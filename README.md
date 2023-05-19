@@ -7,27 +7,27 @@
 
 Pixel empowers creativity, building with speed.
 
-###Table of Contents
-##Introduction
-##Installation
-##Getting Started
-##Basic Usage
-##Widgets and Instances
-##Template Strings
-##Methods and Reactive Data
-##Binding Attributes
-##Pixel Directives
-##Dynamic Attribute Names and Values
-##Rendering with Template Strings or H Function
-##Advanced Usage
-##Props
-##Custom Elements
-##Slots
-##Conclusion
-##Additional Resources
+## Table of Contents
+# Introduction
+# Installation
+# Getting Started
+# Basic Usage
+# Widgets and Instances
+# Template Strings
+# Methods and Reactive Data
+# Binding Attributes
+# Pixel Directives
+# Dynamic Attribute Names and Values
+# Rendering with Template Strings or H Function
+# Advanced Usage
+# Props
+# Custom Elements
+# Slots
+# Conclusion
+# Additional Resources
 
 
-###Introduction
+## Introduction
 Pixel is a JavaScript framework designed to enhance creativity and speed in building web applications. It provides a flexible and intuitive way to create interactive user interfaces using a declarative syntax. Pixel leverages reactive data and efficient rendering to deliver high-performance applications.
 
 ### Installation
@@ -38,7 +38,7 @@ npm install pixel-framework
 Using a script tag:
 
 <script src="https://cdn.pixel.com/pixel.js"></script>
-###Getting Started
+## Getting Started
 Once you have Pixel installed in your project, you can start using it by importing the necessary components. Here's an example of how to import the required modules:
 
 
@@ -46,7 +46,7 @@ import { PixelBuild, Template, data, H, NodeMake } from 'pixel';
 ## Basic Usage
 Let's explore the basic usage of Pixel by going through some key concepts and examples.
 
-###Widgets and Instances
+## Widgets and Instances
 In Pixel, you define widgets that encapsulate your UI components. A widget is an independent entity that can have its own state and behavior. To create a widget, use the PixelBuild function.
 
 Here is a minimal example of using pixel
@@ -113,7 +113,7 @@ let widget={
     }
 }
 ```
-##Binding Attributes
+## Binding Attributes
 To bind an attribute name to a value, use double asterisks '*'. For example, *class='$data.count' will bind the class attribute to the value of count.
 This aswell had direct access to the widget instance
 
@@ -341,7 +341,7 @@ export default{
 }
 
 ```
-##The Build function
+## The Build function
 The build function is the widget Logic method
 the build function has access to some widget options as parameters, through two arguments,[props, context]
 the props parameter is a reference to `this.$props` datas, can be destructured
@@ -356,7 +356,7 @@ export default{
 ```
 this are also available within the this keyword
 
-##Widget type
+## Widget type
 
 Pixel also accepts a function and class widgets, 
 
@@ -365,13 +365,13 @@ Class widgets are perfect and statefull datas, in short, it was used in building
 Class widgets must extend the `Pixel.WIDGET` base widget, to ne treated as a class widget
 Pixel recommends the object widget for declarative syntax
 
-###Conclusion
+## Conclusion
 Congratulations! You've learned the basics of using Pixel to empower your creativity and build with speed. You now know how to define widgets, use template strings, handle methods and reactive data, bind attributes, apply directives, and render your UI widgets. Additionally, you've explored advanced features like props, custom elements, and slots.
 
 
 Pixel offers a powerful and flexible framework for developing dynamic and interactive web applications. Remember to consult the official Pixel documentation and explore the additional resources for more in-depth information and examples.
 
-### Additional Resources
+## Additional Resources
 To further expand your knowledge and explore more advanced features of Pixel, check out the following resources:
 
 Official Pixel Documentation: https://pixel-docs.com
