@@ -310,7 +310,7 @@ build(){
 if there are needs for multiple nodes , there can be wraped in an Array or square brackets e.g
 
 H macro can accept as many child H as possible, 
-```javascrip
+```javascript
 export default{
   // ...
   build() {
@@ -433,11 +433,11 @@ All widget instances of the parent, are available, within the child widget scope
 but if need be to access a child widget's data within the scope it's defined in the parent, pixel provides you with the ***fallThrogh*** setting option in the child widget's buildConfig.
 access to state instances are to be exposed directly, the ***this*** keyword would not be available in the scope,and so,  should be passed as a string format  e.g
 
-```JavaScript
+```javascript
 export default{
     buildConfig:{
         fallThrogh:{
-            count:'$data.count'//direct access to widget instance datas as in the string interpolation system.
+            count:'$data.count',//direct access to widget instance datas as in the string interpolation system
             name:'$params.name',
             msg:messages//namespace variable
         }
@@ -446,7 +446,7 @@ export default{
 
 ```
 This will be exposed withing the scope of the child widget tag as `$fall[xxx]` or `this.$fall[xxx]` if using the hyperscript function. e.g
-```JavaScript
+```javascript
 export default{
     build(){
         return Template`
@@ -466,7 +466,7 @@ the build function has access to some useful widget options data as parameters, 
 the params parameter is a reference to `this.$params` datas, can be destructured
 the context is aswell an object, with access to, styles, events, slots and attrs.
 Here is an example
-```JavaScript
+```javascript
 export default{
     build(params, context){
         return //...
@@ -509,7 +509,7 @@ Pixel recommends the use of object options widget for declarative syntax
   Within the observe object option, pixel acceptd only  object, with names that references the widget defined model instances datas
   
   Does not  accept the use of nested property accessor as metthod neme e.g
-  ```javaacrip
+  ```javascript
   export default{
     observer:{
       '$data.value':()=>{
@@ -518,13 +518,13 @@ Pixel recommends the use of object options widget for declarative syntax
     }
   }
   ```
-  Pixel will reject every access to a nexted access, maybe to a user defined object/array data type, or a reactive data instanciciation.
+  Pixel will reject every access to a nexted access, maybe to a user defined object/array data type, or a reactive data instanciation.
   
   To set up an observer method for the property of ***$data.value***.
   
   You can specifically set the method name to 'value'.
   here is an example.
-  ```javaacript
+  ```javascript
   export default{
     model(){
       return {
@@ -539,9 +539,13 @@ Pixel recommends the use of object options widget for declarative syntax
       },
       num(){
         //here is an observer method for the '$data.num' state instance
+      },
+      value(){
+        
       }
     }
   }
+  ```
   observer methods gets triggered each time the select prop calls its getter function.
 ## Widge registration
 if you are using the template strings to parse your UI, pixel provides a way of registering widgets, before it can be passed as a template tag within the template encapsulation.
@@ -556,13 +560,13 @@ Pixel provides an effective way of inject a global datas through out tge scope o
 can be accessed as '$base.xxx';
 global widget properties are encapsulated into a single data object, $base.
 Example usage
-```javaacript
+```javascript
 const { initBuild }=Pixel
 let build=initBuild({
   //widget options
   template:`<p>{{$base.$data.text}}</p>`
 })
-build.property('text','cursor-pointer');
+//build.property('text','cursor-pointer');
 accepts two parameters, a property name and the property data ref.
 ```
 2. ***build.handlers***: The hanlers prototype of initBuild sets global handlers for a widget
