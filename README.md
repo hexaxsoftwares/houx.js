@@ -273,7 +273,7 @@ PX-for encapsulates element datas, and creates the relatibe data based on the ev
 Rendering with Template Strings or H Function
 You have two options for rendering your UI widgets: using template strings or the H function.
 
-####Template Strings
+#### Template Strings
 Template strings allow you to define your UI structure directly ising the native html tags. You can use plain HTML tags with slight difference, widget tags that has no children can be closed immediately.eg ***<Widget/>***
 To access widgets in the Template string, you must register it through the widgets option.
 You can optionally define your widges using the template option, which is passed strings of your UI html structure
