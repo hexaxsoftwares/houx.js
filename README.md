@@ -41,7 +41,7 @@ npm install pixel-framework
 
 Using a script tag:
 
-<script src="https://cdn.pixel.com/pixel.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/prince9216/PixelJs@main/pixel.global.dev.js"></script>
 ## Getting Started
 Once you have Pixel installed in your project, you can start using it by importing the necessary components. Here's an example of how to import the required modules:
 
