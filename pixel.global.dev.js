@@ -1,9 +1,9 @@
   /**
-  @param This project, 'PIXEL', is been sponsored by the VORTEX TECHNOLOGY FOUNDATION.
-  *Visit 'www.pixel.com/guide' for for more information on the pixel project and documentation of pixel and its development process guide.
-  *This is a web JIT development version of Pixel
-  *We focus hard on developing and improving our features and perfomance issues, we only need your support to help and encourage us on maintaing this template engine.
-  *Thanks for choosing Pixel
+  *@param This project, 'PIXEL', is been sponsored by the VORTEX TECHNOLOGY FOUNDATION.
+  *@param Visit 'www.pixel.com/guide' for for more information on the pixel project and documentation of pixel and its development process guide.
+  *@param This is a web JIT development version of Pixel
+  *@param We focus hard on developing and improving our features and perfomance issues, we only need your support to help and encourage us on maintaing this template engine.
+  *@param Thanks for choosing Pixel
   */
 const Pixel=(function(global){
   "use strict"
@@ -12,7 +12,7 @@ const Pixel=(function(global){
   const isEQ=(arg1, arg2)=>arg1===arg2;//checks if arg1 is equal to arg2
   const isArray=Array.isArray;
   const isDate=date=>{
-  let res=false;//declare a response variable
+    let res=false;//declare a response variable
     try{
       let value=new Date(date);
       value=Date.parse(date);
@@ -20,13 +20,13 @@ const Pixel=(function(global){
     }catch(err){
       res=false
     }
-    return res
+    return res;
   }
   const toString=Object.prototype.toString;
   const rawVToStr=txt=>toString.call(txt);
-  const isSet=val=>isEQ(rawVToStr(val),'object Set');
-  const isMap=map=>isEQ(rawVToStr(map), 'object Map');
-  const getType=value=>isArray(value) ? 'array' : isDate(value) ? 'date' : isSet(value) ? 'set' : isMap(value) ? 'map' : typeof value;
+  const isSet=val=>isEQ(rawVToStr(val),'[object Set]');
+  const isMap=map=>isEQ(rawVToStr(map), '[object Map]');
+  const getType=value=>isArray(value) ? 'array' :!isEQ(typeof value, 'number') && isDate(value) ? 'date' : isSet(value) ? 'set' : isMap(value) ? 'map' : typeof value;
   const isString=str=>isEQ(getType(str),'string');
   const isNull=arg=>arg==null;
   const isObject=obj=>isEQ(getType(obj),'object');
@@ -34,9 +34,9 @@ const Pixel=(function(global){
   const isPrimitive=val=>!isObject(val) && !isFunction(val) && !isArray(val);
   const hasOwn=Object.hasOwn;
   const assign=Object.assign;
-  const defineProperty=Object.defineProperty;
+  const define=Object.defineProperty;
   const entries=Object.entries;
-  const mapValue=(obj, arg)=>isNull(obj) ? false : isPObject(obj) ? hasOwn(obj, arg) : isArray(obj) ? obj.includes(arg) : false;
+  const _mapValue=(obj, arg)=>isNull(obj) ? false : isPObject(obj) ? hasOwn(obj, arg) : isArray(obj) ? obj.includes(arg) : false;
   const isFunction=func=>isEQ(getType(func),'function');
   const isNumber=num=>isEQ(getType(num),'number');
   const isBoolean=bool=>isEQ(getType(bool), 'boolean');
@@ -46,39 +46,41 @@ const Pixel=(function(global){
   const isGTE=(val, arg)=>val>=arg;//checks if val is greater than or equal to args
   const isLTE=(val, arg)=>val<=arg;
   const $warner=`<<** Pixel Debug **>>.....>>>>>>>`;
-  const PixelDebug=msg=>console.warn(`${$warner}\n\n ${msg}`);//pixel warming debugger
-  const validWidgetOptions=['build','model','styleClass','widgets','preBuild','onBuilt','preMount','onMounted','preUpdate','onUpdated','preDestroy','onDestroyed','handlers','params','buildConfig','styleSheet','directives','template','name','observer'];//valid widget options---
+  const Debug=msg=>console.warn(`${$warner}\n\n ${msg}`);//pixel warming debugger
+  const validWidgetOptions=['build','model','styleClass','widgets','beforeBuild','onBuilt','onMounted','onUpdated','onDestroyed','handlers','params','buildConfig','styleSheet','directives','template','name','observers'];//valid widget options---
   const stringBasedOptions=['name','template','styleSheet'];
-  const methodBasedOptions=['build','model','preBuild','onBuilt','preMount','onMounted','preUpdate','onUpdated','preDestroy','onDestroyed'];
-  const objectBasedOptions=['styleClass','widgets','handlers','params','buildConfig','directives','observer'];
+  const methodBasedOptions=['build','model','beforeBuild','onBuilt','beforeMount','onMounted','beforeUpdate','onUpdated','onDestroyed'];
+  const objectBasedOptions=['styleClass','widgets','handlers','params','buildConfig','directives','observers'];
   const isArrayBasedOptions=['params']
   const ObjSize=obj=>isPObject(obj) ? Object.keys(obj).length : isArray(obj) ? obj.length : 0;
-  const isValidWidgetOption=opts=>mapValue(validWidgetOptions, opts);//checks if an option is a vslid Pixel widget option
+  const isValidWidgetOption=opts=>_mapValue(validWidgetOptions, opts);//checks if an option is a vslid Pixel widget option
   const HTML_TAGS=['html','head','style','title','body','address','article','aside','footer','header','h1','h2','h3','h4','h5','h6','main','nav','section','blockquote','dd','div','dl','dt','figcaption','figure','li','menu','ol','p','pre','ul','a','abbr','b','bdi','bdo','cite','code','data','dfn','em','i','kbd','mark','q','rp','rt','ruby','s','samp','small','span','strong','sub','sup','time','u','var','audio','map','video','iframe','object','picture','portal','svg','math','canvas','noscript','script','del','ins','caption','col','colgroup','table','tbody','td','tfoot','th','thead','tr','datalist','fieldset','form','label','legend','meter','optgroup','option','output','progress','select','textarea','details','dialog','summary','button']//All html valid tags supported by the Pixel framework
-  const IS_HTML_TAG=txt=>mapValue(HTML_TAGS, txt);
+  const IS_HTML_TAG=txt=>_mapValue(HTML_TAGS, txt);
   const WEB_COMPONENTS=['template','slot'];//Web components tags , also supported by the Pixel framework
   const HTML_FORM_ELEMENTS=['select', 'textarea','input'];
-  const Is_Form_Element=txt=>mapValue(HTML_FORM_ELEMENTS, txt);
-  const IS_WEB_COMPONENT=txt=>mapValue(WEB_COMPONENTS, txt);
+  const Is_Form_Element=txt=>_mapValue(HTML_FORM_ELEMENTS, txt);
+  const IS_WEB_COMPONENT=txt=>_mapValue(WEB_COMPONENTS, txt);
   const HTML_VOID_TAGS=['base','link','meta','hr','br','wbr','area','img','track','embed','source','input'];//HTML void tags, also supported by the Pixel framework
-  const IS_HTML_VOID_TAG=txt=>mapValue(HTML_VOID_TAGS, txt);
+  const IS_HTML_VOID_TAG=txt=>_mapValue(HTML_VOID_TAGS, txt);
   const HTML_DEPRECATED_TAGS=['acronym','noembed','applet','noframes','bgsound','param','big','blink','plaintext','center','rb','content','rtc','dir','shadow','font','spacer','frame','strike','frameset','image','tt','keygen','xmp','marquee','nobr','menuitem'];//HTML obselete and deprecated element. 
   //The above tags are no more been supported by the pixel framework
-  const IS_HTML_DEPRECATED_TAG=txt=>mapValue(HTML_DEPRECATED_TAGS, txt);
+  const IS_HTML_DEPRECATED_TAG=txt=>_mapValue(HTML_DEPRECATED_TAGS, txt);
   const IS_VALID_TAGNAME=(txt)=>{
     if(IS_HTML_TAG(txt)||IS_WEB_COMPONENT(txt)||IS_HTML_VOID_TAG(txt))return true;
-    else if(IS_HTML_DEPRECATED_TAG(txt)){PixelDebug(`"${txt}" is an html deprecated tag, and should not be used in new projects\n\nPixel JS does not offer the compilation of obselete elements`);return false;}
+    else if(IS_HTML_DEPRECATED_TAG(txt)){Debug(`"${txt}" is an html deprecated tag, and should not be used in new projects\n\nPixel JS does not offer the compilation of obselete elements`);return false;}
     else return false;
   }
+  const SVG_TAGS=['a','animate','animateMotion','animateTransform','circle','clipPath','defs','desc','discard','ellipse','feBlend','feColorMatrix','feComponentTransfer','feComposite','feConvolveMatrix','feDiffuseLighting','feDisplacementMap','feDistantLight','feDropShadow','feFlood','feFuncA','feFuncB','feFuncG','feFuncR','feGaussianBlur','feImage','feMerge','feMergeNode','feMorphology','feOffset','fePointLight','feSpecularLighting','feSpotLight','feTile','feTurbulence','filter','foreignObject','g','hatch','hatchpath','image','line','linearGradient','marker','mask','metadata','mpath','path','pattern','polygon','polyline','radialGradient','rect','script','set','stop','style','svg','switch','symbol','text','textPath','title','tspan','use','view'];
+  const SVG_DEPRECATED_TAGS=['altGlyph','altGlyphDef','altGlyphItem','cursor','font','font-face','font-face-format','font-face-name','font-face-src','font-face-uri','glyph','glyphRef','hkern','missing-glyph','tref','vkern'];
   const dataStringTypes=['string','function','object','array','boolean','number','symbol','date'];//Valid javascript datatypes
-  const isValidDataStringType=obj=>mapValue(dataTypes, obj);//checks if a string value is a dataTypes return text
+  const isValidDataStringType=obj=>_mapValue(dataTypes, obj);//checks if a string value is a dataTypes return text
   const DataFunctionMap=[String, Function, Object, Array, Date, Symbol, Number, Boolean];
   const Data_Flags=['FLAG_RANGE','NodeList','PATCH_FLAGS',]
   const hasUpperCase=str=>str.match(/[A-Z]/g);
   const hasLowerCase=str=>str.match(/[a-z]/g);
   const hasDigit=dig=>dig.match(/[0-9]/g);
   const NodeTypeMap={ ELEMENT_NODE:1, ATTRIBUTE_NODE:2, TEXT_NODE:3, CDATA_SECTION_NODE:4, ENTITY_REFERENCE_NODE:5, ENTITY_NODE:6, PROCESSING_INSTRUCTION_NODE:7, COMMENT_NODE:8, DOCUMENT_NODE:9, DOCUMENT_TYPE_NODE:10, DOCUMENT_FRAGMENT_NODE:11, NOTATION_NODE:12 }
-  const isElementNode=nodeType=>mapValue(NodeTypeMap, nodeType);
+  const isElementNode=nodeType=>_mapValue(NodeTypeMap, nodeType);
   const IsValidElement=el=>isPObject(el) && IS_VALID_TAGNAME(el.localName)  ||  el.isPixel_Fragment;
   const IS_TEXT_NODE=node=>node && isEQ(node.nodeType, NodeTypeMap.TEXT_NODE);
   const IS_ATTRIBUTE_NODE=node=>node && isEQ(node.nodeType, NodeTypeMap.ATTRIBUTE_NODE);
@@ -92,7 +94,7 @@ const Pixel=(function(global){
   const IS_PROCESSING_INSTRUCTION_NODE=node=>node && isEQ(node.nodeType, NodeTypeMap.PROCESSING_INSTRUCTION_NODE);
   const IS_ENTITY_REFERENCE_NODE=node=>node && isEQ(node.nodeType, NodeTypeMap.ENTITY_REFERENCE_NODE);
   const IS_COMMENT_NODE=node=>node && isEQ(node.nodeType, NodeTypeMap.COMMENT_NODE);
-  const TypeMethods={isString, isFunction, isPObject, isArray, isBoolean, isNumber}
+  const TypeMethods={isString, isFunction, isPObject, isArray, isBoolean, isNumber, isDate, isSymbol, isSet, isMap}
   const isNodeChildren=val=> isString(val) || isArray(val) || isPObject(val) && val && val.isChildWidget || val && isPObject(val) && IS_VALID_TAGNAME(val.type);
   function parseScript(script){return Function(`"use strict"; return (${script})`)();}//helps compile string values to javascript statement
   const createNodeChildrenOrSetAttrs=function(args, element, self){
@@ -102,7 +104,7 @@ const Pixel=(function(global){
     return element;
   }
   const GLOBAL_EVENTS=['abort','animationcancel','animationend','animationiteration','animationstart','auxclick','blur','error','focus','canplay','canplaythrough','cancel','change','click','close','contextmenu','dblclick','drag','dragend','dragenter','dragleave','dragover','dragstart','drop','durationchange','emptied','ended','formdata','gotpointercapture','input','invalid','keydown','keypress','load','keyup','loadeddata','loadedmetadata','loadend','loadstart','lostpointercapture','mousedown','mouseenter','mouseleave','mousemove','mouseout','mouseover','mouseup','mousewheel','wheel','pause','play','playing','pointerdown','pointermove','pointerup','pointercancel','pointerover','pointerout','pointerleave','pointerenter','pointerlockchange','pointerlockerror','progress','ratechange','reset','resize','scroll','securitypolicyviolation','seeked','seeking','select','selectstart','selectionchange','slotchange','stalled','submit','suspend','timeupdate','touchcancel','touchend','touchstart','touchmove','transitioncancel','transitionrun','transitioned','transitionstart','waiting'];//Html event names managed by pixel on elements
-  const IS_VALID_EVENT_HANDLER=eventName=>mapValue(GLOBAL_EVENTS, eventName);
+  const IS_VALID_EVENT_HANDLER=eventName=>_mapValue(GLOBAL_EVENTS, eventName);
   function createTxtNode(self, text, parent){
     text=String(text);
     let hasSkip;
@@ -113,10 +115,13 @@ const Pixel=(function(global){
       hasSkip= hasSkip && isBoolean(Skip) ? Skip : hasSkip ;
     }
     if(text) node=document.createTextNode(text);
-    defineProperty(node, 'FLAG_RANGE', {value:0 , configurable:true, writable:true});
-    defineProperty(node, 'PATCH_FLAGS', {value:[]});
-    if(hasSpecialCharacters(node.textContent) &&  !hasSkip ) node.textContent=resolveAccessor(self.state, node.textContent, self.state ? self.state.config : {}, parent, node);
-    defineProperty(node, 'trigger_Effect_Run',{value:Node_Effect_Track.bind({target:node, self:self})});
+    define(node, 'FLAG_RANGE', {value:0 , configurable:true, writable:true});
+    define(node, 'PATCH_FLAGS', {value:[]});
+    if(hasSpecialCharacters(node.textContent) &&  !hasSkip ) {
+      node.textContent=resolveAccessor(self.state, node.textContent, self.state ? self.state.config : {}, parent, node);
+      node.textContent=_Compiler_Call(self.state, node.textContent, parent);
+    }
+    define(node, 'trigger_Effect_Run',{value:Node_Effect_Track.bind({target:node, self:self})});
     return node;
   }
   function createVNode(type, attrs=null, children=null, self={}, ctx){
@@ -131,30 +136,30 @@ const Pixel=(function(global){
     }
     if(type){
       if(IS_VALID_TAGNAME(type))element=document.createElement(type);
-      defineProperty(element, 'px__VNode',{value:id});
+      define(element, 'px__VNode',{value:id});
       assign(element, Pixel_El);
     }
-    defineProperty(element, 'FLAG_RANGE', {value:0 , configurable:true, enumerable: true, writable:true});
-    defineProperty(element, 'PATCH_FLAGS', {value:[], configurable:true, enumerable:true, writable:true});
-    defineProperty(element, 'NodeList',{value:[], configurable:true, writable:true});
+    define(element, 'FLAG_RANGE', {value:0 , configurable:true, enumerable: true, writable:true});
+    define(element, 'PATCH_FLAGS', {value:[], configurable:true, enumerable:true, writable:true});
+    define(element, 'NodeList',{value:[], configurable:true, writable:true});
     const attributes=!isNull(attrs) && !isNodeChildren(attrs) && isPObject(attrs) ? attrs : !isNull(children) && !isNodeChildren(children) && isPObject(children) ? children : {}
     if(!isNull(attributes['px-skip'])){
       const name=attributes['px-skip'];
       let item;
       try{
         item=parseScript(name);
-        item= item || EvaluateTHIS(self.state, name, element);
+        item= item || __Evaluate_THIS(self.state, name, element);
       }catch(err){
         try{
-          item=EvaluateTHIS(self.state, name, element);
+          item=__Evaluate_THIS(self.state, name, element);
         }catch(error){
-          PixelDebug(`${err}`);
+          Debug(`${err}`);
         }
       }
-      defineProperty(element, 'px-skip', {value:item , configurable:true, enumerable: true});
+      define(element, 'px-skip', {value:item , configurable:true, enumerable: true});
     }
     if(ctx){
-      defineProperty(element, 'ctx',{value: ctx});
+      define(element, 'ctx',{value: ctx});
       if(ctx.ref) {
         push_Unique(element.PATCH_FLAGS, ctx.ref);
         element.FLAG_RANGE++;
@@ -165,7 +170,7 @@ const Pixel=(function(global){
     if(element.hasAttribute('px-data')){
       const attr=element.getAttribute('px-data');
       if(attr.includes('.')){
-        PixelDebug(`Directive resolver issue::\n\npx-data directive does not support dotted accessor property reference for binding in pixel `);return element;
+        Debug(`Directive resolver issue::\n\npx-data directive does not support dotted accessor property reference for binding in pixel `);return element;
       }
       if(has_Object_Prop(self.state, attr) || has_Object_Prop(self.state.config.$global.properties)){
         let item;
@@ -175,9 +180,9 @@ const Pixel=(function(global){
           item=get_Object_Value(self.state.config.$global.properties, attr)
         }
         set_Object_Value(has_Object_Prop(self.state, attr) ? self.state : has_Object_Prop(self.state.config.$global.properties) ? self.state.config.$global.properties : {} , attr, {value:element})
-      }else PixelDebug(`Reference Error:;\n\n '${attr} is referenced on build, but not defined on model`);
+      }else Debug(`Reference Error:;\n\n '${attr} is referenced on build, but not defined on model`);
     }
-    defineProperty(element, 'trigger_Effect_Run',{value:Node_Effect_Track.bind({target:element, self:self})});
+    define(element, 'trigger_Effect_Run',{value:Node_Effect_Track.bind({target:element, self:self})});
     return element;
   }
   function hasSpecialCharacters(value) {// Define the regular expression for special characters
@@ -188,14 +193,14 @@ const Pixel=(function(global){
   function resolveAccessor(self, str, config, el, node){
     let delimiters= ['{{', '}}'];
     if(config && config.delimiters){
-      if(!hasSpecialCharacters(config.delimiters[0]) || !hasSpecialCharacters(config.delimiters[1]) ) PixelDebug(`mustache customization error::\n\n delimeters must match value of special characters\n\ne.g !, @, #, $, %, ^, &, *, (, ),  [, ], {, },  :, ?`); 
-      else if(config.delimiters[0].startsWith('${') || config.delimiters[1].startsWith('${')) PixelDebug(`Invalid  delimiter value :: \n\n"$\{" cannot be used as a string mustache delimeter since this are javascript multiline string interpolation technic\n\n Delimeter Configuration failed`);
+      if(!hasSpecialCharacters(config.delimiters[0]) || !hasSpecialCharacters(config.delimiters[1]) ) Debug(`mustache customization error::\n\n delimeters must match value of special characters\n\ne.g !, @, #, $, %, ^, &, *, (, ),  [, ], {, },  :, ?`); 
+      else if(config.delimiters[0].startsWith('${') || config.delimiters[1].startsWith('${')) Debug(`Invalid  delimiter value :: \n\n"$\{" cannot be used as a string mustache delimeter since this are javascript multiline string interpolation technic\n\n Delimeter Configuration failed`);
       else delimiters=config.delimiters;
     }
     if(delimiters && isArray(delimiters) && isEQ(delimiters.length, 2)){
       entries(delimiters).forEach(([key, val])=>{
         if(!isString(val)){
-          PixelDebug(`${isEQ(key, 0) ? 'opening' : ' closing' } delimiters value must be passed as a string`);return;
+          Debug(`${isEQ(key, 0) ? 'opening' : ' closing' } delimiters value must be passed as a string`);return;
         }
       })
     }
@@ -209,12 +214,9 @@ const Pixel=(function(global){
         link=text;
         try{
           let name=text;
-          text=EvaluateTHIS(self, text, el);
-          if(isNull(text)){
-            PixelDebug(`"${name}" is undefined or not on widget model`);
-          }
+          text=__Evaluate_THIS(self, text, el) || '';
         } catch(err){
-          PixelDebug(`accessor Error\n\n "${text}" property was accessed on build, but not defined on build model\n\n ${err}`);return '';
+          Debug(`accessor Error\n\n "${text}" property was accessed on build, but not defined on build model\n\n ${err}`);return '';
         }
         text= isPrimitive(text) ? String(text) : '';
         if(isString(text) || text && el) {
@@ -228,6 +230,33 @@ const Pixel=(function(global){
       })
     }
     if(!isNull(str) && el) el.FLAG_RANGE+=1;
+    return str;
+  }
+  function _Compiler_Call(self, str, el, node){
+    const pattern=/__\$ref\((.*?)\)__/g;
+    let link;
+    if(str.match(pattern)) {
+      str=str.replace(pattern, (match, text)=>{
+        text=text.trim();
+        link=text;
+        try{
+          let name=text;
+          text=__Evaluate_THIS(self, text, el)||'';
+        } catch(err){
+          Debug(`accessor Error\n\n "${text}" property was accessed on build, but not defined on build model\n\n ${err}`);return '';
+        }
+        text= isPrimitive(text) ? String(text) : '';
+        if(isString(text) || text && el) {
+          push_Unique(el.PATCH_FLAGS, link);
+          if(node) {
+            push_Unique(node.PATCH_FLAGS, link);
+            node.FLAG_RANGE++
+          }
+        }
+        return isNull(text) ? '' : text;
+      })
+    }
+    if(!isNull(str) && el) el.FLAG_RANGE++;
     return str;
   }
   function NodeChildrenManager(children, element, self){
@@ -250,13 +279,13 @@ const Pixel=(function(global){
       return { ky:key, value:attr };
     }
   }
-  const PixelDirectives=['px-if','px-else','px-else-if','px-html','px-text','px-for','px-skip','px-data','px-slot','px-model','px'];
+  const PixelDirectives=['px-if','px-else','px-else-if','px-html','px-text','px-for','px-skip','px-data','px-slot','px-model','px','px-bind'];
   const NodeBasedDirectives=['px-html','px-text','px-slot','px-skip','px-model']
-  const WidgetUsableDirectives=['px-data','px-for', 'px-if','px-else-if','px-else','px'];
-  const isPixelDirective=dir=>mapValue(PixelDirectives, dir);
-  const isNodeBaseDirective=dir=>mapValue(NodeBasedDirectives, dir)
-  const isWidgetUsableDirective=dir=>mapValue(WidgetUsableDirectives, dir)
-  function EvaluateTHIS(obj, str, el){
+  const WidgetUsableDirectives=['px-data','px-for', 'px-if','px-else-if','px-else','px','px-bind'];
+  const isPixelDirective=dir=>_mapValue(PixelDirectives, dir);
+  const isNodeBaseDirective=dir=>_mapValue(NodeBasedDirectives, dir)
+  const isWidgetUsableDirective=dir=>_mapValue(WidgetUsableDirectives, dir)
+  function __Evaluate_THIS(obj, str, el){
     // Check if the expression contains semicolons
     if (str.includes(';')) {
       throw new Error('Invalid expression: \n\n";" not allowed\n Only single expressions are allowed.');return;
@@ -291,7 +320,7 @@ const Pixel=(function(global){
       }
       return value;
   }
-  function AttrNameResolver(self, attr, el){
+  function __Attr_Name_Resolver(self, attr, el){
     attr= attr.slice(1);
     const pattern=/\[(.*?)\]/g;
     const matches=attr.match(/\[(.*?)\]/g);
@@ -301,12 +330,12 @@ const Pixel=(function(global){
         name=text;
         try{
           let suit=parseScript(text);
-          suit= !isNull(suit) ? suit : EvaluateTHIS(self.state, text, el);
-          if(isNull(suit))PixelDebug(`Value Error::\n\n ${text} value accessor is unefined or does not exist`);
+          suit= !isNull(suit) ? suit : __Evaluate_THIS(self.state, text, el);
+          if(isNull(suit))Debug(`Value Error::\n\n ${text} value accessor is unefined or does not exist`);
           text=suit;
         }catch(error){
           try{
-            text=EvaluateTHIS(self.state, text, el);
+            text=__Evaluate_THIS(self.state, text, el);
           }catch(err){
             throw err;
           }
@@ -325,7 +354,7 @@ const Pixel=(function(global){
       if(arr.includes(val)) do_Nothing();
       else arr.push(val);
     }catch(error){
-      PixelDebug(error);
+      Debug(error);
     }
     return arr;
   }
@@ -373,7 +402,6 @@ const Pixel=(function(global){
     const path = str.split('.');
     const lastKey = path.pop();
     let currentObj = obj;
-    
     for (const key of path) {
       if (!hasOwn(currentObj, key) || !isPObject(currentObj[key])) currentObj[key] = {};
       currentObj = currentObj[key];
@@ -411,7 +439,7 @@ const Pixel=(function(global){
     }else if(isArray(item)){
       for(const value of item.values()){
         if(!isString(value)) {
-          PixelDebug(`Failed to create element class from bind array data`);return;}
+          Debug(`Failed to create element class from bind array data`);return;}
         element.className=`${element.className} ${item}`;
       }
     }else if(isString(item)){
@@ -421,7 +449,7 @@ const Pixel=(function(global){
   const parse_Style_Binding=function(self, item, element){
     if(isPObject(item)){
       entries(item).forEach(([key, style])=>{
-        if(!isString(style)){ PixelDebug(`Unrecognized stype property value \n\nat at\n "${key}" style property\n\n${element.outerHTML}`); return;}
+        if(!isString(style)){ Debug(`Unrecognized stype property value \n\nat at\n "${key}" style property\n\n${element.outerHTML}`); return;}
         key=transpile_From_Hyphen(key)//support for hyphen included css style classess
          element.style[key]=style
       })
@@ -443,7 +471,7 @@ const Pixel=(function(global){
     let item;
     let name;
     try{
-      item=EvaluateTHIS(self.state, value, el) ;
+      item=__Evaluate_THIS(self.state, value, el) ;
       item=!item ? value : ''
     }catch(err){
       throw new Error(err)
@@ -452,11 +480,13 @@ const Pixel=(function(global){
   }
   function AttributeManager(attrs, element, self){
      if(!isPObject(attrs))return;
+     const pattern=/__\$ref\((.*?)\)__/;
      entries(attrs).forEach(([key, attr ])=>{
+      if(key.match(pattern)) key=_Compiler_Call(self.state, key, element);
       if(key.startsWith('*')){
          let name;
          let item;
-        key=AttrNameResolver(self, key, element);
+        key=__Attr_Name_Resolver(self, key, element);
          // context_Data(self.state, attr, element)
          try{
            const { value, ky }= pxBind(attr, key);
@@ -465,9 +495,9 @@ const Pixel=(function(global){
         }catch(err){
           try{
             name=key;
-            item=EvaluateTHIS(self.state, attr, element);
+            item=__Evaluate_THIS(self.state, attr, element);
             if(!item && isNull(item)){
-              PixelDebug(`value"${attr}" property value was accessed during render, but not initialized on model or is undefined\n\nat at\n ..."${name} attribute on ${element.localName} element`);
+              Debug(`value"${attr}" property value was accessed during render, but not initialized on model or is undefined\n\nat at\n ..."${name} attribute on ${element.localName} element`);
               return;
             }else{
               element.FLAG_RANGE+=1;
@@ -476,7 +506,7 @@ const Pixel=(function(global){
           }catch(error){
             // let item=parse_Obj_Scope(self.state, attr);
             
-             PixelDebug(`value "${attr}" property value was accessed during render, but not initialized on model\n\nat at\n \n${element.outerHTML}\n\n..."${name} \n${error}`);
+             Debug(`value "${attr}" property value was accessed during render, but not initialized on model\n\nat at\n \n${element.outerHTML}\n\n..."${name} \n${error}`);
              return;
           }
         }
@@ -486,39 +516,50 @@ const Pixel=(function(global){
           }else if(IS_VALID_EVENT_HANDLER(name.slice(1))){
             name=name.slice(1)
             if(!isFunction(item)){
-              PixelDebug(`"${name}" event must be passed as  a function \n \n`);return;
+              Debug(`"${name}" event must be passed as  a function \n \n`);return;
               }
               element.addEventListener(name, isFunction(item) ? item : do_Nothing);
            }else if(isEQ(name.slice(1), 'class') || isEQ(name, 'class')){
              parse_Class_Binding(self, item, element)
           }else if(isPixelDirective(name) || isPixelDirective(name.slice(1))){
-            PixelDebug(`Disallowed data bind for directive\nat........\n${name.startsWith('*') ? name.slice(1) : name} attribute`);return;
+            Debug(`Disallowed data bind for directive\nat........\n${name.startsWith('*') ? name.slice(1) : name} attribute`);return;
           }else{
             element.setAttribute(name.slice(1), item);
           }
         }
-      }else if(IS_VALID_EVENT_HANDLER(key.slice(1).toLowerCase())){
-          const event=key.slice(1).toLowerCase();
-          if(!isFunction(attr)){PixelDebug(`"${event}" event must be wrapped as  a function `);return;}
+      }else if(IS_VALID_EVENT_HANDLER(key.slice(1).toLowerCase()) || key.startsWith('on') && IS_VALID_EVENT_HANDLER(key.slice(2).toLowerCase())){
+        const event=key.startsWith('on') ? key.slice(2).toLowerCase() : key.slice(1).toLowerCase();
+        if(isString(attr)){
+          try{
+            attr=__Evaluate_THIS(self.state, attr.match(pattern) ? attr.match(pattern)[1].trim() : attr.trim(), element);
+          }catch(err){
+            throw new Error(err);
+          }
+        }
+          if(!isFunction(attr)){Debug(`"${event}" event must be wrapped as or in a function \n\non.....on...\n  "${element.localName}" element\n`);return;}
             element.addEventListener(event, isFunction(attr) ? attr : do_Nothing);
       }else if(isPixelDirective(key)){
-         element=ResolveDirectives(self, key, attr, element)
+        if(isString(attr) && attr.match(pattern)) attr=attr.match(pattern)[1].trim();
+         element=__Resolve__Directives(self, key, attr, element)
       }else if(isEQ(key,'style')){
+        if(isString(attr) && attr.match(pattern)) attr=_Compiler_Call(self.state, attr, element);
         parse_Style_Binding(self, attr, element);
       }else if(isEQ(key, 'class')){
+        if(isString(attr) && attr.match(pattern)) attr=_Compiler_Call(self.state, attr, element);
         parse_Class_Binding(self, attr, element)
       }else{
         try{ 
+          if(isString(attr) && attr.match(pattern)) attr=_Compiler_Call(self.state, attr, element);
           element.setAttribute(key, attr);
         }catch(err){
-          PixelDebug(`Athribute Error::\n\n...unable to set node attribute "${key}\n\n ${err}`);
+          Debug(`Athribute Error::\n\n...unable to set node attribute "${key}\n\n ${err}`);
           return;
         }
       }
      })
      return element;
   }
-  function ResolveDirectives(self, key, attr, el){
+  function __Resolve__Directives(self, key, attr, el){
     let item;
     let name;
     try{
@@ -528,17 +569,17 @@ const Pixel=(function(global){
     }catch(err){
       try{
         name=key;
-        item=EvaluateTHIS(self.state, attr, el) ;
+        item=__Evaluate_THIS(self.state, attr, el) ;
         item = item ? item : isEQ(name, 'px-html') || isEQ(name, 'px-text') ? `${attr}` : item
         if(!item && isNull(item)){
-          PixelDebug(`value "${attr}" property value was accessed during render, but not initialized on model or is undefined\n\nat at\n ..."${name} directive on ${el.localName} element`);
+          Debug(`value "${attr}" property value was accessed during render, but not initialized on model or is undefined\n\nat at\n ..."${name} directive on ${el.localName} element`);
           return;
         }else{
           el.FLAG_RANGE+=1;
           push_Unique(el.PATCH_FLAGS, name);
         }
       }catch(error){
-        PixelDebug(`value "${attr}" property value was accessed during render, but not initialized on model\n\nat at\n ..."${name} Directive on ${el.localName} element`);
+        Debug(`value "${attr}" property value was accessed during render, but not initialized on model\n\nat at\n ..."${name} Directive on ${el.localName} element`);
         return;
       }
     }
@@ -548,18 +589,13 @@ const Pixel=(function(global){
     }if(isEQ(name, 'px-for')){
       do_Nothing()//
     }else if(isEQ(name, 'px-html')){
-      let bra
-      try{
-        bra=parseScript(item)
-      }catch(error){
+      let bra;
         try{
           get_Object_Value(self.state, item, true)
-          bra=EvaluateTHIS(self.state, item, el) || item;
-        }catch(err){
-          PixelDebug(`value "${item}" property value was accessed during render, but not initialized on model or is undefined\n\nat at\n ..."${name} directive on ${el.localName} element`);return
-        }
+          bra=__Evaluate_THIS(self.state, item, el) || item;
+      }catch(err){
+          Debug(`value "${item}" property value was accessed during render, but not initialized on model or is undefined\n\nat at\n ..."${name} directive on ${el.localName} element`);return
       }
-      
       if(bra && isPrimitive(bra)) {
         el.innerHTML=!isNull(bra) ? bra : '';
         el.FLAG_RANGE+=1;
@@ -572,9 +608,9 @@ const Pixel=(function(global){
       }catch(error){
         try{
           get_Object_Value(self.state, item, true)
-          bra=EvaluateTHIS(self.state, item) || item;
+          bra=__Evaluate_THIS(self.state, item) || item;
         }catch(err){
-          PixelDebug(`value "${item}" property value was accessed during render, but not initialized on model or is undefined\n\nat at\n ..."${name} directive on ${el.localName} element`);return;
+          Debug(`value "${item}" property value was accessed during render, but not initialized on model or is undefined\n\nat at\n ..."${name} directive on ${el.localName} element`);return;
         }
       }
       if(bra && isPrimitive(bra)) {
@@ -586,71 +622,90 @@ const Pixel=(function(global){
       el.setAttribute('px-data', item)
     }else if(isEQ(name, 'px-slot')){   
       if(!isString(item)){
-        PixelDebug(`value Error::\n\n slot name undefined or is not a string\n\n Error resolving slot name`);return;
+        Debug(`value Error::\n\n slot name undefined or is not a string\n\n Error resolving slot name`);return;
       }
       el.setAttribute(name.slice(3), item);
     }else if(isEQ(name, 'px-model')){
       if(!Is_Form_Element(el.localName)){
-        PixelDebug(`Compilation Error::\n\n cannot bind a data mode for a none input element`);return;
+        Debug(`Compilation Error::\n\n cannot bind a data mode for a none input element`);return;
       }
       let initVal='';
       try{
         initVal=get_Object_Value(self.state, item, true) || "";
       }catch(err){
-        PixelDebug(`undefined reference for directive "px-model"\n\n "${item}" is not defined on widget model instance\n\n${err}`);
+        Debug(`undefined reference for directive "px-model"\n\n "${item}" is not defined on widget model instance\n\n${err}`);
       }
       el.value=initVal;
       el.addEventListener('input', ()=>{
         try{
           set_Object_Value(self.state, item , el.value );
         }catch(err){
-          throw new Error(err)
+          throw new Error(err);
         }
       });
+     push_Unique(el.PATCH_FLAGS, item);
+     el.FLAG_RANGE++;
     }
     return el;
   }
-  function getLoopData(str){
-    const keyValueRegex=/(\[[\s]?(([a-zA-Z]*)[\s]?([\,][\s]?([a-zA-Z]*)?)?)[\s]?\]\s+([a-z]+)\s([a-zA-Z.\-\_\$]+))/;
-    const valueRegex=/(([a-zA-Z]+)\s+([a-zA-Z]+)\s+([a-zA-Z.\-\_\$]+))/;
+  const isTagMatch=(open, close)=>{
+    let res=false;
+    const tags=[['[',']'],['{','}'],['(',')'],['<','>']];
+    for(const items of tags.values()){
+      if(items.includes(open) || items.includes(close)){
+        if(isEQ(open, items[0]) && isEQ(close, items[1]) || isEQ(open, items[1]) && isEQ(close, items[0])) {
+          return true;
+        }
+      }
+    }
+    return res;
+  }
+  function get_Loop_Data(str){
+    const keyValueRegex=/(([{|\[|\(])[\s]?(([a-zA-Z]*)[\s]?([\,][\s]?([a-zA-Z]*)?)?)[\s]?([}|\]|)])\s+([of|in]+)\s([a-zA-Z.\-\_\$]+))/;
+    const valueRegex=/(([a-zA-Z]+)\s+([of|in]+)\s+([a-zA-Z.\-\_\$]+))/;
     const Loop_Data={}
     if(str.match(keyValueRegex)){
-      str=str.replace(keyValueRegex,(match,p1, p2, key, rud, val,  type, obj)=>{
-        defineProperty(Loop_Data, 'key', {value:key});
-        if(val) defineProperty(Loop_Data, 'value',{value:val});
-        defineProperty(Loop_Data, 'type', {value:type});
-        defineProperty(Loop_Data, 'obj',{value:obj});
+      str=str.replace(keyValueRegex,(match,p1, op, p2, key, rud, val,  cl, type, obj)=>{
+        if(isGT(op, 1) && isGT(cl, 1) ) {
+          Debug(`únrecognised tags, \n must be a single opening or closing brackets`);return;
+        }else if(!isTagMatch(op, cl)){
+          Debug(`Unmaching tags for px-for loop data keys mapping\n `);return;
+        }
+        define(Loop_Data, 'key', {value:key});
+        if(val) define(Loop_Data, 'value',{value:val});
+        define(Loop_Data, 'type', {value:type});
+        define(Loop_Data, 'obj',{value:obj});
         return match;
       })
     }else if(str.match(valueRegex)){
       str=str.replace(valueRegex,(match, p1, key, type, obj)=>{
-        defineProperty(Loop_Data,'key',{value:key});
-        defineProperty(Loop_Data,'type',{value:type});
-        defineProperty(Loop_Data, 'obj' ,{value:obj});
+        define(Loop_Data,'key',{value:key});
+        define(Loop_Data,'type',{value:type});
+        define(Loop_Data, 'obj' ,{value:obj});
         return match;
       })
     }else{
-      PixelDebug(`Usupported Loop format in 'px-for'\n\n"${str}" is not recognised`);return;
+      Debug(`Usupported Loop format in 'px-for'\n\n"${str}" is not recognised`);return;
     }
     return Loop_Data
   }
-  function For_Loop_MNG(self, attr){
-    const data=getLoopData(attr);
+  function For_Loop(self, attr){
+    const data=get_Loop_Data(attr);
     if(!data) return ;
     let dataObject;
     let ref;
     try{
-      dataObject=EvaluateTHIS(self.state, data.obj);
+      dataObject=__Evaluate_THIS(self.state, data.obj);
       ref=data.obj;
     }catch(error){
-      PixelDebug(`Trouble accessing '${data.obj}' object for px-for loop\n\nnot found on instance or is undefined\n\n${error}`);return;
+      Debug(`Trouble accessing '${data.obj}' object for px-for loop\n\nnot found on instance or is undefined\n\n${error}`);return;
     }
     if(!dataObject || !isPObject(dataObject) && !isArray(dataObject)){
-      PixelDebug(`Undefined scope for px-for, \n\n${data.obj} not iterable`);return ;
+      Debug(`Undefined scope for px-for, \n\n${data.obj} not iterable`);return ;
     }
     const Valid_LoopType=['of','in'];
-    if(!mapValue(Valid_LoopType, data.type)){
-      PixelDebug(`Iteration issue\n\n"${data.type}" is not an iterator\n "of" or "in" only supported by Pixel`);return;
+    if(!_mapValue(Valid_LoopType, data.type)){
+      Debug(`Iteration issue\n\n"${data.type}" is not an iterator\n "of" or "in" only supported by Pixel`);return;
     }
     return { obj:dataObject, keyName:data.key, valRef:data.value, loopType:data.type, ref }
   }
@@ -660,7 +715,11 @@ const Pixel=(function(global){
     let node;
     if(attrs && hasOwn(attrs, 'px-for')){
       let wrapper;
-      const { obj, keyName, valRef, loopType, ref }=For_Loop_MNG(self, attrs['px-for']);
+      const { obj, keyName, valRef, loopType, ref }=For_Loop(self, attrs['px-for']);
+      if(isEQ(loopType, 'in') && valRef){
+        Debug(`((Warning))\n\nWe do not recommend the use of key value paires in 'for...in' loops, \n\nsince the value of the value reference will remain "undefined"`);
+        Debug(`Many JavaScript style guides and linters recommend against the use of 'for...in', because it iterates over the entire prototype chain which is rarely what one wants, and may be a confusion with the more widely-used "for...of" loop\n\nIt's included in Pixel's support for completeness.`);
+      }
       wrapper=createFragment()
       if(isEQ(loopType,'of')){
         if(valRef){
@@ -671,8 +730,8 @@ const Pixel=(function(global){
             wrapper.NodeList.push(loopNode);
           }
         }else{
-          for(const [ky] of entries(obj)){
-            const ctx={[keyName]:ky,  ref};
+          for(const val of obj.values()){
+            const ctx={[keyName]:val, ref};
             let loopNode=createVNode(type, children || null, attrs || null, self, ctx);
             wrapper.append(loopNode);
             wrapper.NodeList.push(loopNode)
@@ -686,6 +745,7 @@ const Pixel=(function(global){
             wrapper.append(loopNode);
             wrapper.NodeList.push(loopNode)
           }
+          //Debug()
         }else{
           for(const ky in obj){
             const ctx={[keyName]:ky,  ref};
@@ -701,13 +761,13 @@ const Pixel=(function(global){
   }
   function H(type, attrs=null, children=null){
     const argsCount=arguments.length;
-    if(!type){ PixelDebug('error loading vnode type\n\ntype for H Vnode  function is not defined'); return; }else if(argsCount>3){PixelDebug(`H Vnode function cannot accept more than 3 arguments, \n\n "${ argsCount }" received`);return;}
+    if(!type){ Debug('error loading vnode type\n\ntype for H Vnode  function is not defined'); return; }else if(isGT(argsCount,3)){Debug(`H Vnode function cannot accept more than 3 arguments, \n\n "${ argsCount }" received`);return;}
     if(isPObject(type) || isFunction(type)){
       if(Boolean(type.is_Custom_Node)){
         return new type.element;
       }
       type=isFunction(type) ? type : Object.create(type);
-      defineProperty(type, 'isWidget',{value:true, enumerable:true});
+      define(type, 'isWidget',{value:true, enumerable:true});
       let attributes;
       let child;
       if(!isNull(children)){
@@ -730,8 +790,7 @@ const Pixel=(function(global){
           type=Boolean(nodeMake.is_Custom_Node) ? nodeMake : type
         }catch(err){
           throw new Error(err)
-          PixelDebug(`invalid element tagname\n\n"${type}" is not a valid html tag name`); return;
-          
+          Debug(`invalid element tagname\n\n"${type}" is not a valid html tag name`); return;
         }
       }
     }
@@ -742,7 +801,7 @@ const Pixel=(function(global){
     }else if(isEQ(argsCount,3)){
       if (isNodeChildren(attrs) || attrs &&  attrs.isWidget && isPObject(children))return { type, children:attrs, attrs:children }
       else if(isPObject(attrs) && isNodeChildren(children) || children && children.isWidget ) return { type, attrs, children };
-      else PixelDebug(`invalid value pased to HyperScript function, \n ...\nat...>>>>>\n\n"${attrs}" <<and>>> "${children}"`);return;
+      else Debug(`invalid value pased to HyperScript function, \n ...\nat...>>>>>\n\n"${attrs}" <<and>>> "${children}"`);return;
     }
   }
   class Widget {
@@ -766,16 +825,16 @@ const Pixel=(function(global){
   const modelManager=function(opts,self){
     if(!isNull(opts.model)){
       if(!isFunction(opts.model)){
-        PixelDebug(`widget model option must be a function,\n\n and .....>>>>>\n`);return;
+        Debug(`widget model option must be a function,\n\n and .....>>>>>\n`);return;
       }else{
-        defineProperty(self.state, '$data',{value:{},configurable:true, enumerable:true});
+        define(self.state, '$data',{value:{},configurable:true, enumerable:true});
         const modelReturnObj=opts.model.call(self.state);
-        if(!isPObject(modelReturnObj)){ PixelDebug(`\nmodel method must return an object`);return;}
+        if(!isPObject(modelReturnObj)){ Debug(`\nmodel method must return an object`);return;}
         entries(modelReturnObj).forEach(([key, value])=>{
           if(isPObject(value) && value._data_flag){
-            defineProperty(self.state.$data, key, {value: !isNull(value.value) ? value.value : null, enumerable: true, writable: true, configurable:true});
+            define(self.state.$data, key, {value: !isNull(value.value) ? value.value : null, enumerable: true, writable: true, configurable:true});
           }else{
-            defineProperty(self.state, key, {value: value, enumerable: true, writable: true, configurable:true});
+            define(self.state, key, {value: value, enumerable: true, writable: true, configurable:true});
           }
         });
       }
@@ -784,15 +843,14 @@ const Pixel=(function(global){
   const widgetsSetup=function(opts, self){
     if(!isNull(opts.widgets)){
       if(!isPObject(opts.widgets)){
-        PixelDebug(`widget option must be an object,\n \n invalid value  "${getType(opts.widgets)}" found`);
+        Debug(`widget option must be an object,\n \n invalid value  "${getType(opts.widgets)}" found`);
         return;
       }else{
         entries(opts.widgets).forEach(([key, widget])=>{
           if(!hasUpperCase(key.at(0)) && !key.includes('-') && !key.includes('_') && hasDigit(key.at(0)) && !hasDigit(key)){
-            PixelDebug(`Widget registration failed, improper widget namecasing found at "${key}"\n\nwidget names must atleast start with an uppercase letter or a multi-word string seperated by a hyphen or an underscore`);return;
+            Debug(`Widget registration failed, improper widget namecasing found at "${key}"\n\nwidget names must atleast start with an uppercase letter or a multi-word string seperated by a hyphen or an underscore`);return;
           }
         })
-        
         self.widgets=opts.widgets || undefined;
       }
     }
@@ -802,7 +860,7 @@ const Pixel=(function(global){
     entries(obj).forEach(([ind, val])=>{
       val=isFunction(val) ? val() : val;
       if(!isValidDataType(val)){
-        PixelDebug(`validation type for "${ind}" is not a valid javascript data type \n\nat at\n unable to resolve "${val}" `);
+        Debug(`validation type for "${ind}" is not a valid javascript data type \n\nat at\n unable to resolve "${val}" `);
         return false;
       }
     })
@@ -813,15 +871,15 @@ const Pixel=(function(global){
       self.handlers={};
       entries(opts.handlers).forEach(([ind, method])=>{
         if(!isNull(method) && !isFunction(method)){
-          PixelDebug(`widget method option's values must be a method or a function\n\n type of "${getType(method)}" found`);return;
+          Debug(`widget method option's values must be a method or a function\n\n type of "${getType(method)}" found`);return;
         }
         method=method.bind(self.state);
-        defineProperty(method, 'pixel_handler',{value:true})
-        defineProperty(self.state, ind, {value:method})
-        defineProperty(self.handlers, ind, {value:method})
+        define(method, 'pixel_handler',{value:true})
+        define(self.state, ind, {value:method})
+        define(self.handlers, ind, {value:method})
       });
     }else if(!isNull(opts.handlers) && !isPObject(opts.handlers)){
-      PixelDebug(`widget handlers option must be an "object"\n\n........>>>> invalid "typeof ${getType(opts.handlers)}"   found`);return;
+      Debug(`widget handlers option must be an "object"\n\n........>>>> invalid "typeof ${getType(opts.handlers)}"   found`);return;
     }
   }
   const paramsManager=function(opts, self){
@@ -830,7 +888,7 @@ const Pixel=(function(global){
     const attrs=opts.attributes || opts.attrs || undefined;
     if(opts.isFunctionalWidget){
       if(attrs && isPObject(attrs) && !params){
-        defineProperty(self.state, '$attrs',{value:{}})
+        define(self.state, '$attrs',{value:{}})
         entries(attrs).forEach(([ind, attr])=>{
           self.state.$attrs[ind]=attr;
         });
@@ -839,32 +897,32 @@ const Pixel=(function(global){
     let paramsSet;
     if(params && isPObject(params) || isArray(params)){
       if(self.is_Custom_Node){
-        defineProperty(self, '$params',{value:{}})
+        define(self, '$params',{value:{}, configurable:true, enumerable:true})
         paramsSet=self.$params;
       }else{
-        defineProperty(self.state, '$params',{value:{}})
-        defineProperty(self.state, '$attrs',{value:{}})
+        define(self.state, '$params',{value:{}, enumerable:true, configurable:true})
+        define(self.state, '$attrs',{value:{}, enumerable:true, configurable:true})
         paramsSet=self.state.$params;
       }
       entries(params).forEach(([ind, param])=>{
         if(isPixelDirective(ind)){
-          PixelDebug(`Params "${ind}" pased to widget is a pixel directive,\n\nMay not be used as a params identifier`);return;
+          Debug(`Params "${ind}" pased to widget is a pixel directive,\n\nMay not be used as a params identifier`);return;
         }
         if(isFunction(param)){
-          if(!mapValue(attrs || {}, ind)){
-            defineProperty(paramsSet,ind,{value:''});return;}
+          if(!_mapValue(attrs || {}, ind)){
+            define(paramsSet,ind,{value:'', enumerable:true, configurable:true});return;}
         }else if(isArray(params) && isString(param)){
-          defineProperty(paramsSet, param, {value: '', configurable: true});return;}
+          define(paramsSet, param, {value: '',enumerable:true, configurable: true});return;}
         if(isPObject(param) && param.required && isNull(param.default)){
-          if(!mapValue(attrs || {}, ind)){
-            PixelDebug(`validation error........\n\nrequired property is empty\n\nat at\n  .....${ind}`);
-            defineProperty(paramsSet,ind,{value:'' });
+          if(!_mapValue(attrs || {}, ind)){
+            Debug(`validation error........\n\nrequired property is empty\n\nat at\n  .....${ind}`);
+            define(paramsSet,ind,{value:'', enumerable:true, configurable:true });
             return;}
         }else if(isPObject(param) && !isNull(param.default) && !param.required){
           const defaultValue=isFunction(param.default) ? param.default() : param.default;
-          if(!mapValue(attrs || {}, ind)){
+          if(!_mapValue(attrs || {}, ind)){
             if(isFunction(param.type) && !isEQ(getType(param.type()), getType(defaultValue))){
-              PixelDebug(`validation error .....\n\n
+              Debug(`validation error .....\n\n
               property validation for widget default value failed, property "${ind}" is of an invalid type\n\n typeof "${getType(param.type())}" expected`);
               return;
             }else if(isArray(param.type)){
@@ -872,150 +930,131 @@ const Pixel=(function(global){
               for (const [key, val] of param.type.entries()){
                 if(isEQ(getType(val()), defaultValue)){
                   truthy=true;
-                  defineProperty(paramsSet, ind, {value: defaultValue});
+                  define(paramsSet, ind, {value: defaultValue, enumerable:true, configurable:true});
                 }
               }
               if(!truthy){
-                PixelDebug(`validation error  .......\n\nproperty validation for widget failed, property "${ind}" is of an invalid type\n\n matches no type in the validation list`);
-                defineProperty(paramsSet,ind,{value:''});return; 
+                Debug(`validation error  .......\n\nproperty validation for widget failed, property "${ind}" is of an invalid type\n\n matches no type in the validation list`);
+                define(paramsSet,ind,{value:'', enumerable:true, configurable:true});return; 
               }
             }else{
-              defineProperty(paramsSet,ind,{value:defaultValue });
+              define(paramsSet,ind,{value:defaultValue , enumerable:true, configurable:true});
             }
           }
         }else if(isPObject(param) && !isNull(param.default) && Boolean(true)){
-          PixelDebug(`validation error  .......\n\nthe required validator should not be truthy alongside a default value\nat at\n\n"${ind}`);
+          Debug(`validation error  .......\n\nthe required validator should not be truthy alongside a default value\nat at\n\n"${ind}`);
           return;
         }
       })
       entries(attrs || {}).forEach(([ind, attr])=>{
-        if(isPObject(params) && mapValue(params || {}, ind)){
+        if(isPObject(params) && _mapValue(params || {}, ind)){
           param=params[ind];
           if(isFunction(param)){
             if( !isEQ(getType(param()), getType(attr))){
-              PixelDebug(`validation error  .......\n\nproperty validation for widget failed, property "${ind}" is of an invalid type\n\n typeof "${getType(param())}" expected`);
-              defineProperty(paramsSet,ind,{value:''});
+              Debug(`validation error  .......\n\nproperty validation for widget failed, property "${ind}" is of an invalid type\n\n typeof "${getType(param())}" expected`);
+              define(paramsSet,ind,{value:'', enumerable:true, configurable:true});
               return; 
             }else{
-              defineProperty(paramsSet,ind,{value:attr});
+              define(paramsSet,ind,{value:attr, enumerable:true, configurable:true});
             }
           }else if(isArray(param)){
             let truthy=false;
             for (const [key, val] of param.entries()){
               if( isEQ(getType(val()), getType(attr))){
                 truthy=true;
-                defineProperty(paramsSet, ind, {value: attr});return;
+                define(paramsSet, ind, {value: attr, enumerable:true, configurable:true});return;
                 break;
               }
             }
             if(!truthy){
-                PixelDebug(`validation error  .......\n\nproperty validation for widget failed, property "${ind}" is of an invalid type\n\n matches no type in the validation list`);
-                defineProperty(paramsSet,ind,{value:''});return; 
+                Debug(`validation error  .......\n\nproperty validation for widget failed, property "${ind}" is of an invalid type\n\n matches no type in the validation list`);
+                define(paramsSet,ind,{value:'', enumerable:true, configurable:true});return; 
             }
           }else if(isPObject(param)){
             if(!param.type){
-              PixelDebug(`validation error  ......\n\nno type definition found at param validation for widget \n\nat\n"${ind}"`);
-              defineProperty(paramsSet,ind,{value:''});return;
+              Debug(`validation error  ......\n\nno type definition found at param validation for widget \n\nat\n"${ind}"`);
+              define(paramsSet,ind,{value:'', enumerable:true, configurable:true});return;
             }
             if(isFunction(param.type)){
-              if(isNumber(param.type())) attr=Number(attr)
-              if(isNumber(param.type()) && isNaN(attr) || !isEQ(getType(param.type()), getType(attr))){
-                PixelDebug(`property validation for widget failed, property "${ind}" is of an invalid type\n\n typeof "${getType(param.type())}" expected`);
-                defineProperty(paramsSet,ind,{value:''});return ;
-              }else defineProperty(paramsSet,ind,{value:attr});
+              if(!isEQ(getType(param.type()), getType(attr))){
+                Debug(`property validation for widget failed, property "${ind}" is of an invalid type\n\n typeof "${getType(param.type())}" expected`);
+                define(paramsSet,ind,{value:'', enumerable:true, configurable:true});return ;
+              }else{
+                define(paramsSet,ind,{value:attr, enumerable:true, configurable:true});
+              }
             }else if(isArray(param.type)){
               let truthy=false;
               for (const [key, val] of param.type.entries()){
                 if(isEQ(getType(val()), getType(attr)) ){
                   truthy=true;
-                  defineProperty(paramsSet, ind, {value: attr});
+                  define(paramsSet, ind, {value: attr, enumerable:true, configurable:true});
                   break;
                 }
               }
               if(!truthy){
-                PixelDebug(`validation error  .......\n\nproperty validation for widget failed, property "${ind}" is of an invalid type\n\n matches no type in the validation list`);
-                defineProperty(paramsSet,ind,{value:''});return; 
+                Debug(`validation error  .......\n\nproperty validation for widget failed, property "${ind}" is of an invalid type\n\n matches no type in the validation list`);
+                define(paramsSet,ind,{value:'', enumerable:true, configurable:true});return; 
               }
             }
           }
         }else if(isArray(params) && params.includes(ind)){
           entries(params).forEach(([key, val])=>{
             if(isEQ(val, ind)){
-              defineProperty(paramsSet, val,{value: attr || ''})
+              define(paramsSet, val,{value: attr || '', enumerable:true, configurable:true})
             }
           })
           
-        }else if(!mapValue(params, ind)){
-          defineProperty(self.state.$attrs, ind,{value:attr || '', enumerable: true, configurable:true});
+        }else if(!_mapValue(params, ind)){
+          define(self.state.$attrs, ind,{value:attr || '', enumerable: true, configurable:true});
         }
       });
       if(params){
         for(const [key, par] of entries(params)){
           if(par.validator){
             if(!isFunction(par.validator)){
-            PixelDebug(`Error resolving Validation \n\n at at\n${key} params, must be a method`);return;}
+            Debug(`Error resolving Validation \n\n at at\n${key} params, must be a method`);return;}
             let value=paramsSet[key];
             const result=par.validator(value);
-            if(!Boolean(result)){PixelDebug(`Validation Error\n\nCustom validation for "param" ${key} failed`);return}
+            if(!Boolean(result)){Debug(`Validation Error\n\nCustom validation for "param" ${key} failed`);return}
           }
         }
       }
     }else if(params && !isPObject(params) && !isArray(params)){
-      PixelDebug(`params value for widget is of an invalid pattern,  must be an object or an árray\n typeof "${getType(params)}" found`);return;
+      Debug(`params value for widget is of an invalid pattern,  must be an object or an árray\n typeof "${getType(params)}" found`);return;
     }
   }
   const setupBeforeBuildHook=function(opts, self){
-    if(!isNull(opts.preBuild)){
-      if(!isFunction(opts.preBuild)){
-        PixelDebug(`"preBuild Callback" hook must be a function \n\n type of "${getType(opts.preBuild)}" found`);return;
+    if(!isNull(opts.beforeBuild)){
+      if(!isFunction(opts.beforeBuild)){
+        Debug(`"beforeBuild Callback" hook must be a function \n\n type of "${getType(opts.beforeBuild)}" found`);return;
       }
-      self.preBuild=opts.preBuild.bind(self.state={});
-      self.preBuild();
+      self.beforeBuild=opts.beforeBuild.bind(opts.attributes || {});
+      self.beforeBuild();
     }
   }
   const setupOnBuiltHook=function(opts, self, wheel){
     if(isGT(wheel, 1))return;
     if(!isNull(opts.onBuilt)){
       if(!isFunction(opts.onBuilt)){
-        PixelDebug(`"onBuilt Callback" hook must be a function \n\n type of "${getType(opts.onBuilt)}" found`);return;
+        Debug(`"onBuilt Callback" hook must be a function \n\n type of "${getType(opts.onBuilt)}" found`);return;
       }
       self.onBuilt=opts.onBuilt.bind(self.state);
-      self.onBuilt();
     }
-  }
-  const setupBeforeMountHook=function( opts, self, wheel){
-    if(isGT(wheel, 1))return;
-    if(!isNull(opts.preMount)){
-      if(!isFunction(opts.preMount)){
-        PixelDebug(`"preMount Callback" hook must be a function \n\n type of "${getType(opts.preMount)}" found`);return;
-      }
-      self.preMount=opts.preMount.bind(self.state);
-    }else self.preMount=do_Nothing;
   }
   const setupMountedHook=function(opts, self, wheel ){
     if(isGT(wheel, 1))return;
     if(!isNull(opts.onMounted)){
       if(!isFunction(opts.onMounted)){
-        PixelDebug(`LifeCycle Error::\n\n"onMounted callback" hook must be a function \n\n type of "${getType(opts.onMounted)}" found`);return;
+        Debug(`LifeCycle Error::\n\n"onMounted callback" hook must be a function \n\n type of "${getType(opts.onMounted)}" found`);return;
       }
       self.onMounted=opts.onMounted.bind(self.state);
     }else self.onMounted=do_Nothing;
-  }
-  const setupBeforeUpdateHook=function(opts, self, wheel){
-    if(isLTE(wheel, 1))return;
-    if(!isNull(opts.preUpdate)){
-      if(!isFunction(opts.preUpdate)){
-        PixelDebug(`"preUpdate Callback" hook must be a function \n\n type of "${getType(opts.preUpdate)}" found`);return;
-      }
-      self.preUpdate=opts.preUpdate.bind(self.state);
-      self.preUpdate();
-    }else self.preUpdate=do_Nothing;
   }
   const setupOnUpdatedHook=function(opts, self, wheel){
     if(isLTE(wheel, 1))return;
     if(!isNull(opts.onUpdated)){
       if(!isFunction(opts.onUpdated)){
-        PixelDebug(`"onUpdated Callback" hook must be a function \n\n type of "${getType(opts.onUpdated)}" found`);return;
+        Debug(`"onUpdated Callback" hook must be a function \n\n type of "${getType(opts.onUpdated)}" found`);return;
       }
       self.onUpdated=opts.onUpdated.bind(self.state);
     }else self.onUpdated=do_Nothing;
@@ -1026,23 +1065,23 @@ const Pixel=(function(global){
       self.state.$styles={};
       entries(opts.styleClass).forEach(([ind, style])=>{
         if(!isNull(style) && !isPObject(style)){
-          PixelDebug(`property value of style is of an invalid type, an object required....>>\n\n.....typeof ${getType(style)} fount`); return;
+          Debug(`property value of style is of an invalid type, an object required....>>\n\n.....typeof ${getType(style)} fount`); return;
         }
         self.state.$styles[ind]=style;
       })
     }else if(!isNull(opts.styleClass && !isPObject(opts.styleClass))){
-      PixelDebug(`invalid option.......\n\n styleClass option must be an object, typeof "${getType(styleClass)}" found`);return;
+      Debug(`invalid option.......\n\n styleClass option must be an object, typeof "${getType(styleClass)}" found`);return;
     }
   }
   const validateWidgetOptions=function(opts, self){
     const exist=[];
     entries(opts).forEach(([ind, val])=>{
       if(!exist.includes(ind))exist.push(ind);
-      else{ PixelDebug(`widget options error\n\n....duplicate property "${ind} found on widget`);return;}
+      else{ Debug(`widget options error\n\n....duplicate property "${ind} found on widget`);return;}
     });
   }
   const hydration_Compile=function(opts, self, el){
-    if(!el.Pixel_NodeMake && IsValidElement(el) && !el.isPixel_Fragment){
+    if(el && !el.Pixel_NodeMake && IsValidElement(el) && !el.isPixel_Fragment){
       let inheritStyles=true;
       let inheritAttrs=true;
       if(!isNull(self.state.config)){
@@ -1061,21 +1100,8 @@ const Pixel=(function(global){
         });
       }
       if(inheritAttrs && isPObject(self.state.$attrs)){
-        
-        let attributes=self.state.$attrs
-        AttributeManager( attributes, el, self)
-        // 
-        // entries(self.state.$attrs).forEach(([ind, attr])=>{
-        //   if(isEQ(ind, 'class')) el.className=`${el.className} ${attr}`;
-        //   else{
-        //     try{ 
-        //       el.setAttribute(ind, attr);
-        //     }catch(err){
-        //       PixelDebug(`Athribute Error::\n\n...unable to set node attribute \n\n `);
-        //       return;
-        //     }
-        //   }
-        // });
+        let attributes=self.state.$attrs;
+        AttributeManager( attributes, el, self);
       }
     }
   }
@@ -1085,16 +1111,16 @@ const Pixel=(function(global){
     if(options.attributes) widget.attributes=options.attributes;
     if(options.children) widget.children=options.children;
     
-    const waitForReturnObjects=['params','handlers','styleClass','widgets','buildConfig','observer','directives'];
+    const waitForReturnObjects=['params','handlers','styleClass','widgets','buildConfig','observers','directives'];
     entries(validWidgetOptions).forEach(([key, val])=>{
       if(!isNull(opts[val])){
         let value=opts[val];
-        if(mapValue(waitForReturnObjects, val) && isFunction(value))value=opts[val]();
+        if(_mapValue(waitForReturnObjects, val) && isFunction(value))value=opts[val]();
         widget[val]=value;
       }
     })
     entries(opts).forEach(([key, val])=>{
-      if(!mapValue(validWidgetOptions, key ) && !mapValue(['params','ctx'], key)) self.state[key]=val;
+      if(!_mapValue(validWidgetOptions, key ) && !_mapValue(['params','ctx'], key)) self.state[key]=val;
     })
     return widget;
   }
@@ -1105,18 +1131,18 @@ const Pixel=(function(global){
        if(opts.isClassBasedWidget){
          isClassBasedWidget=true
          opts=setupClassBasedWidget(opts, self);
-         defineProperty(opts, 'isClassBasedWidget',{value:isClassBasedWidget});
+         define(opts, 'isClassBasedWidget',{value:isClassBasedWidget});
       }else{
         isFunctionalWidget=true;
         opts=setupFunctionWidget(opts, self);
-        defineProperty(opts,'isFunctionalWidget',{value:isFunctionalWidget});
+        define(opts,'isFunctionalWidget',{value:isFunctionalWidget});
        }
      }
      return opts;
   }
   const sanitizedOptions=function(args, self){
     const count=args.length;
-    if(!args){ PixelDebug('error loading widget\n\ntype for Vnode  function is not defined'); return; }else if(isGT(count,3)){PixelDebug(`PixelBuild function cannot accept more than 3 arguments,  "${ count }" received`);return;}
+    if(!args){ Debug('error loading widget\n\ntype for Vnode  function is not defined'); return; }else if(isGT(count,3)){Debug(`__Pixel_Build function cannot accept more than 3 arguments,  "${ count }" received`);return;}
     let widget=H(args[0], args[1], args[2]);
     widget=  set_Widget_Flag(self, widget, widget, 'children');
     return widget;}
@@ -1125,11 +1151,11 @@ const Pixel=(function(global){
     const modified = trimmed ? `.${className}${trimmed}, .${className} ${trimmed}` : trimmed;
     return modified;
   };
-  const cssStylesheetCompilation=function(opts, self, el){
+  const css_Stylesheet_Compilation=function(opts, self, el){
     if(opts.styleSheet || opts.styles){
       let CssStylesheet=opts.styleSheet || opts.styles;
       if(!isString(CssStylesheet)){
-        PixelDebug(`Invalid Value Type...\n\nstyleSheet must be in string value format`);return;
+        Debug(`Invalid Value Type...\n\nstyleSheet must be in string value format`);return;
       }///attempt to add css rules to thw build shadow root
       const styleEl=createVNode('style', { type:'text/css'}, null);
       const id=Math.floor(Math.random()*(100000000 * 9999999999999) + 10000000);
@@ -1148,31 +1174,34 @@ const Pixel=(function(global){
     }
     return el;
   }
-  const slotHydrateRenderer=function(self, opts, el){
+  const __$slot_Hydrate_Renderer=function(self, opts, el){
     const childrenArr=opts.children ? opts.children.children : [];
     if(childrenArr && isGT(childrenArr.length,0)){
       const patchFlags=opts.children.patchFlags || {}
       let children=[]
       let fallData=self.state.config.fallThrough || {};
-      defineProperty(patchFlags.state, '$fall', {value:fallData})
+      define(patchFlags.state, '$fall', {value:{}})
+      for(const [key, value] of entries(fallData)){
+        define(patchFlags.state.$fall, key, { value, enumerable:true, configurable:true})
+      }
       entries(childrenArr).forEach(([key, child])=>{
         let value=compileTemplate(child, patchFlags, null, true);
         children.push(value);
         
       })
-      defineProperty(self.state,'$slots',{value:{}});
+      define(self.state,'$slots',{value:{}});
       let template=H('template');
       template=compileTemplate(template, self, el);
       entries(children).forEach(([ind, value])=>{
         if(isEQ(value.localName, 'template')){
           const name=value.getAttribute('slot');
-          defineProperty(self.state.$slots, name || 'default', {value: value, configurable: true, enumerable: true});
+          define(self.state.$slots, name || 'default', {value: value, configurable: true, enumerable: true});
         }else{
           template.append(value);
-          defineProperty(self.state.$slots, 'default', {value: template, configurable: true, enumerable: true});
+          define(self.state.$slots, 'default', {value: template, configurable: true, enumerable: true});
         }
       })
-      const enumerateSlots=function(cont){
+      const _enumerate_Slots=function(cont){
         let slotContent=''
         if(isGT(cont.childNodes.length,1)){
           slotContent=createFragment();
@@ -1188,14 +1217,13 @@ const Pixel=(function(global){
       entries(slots || []).forEach(([ind, slotEl])=>{
         const name=slotEl.getAttribute('name');
         if(name && isString(name)){
-          if(self.state.$slots && mapValue(self.state.$slots, name)){
-            const slotContent=enumerateSlots(self.state.$slots[name]);
+          if(self.state.$slots && _mapValue(self.state.$slots, name)){
+            const slotContent=_enumerate_Slots(self.state.$slots[name]);
             slotEl.replaceWith(slotContent);
           }
         }else if(!name){
-          if(self.state.$slots && mapValue(self.state.$slots, 'default')){
-            const slotContent=enumerateSlots(self.state.$slots['default']);
-            
+          if(self.state.$slots && _mapValue(self.state.$slots, 'default')){
+            const slotContent=_enumerate_Slots(self.state.$slots['default']);
             slotEl.append(slotContent);
           }
         }
@@ -1204,12 +1232,12 @@ const Pixel=(function(global){
         let inheritSlots=true;
         if(opts.buildConfig && !isNull(opts.buildConfig.inheritSlots) && isBoolean(opts.buildConfig.inheritSlots)){
           if(!isBoolean(opts.buildConfig.inheritSlots)){
-            PixelDebug(`Value Error\n\n "inheritSlots" value cannot be compiled\n boolean value format required`);return;
+            Debug(`Value Error\n\n "inheritSlots" value cannot be compiled\n boolean value format required`);return;
           }
           inheritSlots=opts.buildConfig.inheritSlots;
         }
         if(!Boolean(inheritSlots))return;
-        let slotContent=enumerateSlots(self.state.$slots['default']);
+        let slotContent=_enumerate_Slots(self.state.$slots['default']);
         el.append(slotContent);
       }
     }
@@ -1218,19 +1246,19 @@ const Pixel=(function(global){
     if(opts.buildConfig && isPObject(opts.buildConfig)){
       if(opts.buildConfig.fallThrough){
         if(!isPObject(opts.buildConfig.fallThrough)){
-          PixelDebug(`Fallthrough data, unresolved type, \nmust be an object or an array data type`);return;
+          Debug(`Fallthrough data, unresolved type, \nmust be an object or an array data type`);return;
         }
         entries(opts.buildConfig.fallThrough).forEach(([key, value])=>{
           try{ value=parseScript(value) ;
-          }catch(err){ value=EvaluateTHIS(self.state, value);}
+          }catch(err){ value=__Evaluate_THIS(self.state, value);}
           opts.buildConfig.fallThrough[key]=value
         })
       }
       entries(opts.buildConfig).forEach(([key, setting])=>{
-        defineProperty(self.state.config, key , {value:setting});
+        define(self.state.config, key , {value:setting, configurable:true, enumerable:true, writable:true});
       })
     }else if(opts.buildConfig && !isPObject(opts.buildConfig)){
-      PixelDebug(`Value Error\n\nbuild Configuration settings object must be an object type format or is undefined`);
+      Debug(`Value Error\n\nbuild Configuration settings object must be an object type format or is undefined`);
       return;
     }
   }
@@ -1240,33 +1268,33 @@ const Pixel=(function(global){
     const $options={};
     let hasOpts=false
     entries(options).forEach(([key, opts])=>{
-      if(!mapValue(exceptions, key) && !isValidWidgetOption(key)){
+      if(!_mapValue(exceptions, key) && !isValidWidgetOption(key)){
         $options[key]=opts;
         hasOpts=true;
       }
     })
-    if(hasOpts) defineProperty(self.state,'$options',{value: $options});
-    defineProperty(self.state,'config',{value:{}});
-    defineProperty(self.state.config,'$global',{value:{}});
+    if(hasOpts) define(self.state,'$options',{value: $options});
+    define(self.state,'config',{value:{}});
+    define(self.state.config,'$global',{value:{}});
     for(let prop of globalProps.values()){
-      defineProperty(self.state.config.$global, prop,{value:{}, enumerable: true});
+      define(self.state.config.$global, prop,{value:{}, enumerable: true});
     }
   }
   const Observer_Track=function(self, opts){
-    if(opts.observer && !isPObject(opts.observer)){
-      PixelDebug(`Data error\n\nobserver option must be an object`);return;
+    if(opts.observers && !isPObject(opts.observers)){
+      Debug(`Data error\n\nobserver option must be an object`);return;
     }
-    defineProperty(self.state, 'observers',{value: {}})
-    entries(opts.observer||{}).forEach(([name, method])=>{
+    define(self.state, 'observers',{value: {}})//define the observers object
+    entries(opts.observers||{}).forEach(([name, method])=>{
       if(!isFunction(method)){
-        PixelDebug(`an observer handler must be a function value`);return;
+        Debug(`an observer handler must be a function value`);return;
       }else if(name.includes('.')){
-        PixelDebug(`Observer issue::\n\n unsupported dot accessor\n\n, found at "${name}" observer handler`);return;
+        Debug(`Observer issue::\n\n unsupported dot accessor\n\n, found at "${name}" observer handler`);return;
       }else if(!hasOwn(self.state, name) && !hasOwn(self.state.$data, name) ){
-        PixelDebug(`observer undefined reference\n\n no such data as "${name}" define on this widget model instance`);return;
+        Debug(`observer undefined reference\n\n no such data as "${name}" define on this widget model instance`);return;
       }
       const path=get_Prop_Path(self.state, name)
-       defineProperty(self.state.observers, name, {value:method, enumerable:true});
+       define(self.state.observers, name, {value:method, enumerable:true});
     })
   }
   function Observer_Depend(self, prop, data){
@@ -1279,10 +1307,29 @@ const Pixel=(function(global){
     }
   }
   const Consume_Global_State=function(self){
-    defineProperty(self.state, '$base',{value:self.state.config.$global.properties})
+    define(self.state, '$base',{value:self.state.config.$global.properties})
     entries(self.state.config.$global.handlers).forEach(([key, value])=>{
-      defineProperty(self.state.$base, key, {value})
+      define(self.state.$base, key, {value})
     })
+  }
+  const Register_$Observer=function(self, opts){
+    define(self.state, '$observe', {value:DATA_OBSERVER.bind(self)});
+    define(self, '_OBS', {value:{}});
+  }
+  function DATA_OBSERVER(prop, callback){
+    if(!isFunction(prop) && !isString(prop) && !has_Object_Prop(this.state, prop)){
+      Debug(`proplem setting Observer_Track for ${prop}\n\n widget has no such property`);return;
+    };
+    if(isString(prop) && Boolean(has_Object_Prop(this.state, prop) || has_Object_Prop(this.state.$data, prop))){
+      define(this._OBS, prop,{value:callback});
+        
+    }else if(true){
+      
+  
+    }else{
+      Debug(`undefined property accessed in $observe macro`);
+    }
+    
   }
   function ensureRenderer(self, options){
     modelManager(options, self);
@@ -1291,40 +1338,39 @@ const Pixel=(function(global){
     methodsManager(options, self);
     compileStyleClasses(options, self);
     Observer_Track(self, options);
+    Register_$Observer(self, options);
   }
-   function PixelBuild(options, params=null, children=[]){
-     setupBeforeBuildHook(options, this);
+   function __Pixel_Build(options, params=null, children=[]){
+     
      if(isNull(this)){
-       PixelDebug(`build instanciation error\n\nunable to compile build widget,  .......this might be due to missing constructor's "new" keyword in PixelBuild call\n "PixelBuild is a constructor function, must be called with the "new" constructor keyword`);return;}
+       Debug(`build instanciation error\n\nunable to compile build widget,  .......this might be due to missing constructor's "new" keyword in __Pixel_Build call\n "__Pixel_Build is a constructor function, must be called with the "new" constructor keyword`);return;}
     options=sanitizedOptions(arguments, this);
-    defineProperty(this, 'state',{value:{}})
+    setupBeforeBuildHook(options, this);
+    define(this, 'state',{value:{}})
     MapGlobal(this, options)
     options=BasedWidgets(options, this);
     ensureRenderer(this, options);
-    let wheel=0
-      setupBeforeUpdateHook(options, this, wheel);
-      this.render=function(self, build){
-        Consume_Global_State(this)
-        setConfig(options, self);
-        let node=compileTemplate(build || '', self, null, true) ;
-        node=cssStylesheetCompilation(options, self, node);
-        slotHydrateRenderer(self, options, node);
-        hydration_Compile(options, self, node);//setting the buildConfig option
-        wheel+=1;
-        setupOnBuiltHook(options, self, wheel);
-        setupBeforeMountHook(options, self, wheel);
-        setupMountedHook(options, self, wheel);
-        return node;
-      }
-      if(isNull(options.build) && isNull(options.template))options.build=null;
-      defineProperty(this, 'build', {value:options.build || options.template , writable:true, enumerable:true});
-      //setupOnUpdatedHook(options, this, wheel);
+    setConfig(options, this); 
+    this.render=function(self, build){
+      Consume_Global_State(this);
+      let node=compileTemplate(build || '', self, null, true) ;
+      node=css_Stylesheet_Compilation(options, self, node);
+      __$slot_Hydrate_Renderer(self, options, node);
+      hydration_Compile(options, self, node);//setting the buildConfig option
+      setupOnBuiltHook(options, self);
+      if(self.onBuilt) self.onBuilt();
+      setupMountedHook(options, self);
+      return node;
+    }
+    if(isNull(options.build) && isNull(options.template))options.build=null;
+    define(this, 'build', {value:options.build || options.template , writable:true, enumerable:true});
     resolve_Proto_Call(this, options);
   }
   const get_Init_Build=function(self, selector, build){
+    const $ref=(ref)=> `__$ref( ${ref} )__`;
     if(isFunction(self.build)){
       self.build=self.build.bind(self.state);
-      return self.build(self.state.$params||{},{events:self.state.$events || {},attrs:self.state.$attrs || {}, styles:self.state.$styles || {}, slots:self.state.$slots || {}});
+      return self.build(self.state.$params||{},{events:self.state.$events || {},attrs:self.state.$attrs || {}, styles:self.state.$styles || {}, slots:self.state.$slots || {}},$ref.bind(self.state));
     }else if(isString(self.build)){
       return TemplateParser(self.build);
     }else if(isNull(self.build) && selector){
@@ -1336,44 +1382,44 @@ const Pixel=(function(global){
       resolve(self.protoPromisesCalls)
     }).then((data)=>{
       if(!self.hasMountProto){
-        self.build=Render_View(self, get_Init_Build(self, null));
+        self.build=Render_Template(self, get_Init_Build(self, null));
       }
-      defineProperty(self.state, '$el', {value:self.build})
+      define(self.state, '$el', {value:self.build})
       delete self.protoPromisesCalls;
       //delete self.render;
       //delete self.widgets;
       delete self.hasMountProto;
-      if(!opts.preMount) delete self.preMount;
+      if(!opts.beforeMount) delete self.beforeMount;
       if(!opts.onMounted) delete self.onMounted;
       return self;
     })
     return self;
   }
   const GenerateRoot=(nodeSelector)=>{
-    if(isNull(nodeSelector)){PixelDebug(`no node model or selector value passed to widget mountroot`); return;}
+    if(isNull(nodeSelector)){Debug(`no node model or selector value passed to widget mountroot`); return;}
     let domRoot;
     if(isString(nodeSelector)){
       domRoot=document.querySelector(nodeSelector);
       if(!IsValidElement(domRoot)){
-        PixelDebug(`error mounting widget, target not a valid element`);
+        Debug(`error mounting widget, target not a valid element`);
         return;}
     }else if(IsValidElement(nodeSelector)){
       domRoot=nodeSelector;
     }
     return domRoot
   }
-  PixelBuild.prototype.mount=mount;
+  __Pixel_Build.prototype.mount=mount;
   function mount(nodeSelector){
     this.hasMountProto=true;
     const domRoot=GenerateRoot(nodeSelector);
-    if(!Boolean(domRoot.isPixel_Fragment)) defineProperty(domRoot, 'NodeList',{value:[], configurable:true, writable:true});
-    if(!domRoot.PATCH_FLAGS) defineProperty(domRoot, 'PATCH_FLAGS',{value:[], configurable:true, writable:true});
+    if(!Boolean(domRoot.isPixel_Fragment)) define(domRoot, 'NodeList',{value:[], configurable:true, writable:true});
+    if(!domRoot.PATCH_FLAGS) define(domRoot, 'PATCH_FLAGS',{value:[], configurable:true, writable:true});
     const initalBuild=get_Init_Build(this, nodeSelector)
-    this.build=Render_View(this, initalBuild);
     Hydrate_Reactive_Data(this, initalBuild, nodeSelector, domRoot);
+    this.build=Render_Template(this, initalBuild);
     domRoot.innerHTML='';
     if(domRoot.iS_PIXEL_MOUNTROOT){
-      PixelDebug(`A Pixel widget has already been mounted on this element, cannot mount more than one Wdget on a single root element`);return;
+      Debug(`A Pixel widget has already been mounted on this element, cannot mount more than one Wdget on a single root element`);return;
     }else{
       const id=Math.floor(Math.random()*(12 * 99) + 766);
       const MoutRootToken={
@@ -1385,64 +1431,60 @@ const Pixel=(function(global){
       }
       domRoot.innerHTML='';
       domRoot.append(this.build || '');
-      if(Boolean(this.build.isPixel_Fragment)){
+      if(Boolean(this.build && this.build.isPixel_Fragment)){
         domRoot.NodeList=this.build.NodeList;
       }else{
         domRoot.NodeList=[this.build];
       }
-      defineProperty(domRoot, 'px__VNode',{value:id});
+      define(domRoot, 'px__VNode',{value:id});
       assign(domRoot, MoutRootToken);
-      if(domRoot.isPixel_Fragment) defineProperty(domRoot, 'trigger_Effect_Run', {value: Widget_Effect_Trigger.bind({target:this,
-      hydrate:(newWidget)=>{ 
-        
-      },
-        initalBuild: initalBuild, root:domRoot})})
-      //this.onMounted()
+      if(domRoot.isPixel_Fragment) define(domRoot, 'trigger_Effect_Run', {value: Widget_Effect_Trigger.bind(this)})
+      this.onMounted()
       return domRoot;
     }
   }
-  PixelBuild.prototype.widget=widget;
+  __Pixel_Build.prototype.widget=widget;
   function widget(Value, obj){
-    if(!isString(Value) || !isPObject(obj) && !isFunction(obj)){PixelDebug(`unrecognised global widget registration for ${obj} widget`);return this;}
+    if(!isString(Value) || !isPObject(obj) && !isFunction(obj)){Debug(`unrecognised global widget registration for ${obj} widget`);return this;}
     if(isEQ(arguments.length,2)){
       if(!isNull(this.state.config.$global.widgets)) this.state.config.$global.widgets[Value]=obj;
       else{
-        defineProperty(this.state.config.$global, 'widgets', {value: {}});
+        define(this.state.config.$global, 'widgets', {value: {}});
         this.state.config.$global.widgets[Value]=obj;
       }
     }
     this.protoPromisesCalls++;
     return this;
   }
-  PixelBuild.prototype.install=install;
+  __Pixel_Build.prototype.install=install;
   function install(plugin, options){
-    if(!isNull(plugin) && !isPObject(plugin)){ PixelDebug(`plugin installation Error::\n\n install argument must be an object value with  an exposed plugin installation method`);return this;}
+    if(!isNull(plugin) && !isPObject(plugin)){ Debug(`plugin installation Error::\n\n install argument must be an object value with  an exposed plugin installation method`);return this;}
     let usePlugin=plugin.plugin;
     if(usePlugin && isFunction(usePlugin) ){
       plugin.plugin(this, options);
     }
     entries(this.state.config.$global.properties).forEach(([name, value])=>{
-      if(isPObject(value) && isEQ(value._data_flag, true)) defineProperty(this.state.$data, name, {value: value.value, configurable: true});
-      else defineProperty(this.state, name, {value: value, configurable: true});
+      if(isPObject(value) && isEQ(value._data_flag, true)) define(this.state.$data, name, {value: value.value, configurable: true});
+      else define(this.state, name, {value: value, configurable: true});
     })
     entries(this.state.config.$global.handlers).forEach(([name, method])=>{
       if(!isFunction(method)){
-        PixelDebug(`global handler error::\n\n The argument passed to a global handler is not a function\nInvalid dataType`);return this;
+        Debug(`global handler error::\n\n The argument passed to a global handler is not a function\nInvalid dataType`);return this;
       }
-      defineProperty(this.state, name, {value: method, configurable: false, enumerable: true});
+      define(this.state, name, {value: method, configurable: false, enumerable: true});
     })
     this.protoPromisesCalls++
     return this;
   }
-  PixelBuild.prototype.property=property;
+  __Pixel_Build.prototype.property=property;
   function property(name, value){
-    if(!isString(name) ){PixelDebug(`unrecognised global property registration for ${value} widget`);return this;}
+    if(!isString(name) ){Debug(`unrecognised global property registration for ${value} widget`);return this;}
     if(isEQ(arguments.length,2)){
       if(isPObject(value) && Boolean(value._data_flag) || Boolean(value._deep_data_flag)){
         if(!isNull(this.state.config.$global.properties.$data)){
           this.state.config.$global.properties.$data[name]=value.value;
         }else{
-          defineProperty(this.state.config.$global.properties,'$data', {value: {}});
+          define(this.state.config.$global.properties,'$data', {value: {}});
           this.state.config.$global.properties.$data[name]=value.value;
         }
       }else{
@@ -1452,29 +1494,29 @@ const Pixel=(function(global){
     this.protoPromisesCalls++
     return this;
   }
-  PixelBuild.prototype.handler=handler;
+  __Pixel_Build.prototype.handler=handler;
   function handler(name, func){
-    if(!isString(name) && !isFunction(func)){PixelDebug(`unrecognised global handler registration for ${func}`);return this;}
+    if(!isString(name) && !isFunction(func)){Debug(`unrecognised global handler registration for ${func}`);return this;}
     if(isEQ(arguments.length,2)){
       if(!isNull(this.state.config.$global.handlers)) this.state.config.$global.handlers[name]=func;
       else{
-        defineProperty(this.state.config.$global, 'handlers', {value: {}, configurable: true, enumerable: true, writable: true});
+        define(this.state.config.$global, 'handlers', {value: {}, configurable: true, enumerable: true, writable: true});
         this.state.config.$global.handlers[name]=func;
       }
     }
     this.protoPromisesCalls++
     return this
   }
-  PixelBuild.prototype.directive=directive;
+  __Pixel_Build.prototype.directive=directive;
   function directive(name, method){
     this.protoPromisesCalls++
     return this;
   }
-  function Render_View(self, initBuild){
+  function Render_Template(self, initBuild){
     return self.render(self, initBuild);
   }
-  const readOnlyStateProps=['$el','$params','$attrs','$data','$events','$styles','$slots','config','$base','observers'];
-  const isReadOnlyProp=key=>mapValue(readOnlyStateProp, key);
+  const readOnlyStateProps=['$el','$params','$attrs','$data','$events','$styles','$slots','config','$base','observers', '$observe'];
+  const isReadOnlyProp=key=>_mapValue(readOnlyStateProp, key);
   function Track_Data_Dependency(dataArray, watchCallback, optionalDepend, accessor){
     const watchers=[];
     let activeWatcher = null;
@@ -1518,8 +1560,8 @@ const Pixel=(function(global){
       Object.keys(obj).forEach((key) => {
         let internalValue = obj[key];
         const dependency = new Dependency();
-        if(!readOnlyStateProps.includes(key) && !obj[key].pixel_handler ){
-          defineProperty(obj, key, {
+        // if(!readOnlyStateProps.includes(key) && !obj[key].pixel_handler ){
+          define(obj, key, {
             get() {
               trackDependency(dependency);
               return internalValue;
@@ -1530,21 +1572,21 @@ const Pixel=(function(global){
               return true;
             }
           });
-        }
+        // }
       });
       return obj;
     }
     function makeReactive(key, data){
       let internalValue=data;
       const dependency=new Dependency();
-      defineProperty(optionalDepend || {}, key, {
+      define(optionalDepend || {}, key, {
         get() {
           trackDependency(dependency);
           return internalValue;
         },
         set(newValue) {
           internalValue = newValue;
-           dependency.notify();
+          dependency.notify();
           return true
         }
       })
@@ -1554,7 +1596,6 @@ const Pixel=(function(global){
       watchers.push(watcher);
       watcher.update();
     }
-    
     if(isGT(dataArray.length, 0)){
       for (let data of dataArray.values()){
         if(isPObject(data)) createReactiveObject(data);
@@ -1583,10 +1624,10 @@ const Pixel=(function(global){
       }
     }
   }
-  function Node_Effect_Track(build, key, root, access){
-    const newNode=build.NodeList[key];
+  function Node_Effect_Track(build, key, root, access, self){
+    const newNode=IS_DOCUMENT_FRAGMENT_NODE(build) ? build.NodeList[key] : build;
     //this.target.attributes.isEqualNode(newNode.attributes)
-    const data_ref=get_Prop_Path(this.self.state, access);//get the relative path of the reacted data key "access"
+    const data_ref=get_Prop_Path(this.self.state, access);//get the relative path of the reacted data key "access"'
     if(!isEQ(this.target.attributes.length, newNode.attributes.length)){
       for(let [key, attr] of entries(newNode.attributes)){
         const { name, value }=attr;
@@ -1607,9 +1648,10 @@ const Pixel=(function(global){
     if(this.target.hasChildNodes()){
       for(let [ind, node] of entries(this.target.NodeList)){
         if(IS_TEXT_NODE(node)){
-
-          let V=build.NodeList[ind]
-          node.textContent=newNode.NodeList && newNode.NodeList[ind] ? newNode.NodeList[ind].textContent : V.textContent//update textContent in cases of test Node
+          const data_ref=get_Prop_Path(self.state, access);
+          if(node.PATCH_FLAGS.includes(data_ref)){
+            node.textContent=newNode.NodeList[ind].textContent; //update textContent in cases of test Node
+          }
         }else if(IS_ELEMENT_NODE(node)){
           if(isGT(node.FLAG_RANGE, 0) || isGT(node.PATCH_FLAGS.length, 0)){
             let shouldUpdate=false;
@@ -1620,72 +1662,74 @@ const Pixel=(function(global){
               }
             }
             if(Boolean(shouldUpdate)){
-              node.trigger_Effect_Run(newNode, ind, node, access)
+              node.trigger_Effect_Run(newNode, ind, node, access);
             }
           }
-        }else if(IS_DOCUMENT_FRAGMENT_NODE(node) && node.isPixel_Fragment && node.iS_PIXEL_MOUNTROOT){
-          node.trigger_Effect_Run()
+        }else if(IS_DOCUMENT_FRAGMENT_NODE(node) && node.iS_PIXEL_MOUNTROOT){
+          node.trigger_Effect_Run(self, node, access);
         }else if(true){
           
-          do_Nothing()//for now
         }else{
-          do_Nothing()
+          do_Nothing();
         }
       }
     }
-    if(!this.target.isEqualNode(newNode)){
-      this.target.innerHTML=newNode.innerHTML
+    if(IS_TEXT_NODE(this.target)) this.target.textContent=newNode.textContent;
+    if(Is_Form_Element(this.target.localName)) this.target.value=newNode.value;
+    if(!this.target.isEqualNode(newNode)) this.target.innerHTML=newNode.innerHTML;
+  }
+  function Widget_Effect_Trigger(self, el, ind,){
+    const data_ref=get_Prop_Path(self.state, ind);
+    for(const refs of el.PATCH_FLAGS.values()){
+      if(isEQ(refs, data_ref)){
+        const newValue=get_Object_Value(self.state, refs);
+        let Owner_prop=el.Ref_Rag[refs];
+        let Owner_path=get_Prop_Path(this.state, Owner_prop);
+        set_Object_Value(this.state, Owner_path,  newValue );
+      }
     }
   }
-  function Widget_Effect_Trigger(build, el, key, root, ind ){
-    const newWidget=build.NodeList[key];
-    this.hydrate(newWidget)
-    
-     const data_ref=get_Prop_Path(this.target.state, ind);
-    // entries(el.NodeList).forEach(([ky, node])=>{
-    //   //node.trigger_Effect_Run(newWidget.NodeList[ky], ky, node, ind)
-    // })
-    
-  }
   function Hydrate_Reactive_Data(self, initBuild, selector, root){
-    const dataWatch=[self.state, self.state.$data, self.state.$params,self.state.$base, self.state.$base ? self.state.$base.$data  : {}, self.state.$attrs];
+    const dataWatch=[ self.state, self.state.$data, self.state.$params, self.state.$base, self.state.$base ? self.state.$base.$data  : {}, self.state.$attrs];
+    
     Track_Data_Dependency(dataWatch, function(newV, oldV, ref){
-      const build=Render_View(self, initBuild);
+      const build=Render_Template(self, initBuild);
       Eject_Hydration_Flag(self, build, root, ref);
-      Observer_Depend(self, ref, [newV, oldV])
+      Observer_Depend(self, ref, [newV, oldV]);
+      
     })
     function React_To_Nexted_Object(value){
       Track_Data_Dependency([value], (reg)=>{
-        const build=Render_View(self, initBuild);
+        const build=Render_Template(self, initBuild);
         Eject_Hydration_Flag(self, build, root, reg);
-      })
+      });
       entries(value).forEach(([ky, val])=>{
          if(isPObject(val) || isArray(val) ) React_To_Nexted_Object(val);
-      })
+      });
     }
-    entries(self.state.$data).forEach(([key, value])=>{
-       if(isPObject(value) || isArray(value)) React_To_Nexted_Object(value);
-    })
-    entries(self.state.$base ? self.state.$base.$data || {} : {}).forEach(([key, value])=>{
-       if(isPObject(value) || isArray(value)) React_To_Nexted_Object(value);
-    })
+    const Open_To_Nestable_Objects=()=>[self.state.$data, self.state.$base, self.state.$params, self.state.$attrs];
+    for(const object of Open_To_Nestable_Objects().values()){
+      entries(object || {}).forEach(([key, value])=>{
+        if(isObject(value)) React_To_Nexted_Object(value);
+      });
+    }
   }
   function Eject_Hydration_Flag(self, build, root, ind, selector){
     let data_ref=get_Prop_Path(self.state, ind) ;
     entries(root.NodeList).forEach(([key, el])=>{
       if(isGT(el.FLAG_RANGE, 0) || isGT(el.PATCH_FLAGS ? el.PATCH_FLAGS.length : 0, 0)){
         let shouldUpdate=false;
-        for( let refs of el.PATCH_FLAGS){
+        for( const refs of el.PATCH_FLAGS){
           if(isEQ(refs, data_ref) ){
             shouldUpdate=true;
             break;
           }
         }
         if(Boolean(shouldUpdate)){
-          if(el.isPixel_Fragment && el.iS_PIXEL_MOUNTROOT){
-            el.trigger_Effect_Run(build, el, key, root, ind, selector)
+          if(IS_DOCUMENT_FRAGMENT_NODE(el)  && el.iS_PIXEL_MOUNTROOT){
+            el.trigger_Effect_Run(self, el, ind);
           }else{
-            el.trigger_Effect_Run(build, key, root, ind)
+            el.trigger_Effect_Run(build, key, root, ind, self);
           }
         }
       }
@@ -1693,8 +1737,8 @@ const Pixel=(function(global){
   }
   function data(val){
       let react={};
-      defineProperty(react, '_data_flag',{value:true, enumerable:true});
-      defineProperty(react, 'value',{value:val, enumerable:true, writable: true});
+      define(react, '_data_flag',{value:true, enumerable:true});
+      define(react, 'value',{value:val, enumerable:true, writable: true});
       return react;
   }
   function children_Setup(val, element, self, state=false, NodesList=[]){
@@ -1719,7 +1763,7 @@ const Pixel=(function(global){
         element.FLAG_RANGE=element.FLAG_RANGE+child.FLAG_RANGE
       }
     }else if(isFunction(val)  || isPObject(val) && val.isWidget){
-      child=CompilePatcher(self, val, val)//this sets the widget flags, passed the widget to PixelBuild, sets global widgets from  its parents if any, installs all BUILT_IN_WIDGETs, mounts the wodget to a fragment and return the domRoot'
+      child=CompilePatcher(self, val, val)//this sets the widget flags, passed the widget to __Pixel_Build, sets global widgets from  its parents if any, installs all BUILT_IN_WIDGETs and global datas, mounts the wodget to a fragment and return the domRoot'
       element.append(child);
       element.NodeList.push(child);
     }else if(val.Pixel_NodeMake){
@@ -1735,17 +1779,16 @@ const Pixel=(function(global){
     }else if(self){
       element=ResolveWidget(self, element, 'widgets', val);
     }else if(isNull(val)){
-      PixelDebug(`undefined reference error\n\n unable to instanciate reference, seems to be having a problem, please recheck your "${element.localName}" element children`);return element;
+      Debug(`undefined reference error\n\n unable to instanciate reference, seems to be having a problem, please recheck your "${element.localName}" element children`);return element;
     }else element=ResolveWidget(element,element,'widgets',val);
     return element;
   }
-  
   function compileTemplate(build='', self, element, isWidget=false){
     if(isPrimitive(build)){
-      build=createTxtNode(self, build, element);
-      defineProperty(element, 'FLAG_RANGE', {value:1});
+      build=build.trim() ? createTxtNode(self, build, element) : '';
+      if(element) define(element, 'FLAG_RANGE', {value:1});
     }else if(build.isWidget && isPObject(build) || isFunction(build)){//if build value is a valid widget data
-      element=CompilePatcher(self, build, build);//this sets the widget flags, passed the widget to PixelBuild, sets global widgets from  its parents if any, installs all BUILT_IN_WIDGETs, mounts the wodget to a fragment and return the domRoot'
+      element=CompilePatcher(self, build, build);//this sets the widget flags, passed the widget to __Pixel_Build, sets global widgets from  its parents if any, installs all BUILT_IN_WIDGETs, mounts the wodget to a fragment and return the domRoot'
     }else if(!isArray(build)){
       if(build.Pixel_NodeMake){
         element=build;
@@ -1760,52 +1803,53 @@ const Pixel=(function(global){
     }else if(isArray(build)){
       element=createFragment();
       const NodesList=[]
-      defineProperty(element,'widgets',{value:self.widgets || {}});
+      define(element,'widgets',{value:self.widgets || {}});
       try { 
         entries(build).forEach(([ind, value])=>{
           children_Setup(value, element, self, true, NodesList);
         });
         
       }catch(err){
-         console.error(err)
-        PixelDebug(`Template Compilation error::\n\nelement "${build}" may not ve been passed properly\n\n${err}`);
-        PixelDebug(`This might be a pixel internal bug/issue, \n\n please report any bugy problem @ "http://www.pixel-framework.com/issue" or open an issue on our github repository`);
+        Debug(`Template Compilation error::\n\nelement "${build}" may not ve been passed properly\n\n${err}`);
+        Debug(`This might be a pixel internal bug/issue, \n\n please report any bugy problem @ "http://www.pixel-framework.com/issue" or open an issue on our github repository`);
         return element;
       }
     }
-    return element
+    return element;
   }
   function Widget_Directive_Handler(self, widget, props){
     const { name, item }= props;
     
   }
   function ResolveWidget(obj, element, widgets, value){
-    if(!mapValue(BUILT_IN_WIDGETS, value.type) && !mapValue(obj[widgets] || {}, value.type) && !mapValue(obj.state.config.$global.widgets, value.type)){
-      PixelDebug(`Template Compilation Error::\n\nUnresolved tagname "${value.type}"\n\n   ...if this is a pixel widget, make sure its registered through the "widgets" option or resolved through the custom nodemake resolver`);
+    if(!_mapValue(BUILT_IN_WIDGETS, value.type) && !_mapValue(obj[widgets] || {}, value.type) && !_mapValue(obj.state.config.$global.widgets, value.type)){
+      Debug(`Template Compilation Error::\n\nUnresolved tagname "${value.type}"\n\n   ...if this is a pixel widget, make sure its registered through the "widgets" option or resolved through the custom nodemake resolver`);
       return element ;
     }
-    if (mapValue(BUILT_IN_WIDGETS, value.type) || mapValue(obj[widgets] || {}, value.type ) || mapValue(obj.state.config.$global.widgets, value.type) ){
-      let widget=mapValue(BUILT_IN_WIDGETS, value.type) ? BUILT_IN_WIDGETS[value.type] : obj.widgets && mapValue(obj.widgets, value.type) ? obj.widgets[value.type] : obj.state.config.$global.widgets[value.type] ;
+    if (_mapValue(BUILT_IN_WIDGETS, value.type) || _mapValue(obj[widgets] || {}, value.type ) || _mapValue(obj.state.config.$global.widgets, value.type) ){
+      let widget=_mapValue(BUILT_IN_WIDGETS, value.type) ? BUILT_IN_WIDGETS[value.type] : obj.widgets && _mapValue(obj.widgets, value.type) ? obj.widgets[value.type] : obj.state.config.$global.widgets[value.type] ;
       widget= isFunction(widget) ? widget.bind({}) : Object.create(widget);//binding or creating a new object model
-      let patches=[]
+      let patches=[];
+      const Ref_Rag={};
       if(value.attrs){
         entries(value.attrs).forEach(([ind, param])=>{
           if(isNodeBaseDirective(ind)){
-            PixelDebug(`Directive breakup on widget\n\n "${ind}" directive, is an element based directive\n\n cannot be used on a pixel widget\nat at.....\n....."${value.type}"`);return;//matching away all none widget usable directives
+            Debug(`Directive breakup on widget\n\n "${ind}" directive, is an element based directive\n\n cannot be used on a pixel widget\nat at.....\n....."${value.type}"`);return;//matching away all none widget usable directives
           }
           if(ind.startsWith('*') && isGT(ind.length,1)){
-            let name=AttrNameResolver(obj, ind).slice(1);
+            let name=__Attr_Name_Resolver(obj, ind).slice(1);
             let item;
             try{
-              item = EvaluateTHIS(obj.state, param)
+              item = __Evaluate_THIS(obj.state, param);
               patches.push(param);
+              define(Ref_Rag, param, {value:name, enumerable:true});
             }catch(err){
               //name=ind.slice(1);
-              PixelDebug(`value "${param}" property value was accessed during render, but not initialized on model or is undefined\n\nat at\n ..."${name} property `);return;
+              Debug(`value "${param}" property value was accessed during render, but not initialized on model or is undefined\n\nat at\n ..."${name} property `);return;
             }
             delete value.attrs[ind];
             let nodeBased=['class','styles']
-            if(mapValue(nodeBased, name)) {
+            if(_mapValue(nodeBased, name)) {
               name=`${name}`
             }
             value.attrs[name]=item;
@@ -1815,8 +1859,11 @@ const Pixel=(function(global){
         });
         widget.attributes=value.attrs;
       }
-      const child=CompilePatcher(obj, widget, value);//this sets the widget flags, passed the widget to PixelBuild, sets global widgets from  its parents if any, installs all BUILT_IN_WIDGETs, mounts the wodget to a fragment and return the domRoot'
-      if(isGT(patches.length, 0)) child.PATCH_FLAGS=patches
+      const child=CompilePatcher(obj, widget, value);//this sets the widget flags, passed the widget to __Pixel_Build, sets global widgets from  its parents if any, installs all BUILT_IN_WIDGETs, mounts the wodget to a fragment and return the domRoot'
+      if(isGT(patches.length, 0)) {
+        child.PATCH_FLAGS=patches;
+        define(child, 'Ref_Rag', {value:Ref_Rag})
+      }
       if(!isNull(element)) {
         element.append(child);
         element.NodeList.push(child);
@@ -1832,14 +1879,14 @@ const Pixel=(function(global){
   function CompilePatcher(self, widget, value){
     if(isEQ(widget.name, 'bound PXWidget')){
       const refName=widget.attributes ? widget.attributes.self : null;
-      const RefHedge=!isPrimitive(refName) ? refName : mapValue(BUILT_IN_WIDGETS, refName) ? BUILT_IN_WIDGETS[refName] : self.widgets && mapValue(self.widgets, refName) ? self.widgets[refName] : self.state.config.$global.widgets[refName] ;
+      const RefHedge=!isPrimitive(refName) ? refName : _mapValue(BUILT_IN_WIDGETS, refName) ? BUILT_IN_WIDGETS[refName] : self.widgets && _mapValue(self.widgets, refName) ? self.widgets[refName] : self.state.config.$global.widgets[refName] ;
       if(RefHedge && widget.children){
         RefHedge.children=widget.children
       }
       if(widget.attributes) widget.attributes.self=RefHedge || refName;
     }
     widget=  set_Widget_Flag(self, widget, value, 'children');//setting the widget flag
-    let child=new PixelBuild(widget);//build the widget
+    let child=new __Pixel_Build(widget);//build the widget
     for(const [key, value] of entries(self.state.config.$global)){
       entries(value).forEach(([name, data])=>{
         if(isEQ(key, 'widgets')) child=child.widget(name, data);//in the loot, uses the build.widget prototype to define global widgets
@@ -1859,12 +1906,15 @@ const Pixel=(function(global){
     }
     return widget;
   }
+  function normalize_Widget(self, widget){
+    
+  }
   function createFragment(){
     const fragment=new DocumentFragment();
-    defineProperty(fragment, 'isPixel_Fragment',{value:true});
-    defineProperty(fragment, 'NodeList',{value:[], configurable:true, writable:true});
-    defineProperty(fragment, 'PATCH_FLAGS',{value:[], configurable:true, writable:true});
-    defineProperty(fragment, 'FLAG_RANGE',{value:0, configurable:true, writable:true});
+    define(fragment, 'isPixel_Fragment',{value:true});
+    define(fragment, 'NodeList',{value:[], configurable:true, writable:true});
+    define(fragment, 'PATCH_FLAGS',{value:[], configurable:true, writable:true});
+    define(fragment, 'FLAG_RANGE',{value:0, configurable:true, writable:true});
     return fragment;
   }
   const devInfo='You are using the development build version of pixel, make sure you switched to the minified build version when deploying to production with the (*.min.js) file extension';//development information
@@ -1877,12 +1927,12 @@ const Pixel=(function(global){
     entries(validWidgetOptions).forEach(([key, val])=>{
       if(!isNull(opts[val])){
         let value=opts[val];
-        if(mapValue(waitForReturnObjects, val) && isFunction(value))value=opts[val]();
+        if(_mapValue(waitForReturnObjects, val) && isFunction(value)) value=opts[val]();
         widget[val]=value;
       }
     });
     entries(opts).forEach(([key, val])=>{
-      if(!mapValue(validWidgetOptions, key ) && !mapValue(['params','ctx'], key)) self.state[key]=val;
+      if(!_mapValue(validWidgetOptions, key ) && !_mapValue(['params','ctx'], key)) self.state[key]=val;
     })
     return widget;
   }
@@ -1929,7 +1979,7 @@ const Pixel=(function(global){
     for (let node of body.childNodes){
       if(node ){
         if(IS_TEXT_NODE(node)){
-          node=node.wholeText;
+          node=node.textContent;
           if(node.trim()) stack.push(node);
         }else if(IS_COMMENT_NODE(node)){/*Ignore comment nodes*/do_Nothing();
         }else if(node.Pixel_NodeMake){
@@ -1950,7 +2000,7 @@ const Pixel=(function(global){
             }
           }
           const children=HTMLParser(node.innerHTML) || null;
-          const nodeOBJ={ type:tagName, attrs:ObjSize(attributes) ? attributes : null, children: children && isPObject(children) ? [children]  : children }
+          const nodeOBJ={ type:tagName, attrs:isGT(Object.keys(attributes).length,0) ? attributes : null, children: children && isPObject(children) ? [children]  : children }
           stack.push(nodeOBJ);
         }
       }
@@ -1964,57 +2014,53 @@ const Pixel=(function(global){
       return acc + str + value;
     }, '');return HTMLParser(html);
   };
-  const data_Reference=function(ref){
-    return ref
-  }
   function NodeMake(opts, options){
     this.is_Custom_Node=true;
-    if(!isPObject(opts)){PixelDebug(`NodeMake option values must be type of object......>>>>`);return;}else if(isGT(arguments.length, 1)){PixelDebug(`NodeMake parameter values required only 1 argument.....\n\n${arguments.length} given>>>>>>>>>>>`);return;}
-    const isValidNodeMakeopts=opt=>mapValue(['template','styles','plugin','name','params','onConnected','onDisconnected','onAdopted','onAttrChanged'],opt);
+    if(!isPObject(opts)){Debug(`NodeMake option values must be type of object......>>>>`);return;}else if(isGT(arguments.length, 1)){Debug(`NodeMake parameter values required only 1 argument.....\n\n${arguments.length} given>>>>>>>>>>>`);return;}
+    const isValidNodeMakeopts=opt=>_mapValue(['template','styles','plugin','name','params','onConnected','onDisconnected','onAdopted','onAttrChanged'],opt);
     entries(opts).forEach(([key, value])=>{
-      if(!isValidNodeMakeopts(key)){PixelDebug(`invalid option value....\n\n "${key}" is not a recognised NodeMake option `);return;}
-      if(isEQ(key, 'styles') && !isString(value)){PixelDebug(`styleSheet for custom elements must be of type "Strings of css styleSheets"`);return;}
+      if(!isValidNodeMakeopts(key)){Debug(`invalid option value....\n\n "${key}" is not a recognised NodeMake option `);return;}
+      if(isEQ(key, 'styles') && !isString(value)){Debug(`styleSheet for custom elements must be of type "Strings of css styleSheets"`);return;}
       if(isEQ(key,'params')){
-        if(!isPObject(opts.params)){PixelDebug(`params value for Custom Node must be of type "object"\n\n typeof "${getType(opts.params)}" found`);return;}
+        if(!isPObject(opts.params)){Debug(`params value for Custom Node must be of type "object"\n\n typeof "${getType(opts.params)}" found`);return;}
       }
     });
     if(!isNull(opts.params))paramsManager(opts, this)
-    if(isNull(opts.template)){PixelDebug(`Custom element required a template option`);return;}else if(!isString(opts.template)){ PixelDebug(`string value required at the node make template option`);return;}
-    if(isNull(opts.name)){PixelDebug('Custom node does not have a name option\n\nname required for node registration....');return;
-    }else if(!isString(opts.name)){PixelDebug(`unrecovered  value type\nNodeMake name option required value of type "Strings"\n\n"${getType(opts.name)}" found`);return;
-    } else if(IS_VALID_TAGNAME(opts.name)){PixelDebug(`"${opts.name}" is an Html tag name .....\n\nshould not be used in Custom nodes`);return;
-    }else if(IS_HTML_DEPRECATED_TAG(opts.name)){PixelDebug(`an Html depreciated element tagname, \n\nshould not be used for CUSTOM_NODES`);return;
-    }else if(!opts.name.includes('-')){PixelDebug(`Due to inDom tag passing caveats ,Custom Nodes are termed to be named differently by using lowercases, multiwords saperated by the hyphen or underscore characters\n\n Node with name "${opts.name}" is invalid.......`);return;}
+    if(isNull(opts.template)){Debug(`Custom element required a template option`);return;}else if(!isString(opts.template)){ Debug(`string value required at the node make template option`);return;}
+    if(isNull(opts.name)){Debug('Custom node does not have a name option\n\nname required for node registration....');return;
+    }else if(!isString(opts.name)){Debug(`unrecovered  value type\nNodeMake name option required value of type "Strings"\n\n"${getType(opts.name)}" found`);return;
+    } else if(IS_VALID_TAGNAME(opts.name)){Debug(`"${opts.name}" is an Html tag name .....\n\nshould not be used in Custom nodes`);return;
+    }else if(IS_HTML_DEPRECATED_TAG(opts.name)){Debug(`an Html depreciated element tagname, \n\nshould not be used for CUSTOM_NODES`);return;
+    }else if(!opts.name.includes('-')){Debug(`Due to inDom tag passing caveats ,Custom Nodes are termed to be named differently by using lowercases, multiwords saperated by the hyphen or underscore characters\n\n Node with name "${opts.name}" is invalid.......`);return;}
     if(!isNull(opts.plugins)){
       if(isFunction(opts.plugins))opts.plugins();
       else if(isPObject(opts.plugins) || isArray(opts.plugins)){
       }else{
-        PixelDebug(`plugin type not supported for custom node`);return;
+        Debug(`plugin type not supported for custom node`);return;
       }
     }
     const LifeCycleHooksList=['onConnected','onDisconnected', 'onAdopted','onAttrChanged','plugin'];
     let Hooks={};
     entries(opts).forEach(([ind, value])=>{
-      if(mapValue(LifeCycleHooksList, ind)){
+      if(_mapValue(LifeCycleHooksList, ind)){
         if(!isFunction(value)){
-          PixelDebug(`LifeCycle callback error\n\n"${ind}" is a callback function, received an invalid type`);return;
+          Debug(`LifeCycle callback error\n\n"${ind}" is a callback function, received an invalid type`);return;
         }
-        if(isEQ('onConnected',ind)) defineProperty(Hooks, 'connectedCallback',{value:value, configurable:true});
-        if(isEQ('onDisconnected',ind)) defineProperty(Hooks, 'disConnectedCallback',{value:value, configurable:true});
-        if(isEQ('onAdopted',ind)) defineProperty(Hooks, 'adoptedCallback',{value:value, configurable:true});
-        if(isEQ('onAttrChanged',ind)) defineProperty(Hooks, 'attributeChangedCallback',{value:value, configurable:true});
+        if(isEQ('onConnected',ind)) define(Hooks, 'connectedCallback',{value, configurable:true});
+        if(isEQ('onDisconnected',ind)) define(Hooks, 'disConnectedCallback',{value, configurable:true});
+        if(isEQ('onAdopted',ind)) define(Hooks, 'adoptedCallback',{value, configurable:true});
+        if(isEQ('onAttrChanged',ind)) define(Hooks, 'attributeChangedCallback',{value, configurable:true});
       } 
     })
     const pluginThis={
       name:opts.name,
-      
     }
     class Pixel_NodeMake_Element extends HTMLElement{
       constructor(){
         super();
         const shadow=this.attachShadow({ mode: 'open'})
         const template=compileTemplate(TemplateParser(opts.template), this, null);
-        cssStylesheetCompilation(opts, null, template);
+        css_Stylesheet_Compilation(opts, null, template);
         shadow.appendChild(template);
         const pluginData=opts.plugin.call(pluginThis);
       }
@@ -2046,9 +2092,9 @@ const Pixel=(function(global){
   }
   function hasExistenceAndType(data, type, name=''){
     if(!data || isNull(data) ){
-      PixelDebug(`${name} option must be passed to the request object options,\n\n null found , or is undefined`);return false;
+      Debug(`${name} option must be passed to the request object options,\n\n null found , or is undefined`);return false;
     }else if(!resolveType(data, type)){
-      PixelDebug(`found an invalid value to the "${name}" option\n\n must be a "${isFunction(type) ? type.name.toLowerCase() : type }" type value`);return false;
+      Debug(`found an invalid value to the "${name}" option\n\n must be a "${isFunction(type) ? type.name.toLowerCase() : type }" type value`);return false;
     }
     return true;
   }
@@ -2061,28 +2107,28 @@ const Pixel=(function(global){
   function do_Nothing(){}
   function defineWidget(opts){
     if(isPrimitive(opts)){
-      PixelDebug(`Value Error\n\n invalid value for the defineWidget macro\n/... at /././. at`);return;
+      Debug(`Value Error\n\n invalid value for the defineWidget macro\n/... at /././. at`);return;
     }else if(isGT(arguments.length, 1)){
-      PixelDebug(`Parameter Error\n\nmax-one argument required\n ${arguments.length} given`);return;
+      Debug(`Parameter Error\n\nmax-one argument required\n ${arguments.length} given`);return;
     }
     return opts;
   }
   const initBuild=function(options, attrs, children){
-    return new PixelBuild(options, attrs, children);}
+    return new __Pixel_Build(options, attrs, children);}
   const initSSRBuild=function(options, attrs, children){
     for(let key of Object.keys(options)){
-      if(!isValidWidgetOption(key)) PixelDebug(`Widget option error\n\n "${key}" not a valid widget option`);}
+      if(!isValidWidgetOption(key)) Debug(`Widget option error\n\n "${key}" not a valid widget option`);}
     
-    return new PixelBuild(options);
+    return new __Pixel_Build(options);
   }
   function VNode(options){
-    if(!isPObject(options)){ PixelDebug(`VNode Error\n expects an 'object'`);return;}
+    if(!isPObject(options)){ Debug(`VNode Error\n expects an 'object'`);return;}
     const optionsName=['type','attrs', 'children'];
     if(isGT(Object.keys(options).length, 3)){
-      PixelDebug(`Options Error\n\n VNode does not accept more than 3 arguments`);
+      Debug(`Options Error\n\n VNode does not accept more than 3 arguments`);
     }
     for(let name of Object.keys(options)){
-      if(!mapValue(optionsName, name)) {PixelDebug(`${name} is not a valid VNode options value`);return;}
+      if(!_mapValue(optionsName, name)) {Debug(`${name} is not a valid VNode options value`);return;}
     }
     const {type, attrs, children}=options;
     return  options ;
@@ -2102,10 +2148,9 @@ const Pixel=(function(global){
   global.createVNode=createVNode;
   global.NodeMake=NodeMake;
   global.createFragment=createFragment;
-  global.Debug=PixelDebug;//dev
+  global.Debug=Debug;//dev
   global.Fragment=Fragment;
   global.GenerateRoot=GenerateRoot;
-  global.ref=data_Reference;
   console.info(devInfo);//dev
   return global;
 })(({}));
