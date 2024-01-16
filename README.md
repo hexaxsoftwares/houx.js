@@ -1,74 +1,91 @@
 # PixelJs
 # Pixel js : Empowering Creativity, Building with Speed
 
-### Using Pixel for Creativity
+### Welcome to PixelJs documentation
 
 
 
 Pixel empowers creativity, building with speed.
 
 
+## 1. Introduction
 
-
-## Introduction
 Pixel is a JavaScript framework designed to enhance creativity and speed in building web applications. It provides a flexible and intuitive way to creating interactive user interfaces using a declarative syntax. 
 
-Pixel leverages reactive data and efficient rendering to deliver high-performance applications.
+Pixel is a framework where creativity meets efficiency.
 
-## Installation
-Here are some simple way of implementing and using pixeljs in your project.
-To use Pixel, you need to include the Pixel library in your project.
+This guide isn't just about syntax and functions; it's a journey into a mindset that unleashes your creative potential and accelerates your web development.
 
-At the minimal level of pixeljs, it can only be linked to your project through a cdn link or downloaded and hosted localy in your project directory path.
-You can install Pixel via npm or include it directly in your HTML file using a script tag. Here are the installation options:
+Pixel leverages reactive data and efficient rendering to delivering high-performance applications.
 
-Using npm;
+This guide will take you through a detailed journey, covering installation, basic concepts, advanced features, and practical examples.
 
-npm install pixel-framework
+Whether you're a newcomer to web development or seeking to expand your skills, PixelJs serves as your guide to building interactive and dynamic web applications.
 
-Using a script tag:
+Let's dive in!
 
+## 2. Installation
+
+Before delving into the intricacies, let's establish our PixelJs playground. A basic understanding of HTML, CSS, and JavaScript is essential. If you're new to programming, take a moment to acquaint yourself with these fundamentals. Now, let's install PixelJs.
+
+### Installation Options:
+
+#### Option 1: CDN Link
+
+Include the following script tag in your HTML file:
+
+```html
 <script src="https://cdn.jsdelivr.net/gh/prince9216/PixelJs@main/pixel.global.dev.js"></script>
-## Getting Started
-Once you have Pixel available in your project, the global namespace "Pixel" will be exposed to your file.
-You can start using it by destructuring the necessary components from the global Pixel Object. 
+```
 
-Here's an example of how to import the required modules:
+#### Option 2: npm
 
-const { initBuild, Template, data, H, NodeMake, ref } = Pixel;
-## Basic Usage
-Let's explore some basic usage of Pixel by going through some important key concepts and examples.
+Install PixelJs using npm:
 
-## Widgets and model instances
+```bash
+npm install pixel-framework
+```
 
-In Pixel, you define widgets that encapsulate your UI components. A widget is an independent entity that can have its own state, UI structure and behavior. Every Pixel widget Manages it's own state.
+Once installed, PixelJs becomes your creative companion.
+
+## Understanding PixelJs: Getting Started
+
+Once PixelJs is included in your project, the global namespace "Pixel" will be exposed. You can start using it by de-structuring the necessary components from the global Pixel Object. Here's how to:
+
+```javascript
+  const { initBuild, Template, data, H, NodeMake, ref } = Pixel;
+  ```
+  
+### Widgets and model instances
+  
+Pixel widgets are independent entities encapsulating UI components. A widget has its state, structure, and behavior.
+Model instances define stateful data for widgets, making them reactive.
+Every Pixel widget Manages it's own state.
 
 This can be confusing at the moment , but dont bother, this documentation is designed for both beginners and experienced developers alike.
 
-You do not need to be a profession but basic knowledge of both html, css and javascript are required. If you are completly new to programming, it is'nt a good idea to jump right into a framework.
+A Pixel widget can be an object, a class or a function. We recommends the use of object type widget when writing widgets in pixel.
 
-To create a widget,you should  use the initBuild function to iniatialize a Pixel widget build . This can do for a start.
+Let's create your inaugural PixelJs widget. Envision a widget as the fundamental building block of your web application.
 
-Here is a minimal example of using pixel 
 
 ```javascript
-const { initBuild, Template }= Pixel// using the browser JIT compiler, we destructure our tools from the global Pixel Object
-let build=initBuild({
+const { Template }= Pixel// using the browser JIT compiler, we destructure our tools from the global Pixel Object
+let app={
     model(){
     
         return {
-            count:0
+            greeting: "Hello Pixel"
         }
     },
     build(){
       
-        return Template`<button>{{ count }}</button>`
+        return Template`<h1>{{ greeting }}</h1>`
     }
 })
-//to insert into the dom
-build.mount(/*root element instance or selector*/)
+//this is a valid pixel widget
 ```
-The initBuild function expects initially an object containing of pixel valid widget options.
+
 In the example code above, we passed in an object containing widget options that makes up our widget build.
 
 lets go through the options above.
@@ -86,27 +103,34 @@ This simply means that the widget UI gets updated whenever any of the properties
 
 The build function runs only once throughout the life of a widget, and uses its returned value to build the widget UI in pixel.
 
-if returns a string,it will be passed and compiled as a textNode.
+if the build method returns a string,it will be passed and compiled as a textNode.
 
-The build function must return a render function in form of an arrow function.
+The build function must return a render function in form of an arrow function or an instance of the ***Pixel.Template*** function.
 
- You can return an instance of ***Pixel.Template*** with a Parameter of javascript multline string literal, if you prefer the native way of building your ui.
-  The ***Template*** function is a pixel builtin utility function used in parsing the DomStrings to the Build method, you can optional return the Template instance directly without returning a render function.
-  
-Here is a minimal example of using the Template option in the build function
+You can return an instance of ***Pixel.Template*** with a Parameter of javascript multline string literal, if you prefer the native way of building your ui.
+
+The ***Template*** function is a pixel built in utility function used in parsing the DomStrings to the Build method, you can optional return the Template instance directly without returning a render function.
+
+In the previous example, we've crafted a simple widget that conveys a greeting. The `model` function establishes the widget's initial data, and the `build` function defines the UI structure using the `Pixel.Template ` function.
+
+The widget gets updated whenever the model returned properties change or got mutated.
+
+A render function is required when building your UI using the ***H*** hyperscript function
+ 
+Here is an example of using the ***H*** function through a render in the build function
 
 ```javascript
-const { Template } = Pixel//destructured from the global Pixel object
-export default{
+const { H } = Pixel//destructured from the global Pixel object
+let app={
   build(){
-    return ()=>Template`<h1>My heading</h1>`
+    return ()=>H('h1', 'My heading');
   }
 }
 ```
 Another optional native way of encapsulating your ui is by using the template option, e.g
 
 ```javascript
-export default{
+let app={
   
     template:`
         <!--your html template strings -->
@@ -115,18 +139,49 @@ export default{
 ```
 The template option will be ignored if the build function is present.
 
-The innerHtml of the mountRoot target will be used as a fallback widget template if the build and the template options are both not provided.
+### **Widgets as Art, Initial Entry point.**
 
-***Note:*** The in Dom template DomParser will be implemented since pixel won't be able to take the responsibility of processing the innerHtml content before resolving.
+In PixelJs, you're not just building widgets; you're crafting art. Each widget is like a brushstroke, contributing to the canvas of your application. Think about the composition, the flow, and the visual poetry you create through your widgets.
 
-The start the mounting process so the widget UI can be mounted into the dom, call the mount prototype of initBuild function.
+When building with pixel, there must be an entry point for your app build. This is a fundamental concept.
+
+The ***Pixel.initBuild*** component is used to create an initial entry point widget, other child widgets can be passed here as components, pages or building blocks to the webpage.
+
+The initBuild method is passed a widget as its first Parameter.
+This is an initial entrypoint of the app, we will learn how to use other widgets as child widgets.
+
+Study the code below.
+```javascript
+const { initBuild, Template } = Pixel;
+let build = initBuild({
+  model() {
+    return {
+      count: 0
+    };
+  },
+  build() {
+    return Template`<button>{{ count }}</button>`; // Craft your visual poetry!
+  }
+});
+
+build.mount(/*root element instance or selector*/);
+```
+An initBuild instances expects to be mounted , you ll ve to use the ***build.mount*** to mount prototype to inject the widget ui into the dom.
+
+There should be a root dom node in the html dom, where an initBuild instance would be mounted. The mount method is passed a seloctor or an instance of a dom node as a parameter.
+
+The innerHtml of the mount Node target will be used as a fallback widget template if the build and the template options are both not provided.
+
+***Note:*** The in Dom template parsing caveat will be implemented since pixel won't be able to take the responsibility of processing the innerHtml content before resolving.
 
 ```javascript
   build.mount(/*selector*/)
 ```
+Your widget template will be injected into the selected dom element, clearing all inner content of the selected element
 
-  Your widget template will be injected into the selected dom element, clearing all inner content of the selected element
-## Template Syntax
+***Note:*** More than one initBuild instance cannot be mounted into the same inDom Node.
+
+### **Template Syntax**
 
 Pixel provides you an efficient way of encapsulating templates logic into your Pixel template without using the default javascript multline string interpolation system.
 
@@ -134,7 +189,7 @@ You can iterpolate state instances into the template by using the double curly b
 Data values exposed through the model option can directly be referenced from inside the mustache tags,.
 
 ***{{*** is used as the opening tag while ***}}*** is the closing tag.
-This are the default settings. Any text within this tags will be parsed a javascript expression.
+This are the default settings. Any text within this tags will be parsed as javascript expression.
 
 This mustache tags can only accepts single expressions,parsing multiple statements will raise a Pixel template Error.
 
@@ -143,16 +198,17 @@ During template compilation, calling of a function that does not return a primit
 `{{ func() }}` or tenary operations e.g , `{{ count ? count : 0 }}` are all  valid template interpolation in pixel provided it does'nt consist of more than a single expression or other unsupported construct like variable declaration.
 
 Many javascript keyword will not be accepted if found within the template tags.
+
 Here are the regex pattern of pixel unsupported template tag expression.
 ```javascript
  /(?:\.\.|\/\/|\/\*|\*\*|\[=|==\+|-\+|\+=|\-=|\*=|\/=|%=\*\*=|&&=|\|\|=|<=|>=|\breturn\b|\bthrow\b|\bfunction\b|\bnew\b|\btypeof\b|\bdelete\b|\binstanceof\b|\bvoid\b|\bnull\b|\bundefined\b|\bconst\b|\blet\b|\bvar\bclass\b)/;
 
 ```
 
-This tags cannot be used within attributes
+This construct cannot be used within these tag or attribute Binding
 
-To customize these mustaches tags, you will ve to setup a widget configuration option known as the  ***buildConfig***  in your  widget which is and object of widget configuration settings. 
-The you parse in an option ***delimiters*** with value of two datas consisting of two string values,  an opening and closing tags. 
+To customize these mustaches tags, you will ve to setup a widget configuration option known as the  ***buildConfig***  in your  widget which is an object of widget configuration settings. 
+Then you parse in an option ***delimiters*** with value of two datas consisting of two string values,  an opening and closing tags. 
 
 e.g
 ```javascript
@@ -166,13 +222,64 @@ export default{
 
 The values will be used in interpolating template strings instead of the custom curly brace patterns within the present widget.
 
-## Handlers
+### **Building Blocks: Components Based Architecture**
+
+PixelJs encourages a component-based architecture, allowing you to create modular and reusable UI elements. 
+
+Let's create a simple header widget and compose it into a larger application structure:
+
+```javascript
+const { initBuild, Template } = Pixel;
+
+// Component
+let header = {
+  model() {
+    return {
+      title: 'Pixel World',
+    };
+  },
+  build() {
+    return Template`<h1>{{ title }}</h1>`;
+  },
+};
+
+// Compose into a larger structure
+let app = initBuild({
+  build() {
+    return Template`
+      <div>
+      
+        <Header/>
+        
+        <p>Welcome to the {{ title }}</p>
+      </div>`;
+  },
+  widgets:{
+    Header:header
+  }
+});
+
+app.mount(/*root element instance or selector*/);
+```
+
+Here, we've created a simple header widget (`header`) and seamlessly integrated it into a larger application structure (`app`). Widgets enhance the modularity and manageability of your application.
+
+Before a widget can be used in another widget as a tag , it must be registered in the ***widgets*** object option.
+
+***Note:*** During widget registration, be sure it followed the pixel widget naming rules. 
+Must not conflict with any built in pixel widgets, must contain atleast one of these characters .
+A special character, like a hyphen (-) or an underscore (_), a number and an uppercase letter.
+
+If it posseses none of this requirments, pixel will raise a ***Widget registration Warn***.
+
+### **Handlers**
 Pixel provide an intuitive way of defining stateful method Handlers.
 
-Handlers helps you perfornm stateful logic or functions  on state data.
+Handlers helps you perfornm stateful logic or functions  on state datas.
 
 To define  methods on your widget, use the handlers object option in the widget options.
-example
+
+for example...
 
 ```javascript
 export default{
@@ -191,14 +298,53 @@ export default{
 ```
 Handlers defined here are automatically exposed to the template instances directly and can be accessed within both the template and attribute scope.
 
+Explore their usage to perform logic on state data:
 
-## stateful datas
+### **Reacting to Changes: Crafting Dynamic Reactive mentality**
 
-The widget state is initialized on the ***model*** option method
+In the world of PixelJs, think of your application as a living, breathing entity. The reactive nature of PixelJs means your UI responds dynamically to changes in data.
 
-Its returned datas are exposed to the template instances directly, and to the widget instance through the ***this*** keyword
+Embrace this reactivity – it's not just a feature; it's a mindset. Your UI evolves as your data evolves.
 
-for reactive datas, use the Pixel.data macro. 
+PixelJs excels at reactivity making it easier in building dynamic widgets.
+
+Let's create a button that increments a counter each time it's clicked:
+Notice how the button counter display responds to the user interaction
+
+```javascript
+const { Template } = Pixel;
+
+let app= {
+  model() {
+    
+    return {
+      count: 0,
+    };
+  },
+  build() {
+    
+    return Template`
+      <button *click='increment'>
+        Clicked {{ count }} times
+      </button>`;
+  },
+  handlers: {
+    
+    increment() {
+      this.count++;
+    },
+  },
+});
+
+```
+
+Now, a button increments a counter with every click by calling the `increment` method from the handlers. Notice how changes in the data (`count`) automatically update the UI.
+
+This reactivity system may not be effective when a data been mutated is accesed from an object based dataType like a Set, Map, Array, or a plain object.
+
+Utilize the `Pixel.data` macro for reactive object dataTypes reactivity hydration:
+Its returned datas are exposed to the template instances directly as ***<propName\>.$data***.
+
 here is a minimal example
 
 ```javascript
@@ -206,41 +352,126 @@ const { data }=Pixel
 let widget={
     model(){
     //initialized widget instances
-        let count=data(0)
+        let obj=data({
+          message:"Exploring Pixel",
+          count:0
+        })
         //expose it to the template
-        return { count }
+        return { 
+          obj ,
+          num:data(34)
+        }
     },
     build(){
     //accessed in the widget through the ***this*** keyword
-        this.count+=70
+        this.obj.$data.count+=70
     //to access them in template, it ll be esposed as $data.count, this datas object are reactive data
-      return Template`<p >{{ $data.count }}</p>`
+      return Template`
+      <h1>{{ obj.$data.message}}</h1>
+      <p >{{ obj.$data.count }}</p>
+      <h5> {{ num.$data}}</h5>
+      `
     }
 }
 ```
-by setting out the data macro, this helps us target nexted properties, handle dependency tracking;
-datas defined using the data macro is used to define an external higher data hyponation level, by setting the $data scope.
-## Binding Attributes
-To bind an attribute value from a widget instance data, use the single asterisks '*' data binder. For example, ****class='$data.color'*** will bind the class attribute to the value of count.
-direct access to the widget instance
+By utilizing the ***data*** macro, this helps us handle dependency tracking for nexted and deep data properties;
+
+### **Pixel UI Symphony: Templating as Expressions**
+
+PixelJs templates are more than just HTML with placeholders. They are expressions of intent, a language to communicate with your UI.
+
+View your templates as a dialogue with your application – a conversation that shapes the user experience.
+
+
+PixelJs introduces a powerful templating language for expressing UI elements. Let's explore the templating features with an example:
 
 ```javascript
-export default{
+const { Template } = Pixel;
+
+let app ={
+  model() {
+    return {
+      name: 'Pixel Explorer',
+    };
+  },
+  build() {
+    return Template`
+      <div>
+        <h1>Welcome, {{ name }}</h1>
+        <input px:model='name' placeholder='Type your name'>
+      </div>`;
+  },
+};
+
+```
+
+In this example, an input field dynamically updates the `name` text based on user input. The `px:model` directive establishes a two-way binding between the input and the data.
+
+PixelJs templates provide a concise and expressive way to define UI logic.
+
+Confused of what directives are , we ll learn of that soon.
+
+#### **Pixel Template parsing caveat**
+
+In pixel, dom templates is made to be an essential made easy for all , especially for people who comes from native html background.
+
+tags can be immediately closed if they expects no children nodes , this helps you omit a closing tag for html elements that Requires a closing tag.
+```html
+<element attr='value' />
+```
+
+If this is an element that Requires a closing tag, without beign immediately closed like in the above example or including a closing tag, pixel will inxlude all nodes following as its children.
+
+for example...
+```html
+<p > 
+Hello Pixel
+<input>
+```
+
+Both the **Hello Pixel** text and the input element are all child nodes of th p element.
+
+In terms of void elements, like input, br, img etc can be rendered without being immediately closed or a closing tag.
+
+### **Attributes Data binding : Connecting your UI system**
+
+To bind an attribute value from a widget instance data, use the single asterisks '*' data binding mechanism. 
+
+For example, ****`class='color'`*** will bind the class attribute to the value of color, meaning that the text `color` will be evaluated as a javascript expression with the model state instances in scope.
+
+Same rules implies as in template mustache tags. Once an attribute name is preceded with an asterisks, its value will be treated as a javascript expression.
+
+Data binding in PixelJs is not just connecting variables; it's orchestrating a symphony of interactions. Envision your UI elements harmonizing with the underlying data. Your application is a symphony where each note resonates with a data point.
+
+e.g
+```javascript
+let app={
   model(){
-    return { color:data('bg-info') }
+    return { 
+      color:data('bg-info')
+    }
   },
   // ...
   build() {
-    return Template`<p *class='$data.color'>Hello, Pixel!</p>`;
+    
+    return Template`<p *class='color.$data'>Hello, Pixel!</p>`;
   },
 };
 ```
-## Dynamic Attribute Names and Values
-You can use square brackets '[  ]' to specify dynamic attribute names or values. Inside the brackets, you can use expressions or access properties from the widget data instances
+
+This example binds the `class` attribute to the value of `color`.
+
+### **Dynamic Attribute Names and Values**
+
+Use square brackets `[]` to specify dynamic attribute names or values. You can aswell Dynamically reference properties from widget data instances:
+
+Attribute binding concept implies as the attribute must be proceded by the asterisks 
+
+Watch the example...
 
  ```javascript
  const { data }=Pixel
-export default{
+let app={
   model(){
     return {
       name:'class',
@@ -253,18 +484,31 @@ export default{
   },
 };
 ```
-appending the asterisks helps pixel decide when to bind a data property to a widget state data.
-## Pixel directives
-Pixel provides directives that allow you to conditionally display elements, bind reactive datas to an input element, reference an element or skip the compilation of an element's children. Here are some commonly used directives:
-#### px:kip Directive
-To skip the compilation of an elements children, use the `px:skip` attribute. All children of the element will be skipped while building this element
+Appending the asterisks helps pixel decide when to bind a data property to a widget state data.
 
-The `px:skip` directive does not need to be passed a value, it presence on an element is considered and defaults to truthy, accepts only boolean value, scopes to html elements only.
-Will raise a Pixel warn warn when aplied on a pixel widget since it's only an element based directive.
+### **Pixel directives**
 
-### Conditional rendering
+Pixel provides directives that allow you to conditionally display elements, bind reactive datas to an input element during compilation, reference an element or skip the compilation of an element's children.
 
-To render elements/widget based on some evaluated result of a statement or value, Pixel provides you with the `px:if` directive
+Directive is a special attribute used in manipulating a node or widget before, during or after compilation.
+
+Pixel directives are not just instructions; they are artistic directives guiding the flow of your application or widget build. See `px:if` as a creative decision, `px:for` as a rhythmic pattern, and `px:data` as a dynamic palette.
+
+Here are some commonly used directives:
+
+##### px:skip 
+To skip the compilation of an elements children and innerContent, use the `px:skip` attribute. All children of the element will be skipped while building this element
+
+The `px:skip` directive does not need to be passed a value, it presence on an element is considered and defaults to truthy, considers only boolean values, other values are ignored and falls back to `true`. 
+
+Scopes to html elements nodes only.
+Will raise a Pixel warn if used  on a pixel widget since it's only an element based directive.
+
+#### Conditional rendering
+
+To render elements/widget based on some evaluated result of a statement or value, Pixel provides you with some useful condition based directives.
+
+##### px:if
 
 ```javascript
 Template`<button px:if='false'></button>`
@@ -272,39 +516,200 @@ Template`<button px:if='false'></button>`
 
 this element will not render since the condition render result is falsy
 
-The `px:else-if` directive ,if available on the next element or widget following the previous 'px:if' or 'px:else-if' element/widget , will be processed if, the `px:if`, or previous `px:else-if ` if any, evaluated to false
+##### px:else-if
+
+The `px:else-if` directive ,if available on the next element or widget following a 'px:if' or other 'px:else-if' element/widget , will be processed if, the `px:if`, or previous `px:else-if ` if any, evaluates to false
 Inoder to make it effective, should be passed to the next element or widget after the previous relative conditioned element/widget 
 
+If unable  to find a relative conditional directive on the previous element/widget, will raise a pixel templates conditional Error.
+
+##### px:else
 The `px:else` directive , displays its element if the previous `px:if` or `px:else-if` , if any, statements are falsy
 
-its always a gotcha to pass a px:if alongsode the px:for ditective, if possible, avoid px:if with px:for
-### List rendering
+its always a gotcha to pass a px:if alongsode the px:for ditective, if possible, avoid px:if with px:for.
 
+#### List rendering
+
+##### px:for
 list rendering helps you render a widget or an element, from an iterable value , the resulting value will be available on the element, or widget rendering logic
 
 To achieve this , pixel provides you with the `px:for` directive.
 
 here is a minimal example on using 'px:for' directive.
 ```javascript
-Template` <MyWidget px:for='item in $data.Packages' *data='item'> </MyWidget>`
+Template` <MyWidget px:for='item of $data.Packages' *data='item'> This is {{ item }} </MyWidget>`
 ```
 
-px:for encapsulates element datas, and creates the relatibe data based on the evalusted loop data, then passes the positional arguments to the element/widget context.
+`px:for `encapsulates element datas, and creates the relative data based on the evaluasted loop data, then passes the positional arguments to the element/widget context.
 
-#### px:model
-    Data instances defined and exposed from the model method option can be two way binded efficiently using the 'px:model' directive.
+It also follows the common javascript  forloop structure.
+
+###### Accepted constructs
+
+`item in obj`,
+
+`[ key, value ] of iterable`,
+
+`[ value ] in iterable`,
+
+`[ index, count ] of numberVal`,
+
+`count in 5`,
+
+`3`,
+
+`[ count ] in 5`
+
+`iterableValueRef`
+
+
+The `px:for` directive can iterate over any iterable  object or number value type.
+
+Both a parenthesis `()`,  block brackets `[]`, curly bracket `{}` can all be used in enclosing the key value pairs.
+
+It's recommended to use the `for...of` when iterating through an object over the `for...in` iterator protocol except when iterating over a none object data type, e.g A number.
+
+Like in `[ text ] in arrayData `.
+
+The `for...in` iterator attimes may produce unexpected result when used on an object data type expecially in cases where key/value pairs is required.
+
+We  do not recommend the use of key value paires in 'for...in' loops, since the value of the value path  reference will remain "undefined";
+
+From the JavaScript official documentation, it's quoted 
+
+`Many JavaScript style guides and linters recommend against the use of 'for...in', because it iterates over the entire prototype chain which is rarely what one wants, and may be a confusion with the more widely-used "for...of" . `
+
+Both the `for...of` and `for...in` can be used interchangeably.
+
+It's included in Pixel's support for completeness.`
+
+If a single reference is passed, it references the value data. If the iterated data is a Number, it will reference the number count.
+
+In be enclosed within bracked or not.
+
+For example...
+
+`value of iterable` works aswell as 
+
+`[ value ] of iterable`
+
+In cases where key/value pairs are required, then the enclosing brackets are required.
+Here if `for...in` is used, the second value might be of `undefined`.
+
+an iterable or a number can just be passed without a looping format , like key or value mapping. The widget or element will be evaluated to the count of the iterable or number value.
+
+e.g
+```javascript
+Template`<input px:for="iterable" >`
+```
+
+***Note:*** No  value of key or value is passed to the context remember.
+
+#### ***Artistic Directives***
+
+##### px:model
+
+Data instances defined and exposed from the model method option can be two way binded efficiently using the 'px:model' directive.
     e.g.
-    ```javascript
-    Template`<input px:model='$data.value'>`
-    ```
-    update to this data reference will update the dom or nodes efficiently
-#### px:data
-    accessing and touch-manipulation on dom objects is achieved using the 'px:data' directive.
-    px:data is used to reference in template variables
-    Template`<h1 px:data='$data.value'></h1>`
+```javascript
+const { Template } = Pixel
+
+let app={
+  model(){
     
-    value of $data.value will be populated with the element or widget instance if passed to a widget tag.
+    return {
+      value:data("Pixel Explorer")
+    }
+  }
+  build(){
     
+    return Template`
+    
+    <input px:model='value.$data'>
+    <h3> {{ value.$data}} </h3>
+    `
+    
+    
+  }
+}
+```
+By using the `px:model` directive, the input element is now bound to and from the value state data, which means, the input is been populated with the data from the value property, any update to the input will aswell update the value property, hereby triggering a state rerendering.
+
+Scoped to Input, Textarea and option elements only.
+
+##### px:data
+
+Accessing a node object from inside a widget and touch-manipulation on dom objects is achieved using the 'px:data' directive.
+
+`px:data` is used to reference in template variables.
+```javascript
+const { Template } = Pixel
+
+let app={
+  model(){
+    
+    return {
+      value:""
+    }
+  }
+  build(){
+    
+    return Template`
+    
+    <input px:data=value >
+    `
+    
+    
+  },
+  handlers:{
+    doSomething(){
+      this.value//will now be populated with the instance of the input element
+    }
+  }
+}
+
+```
+Value of `value` will be populated with the element or widget instance if passed to a widget tag.
+
+##### px:text
+
+Injecting an innerText content into a Dom Node is achieved using the `px:text` directive.
+
+This directive uses the `element.innerText` method to populate an element's innerText with the provided string value.
+
+This is how to...
+
+```javascript
+const { Template } = Pixel
+
+let app={
+  model(){
+    
+    return {
+      text:"Pixel Explorer"
+    }
+  }
+  build(){
+    
+    return Template`
+    
+    <p px:text=text > </p>
+    `
+  },
+}
+```
+
+The innerText of this paragraph will be resolved to the value of the `text` property.
+
+##### px:html
+
+Same as `px:text` only used in inserting innerHtml into an element.
+
+##### px:bind
+
+Used in binding reactive data instance, a replacement for the asterisks binding.
+
+
 ### Display Rendering
 
 Rendering with Template Strings or H Function
