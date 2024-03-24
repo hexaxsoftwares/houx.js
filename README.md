@@ -1,7 +1,7 @@
 ## PixelJs
-### Pixel : Empowering Creativity, Building with Speed
+### Pixel : Empowering web development Creativity, Building with Speed
 
-### Welcome to PixelJs documentation
+### Welcome to pixel documentation
 
 
 
@@ -10,7 +10,8 @@ Pixel empowers creativity, speedy development while Building web apps.
 
 ### 1. Introduction
 
-Pixel is a JavaScript framework designed to enhance creativity and speed in building web applications. It provides a flexible and intuitive way to creating interactive user interfaces using a declarative syntax. 
+Pixel is a JavaScript framework designed with the target to enhancing creativity, speedy prototyping and efficient workflow while building web applications.  
+It provides you with a flexible and intuitive API for creating an interactive user interfaces using a declarative syntax. 
 
 Pixel is a framework where creativity meets efficiency.
 
@@ -20,76 +21,85 @@ Pixel leverages reactive data and efficient rendering to delivering high-perform
 
 This guide will take you through a detailed journey, covering installation, basic concepts, advanced features, and practical examples.
 
-Whether you're a newcomer to web development or seeking to expand your skills, PixelJs serves as your guide to building interactive and dynamic web applications.
+Whether you're a newcomer to web development or seeking to expand your skills, Pixel serves as your guide to a higher level of web UI development.
 
 Let's dive in!
 
 ### 2. **Getting Started : installation and setting up your Pixel playground**
 
-Before delving into the intricacies, let's establish our PixelJs playground.  
+Before delving into the intricacies, let's establish our pixel playground.  
 A basic understanding of HTML, CSS, and JavaScript is essential. If you're new to programming, take a moment to acquaint yourself with these fundamentals.
 
-### **Installation Proccess:**
+#### **Installation Proccess:**
 
 Pixel is a dependency-free, browser-oriented javascript library. This means that using it is as simple as adding a `<script>` tag to your document head. No need for complicated build steps.
 
 You can simply load Pixel by just including the following script tag in your main HTML file head tag and get going:
 
-****html****
 ```html
 <script src="https://cdn.jsdelivr.net/gh/prince9216/PixelJs@main/pixel.global.dev.js"></script>
 ```
-
+You might also prefer the esm browser module. Here is the cdn link to a pixel exported components module.
+```html
+<script src="https://cdn.jsdelivr.net/gh/prince9216/PixelJs@main/pixel.esm-browser.dev.js"></script>
+```
 Some discreet developers might prefer loading and hosting pixel locally in production.
 
-Then you can simply download the file from the jsdelivr Link, copy it to your project directory, and link to it from your html head file .
+Then you can simply download the file from this jsdelivr Link . `https://cdn.jsdelivr.net/gh/prince9216/PixelJs@main/pixel.global.dev.js` and copy the file to your project directory, then link to it from your html head file .
 
 ```html 
-<script src='path/to/pixel.global.js'></script>
+<script src='path/to/pixel.global.dev.js'></script>
 ```
+You can aswell use pixel in the cli  by installing it via npm/yarn  
+Make sure you have nodejs installed.  
+###### Using npm.
+```bash
+npm install pixeljs-framework
+```
+###### Using yarn
+```bash
+yarn add --save pixeljs-framework
+```
+Once installed, pixel becomes your creative companion.
 
-Once installed, PixelJs becomes your creative companion.
+## **Understanding pixel**
 
-## **Understanding PixelJs**
+Once pixel is included in your project, the global namespace `Pixel` will be exposed and available within your script scope if you are using the self/cdn hosting.  
+Regular imports of pixel modules from 'pixel' will be available if using the cli version
 
-Once PixelJs is included in your project, the global namespace **Pixel** will be exposed and available within your script scope. You can start using it by de-structuring the necessary components from the global Pixel Object. Here's how to:
-
+Destructuring while using the self/cdn hosting
 ```javascript
-  const { initBuild, Template, data, H, NodeMake, ref } = Pixel;
+  const { initBuild, Template, data, el, ref } = Pixel;
   ```
-  
-The above methods and components are all made available to the scope.
+Regular imports while using the cli installation guide
+```javascript
+import { initBuild, Template, data,  el, ref } from 'pixel'
+```
   
 ### **Widgets and model instances**
   
-Pixel widgets are independent entities encapsulating UI components. A widget has its state, structure, and behavior.
-
-Model instances define stateful data for widgets, making them reactive.
-Every Pixel widget Manages it's own state.
+Pixel widgets are independent entities encapsulating UI components.  
+A widget can be a full page, or a simple component block of your application.  
+Every widget has its own state, structure, and behavior and takes care of how it's model reactivity system is managed.  
 
 This can be confusing at the moment , but don't bother, this documentation is designed for both beginners and experienced developers alike.
 
-A Pixel widget can be an object, a class or a function. 
-Pixel supports the use of both dataTypes as valid widgets, but we are going to use the object widgets throughout the example in this documentation as we recommends the use of object type widget when writing widgets in pixel.
+A Pixel widget can be defined using an object type, a class or a regular javascript function .   
+Pixel supports the use of both dataTypes as valid widgets for  simplicity and completeness.  
 
-Let's create your inaugural PixelJs widget. Envision a widget as the fundamental building block of your web application.
+Let's create your inaugural pixel widget.    Envision a widget as the fundamental building block of your web application.  
+We are working with an object based widget in this  example since it's the most simple and recommended way of writing widgets in pixel.  
+You can learn about using class and functions as widgets in their specific documentation.
 
-
+Consider the example below
 ```javascript
-const { Template }= Pixel// using the browser JIT compiler, we destructure our tools from the global Pixel Object
 let app={
-    model(){
-    
-        return {
-            greeting: "Hello Pixel"
-        }
-    },
-    build(){
-      
-        return Template` <h1>{{ greeting }}</h1>`
-    }
+  model(){
+    return { greeting: "Hello Pixel" }
+  },
+  template:`<h1> {{ greeting }} </h1>`
 })
-//this is a valid pixel widget
+//this is a valid simple pixel widget
 ```
 
 In the example code above, we passed in an object containing widget options that makes up our widget build.
@@ -98,70 +108,66 @@ lets go through the options above.
 
 1. The ***model*** option: Requires to be a method/function. and must return an Object 
 
-The model option is used to define statefull datas.
-The model returned object values  are esposed to the widget instance and can be used in bulding and encapsulating the widget state management process.
+The model option is used to define statefull properties that are to be exposed to the public instances.   
+The model returned object values  are esposed to the widget instance and can be used in bulding and encapsulating the widget model and reactive datas.
 
-This data defined and exposed in model are  converted proxy datas and are made reactive.
+This simply means that the widget UI gets updated whenever any of the properties of the widget model returned object values are mutated or  change.
 
-This simply means that the widget UI gets updated whenever any of the properties of the widget model returned object values are mutated .
+2. The ***template*** option: A string based option that is used to define your widget markup texts.  
+Its recommended to use backticks while parsing this option to allow the use of multline system.
 
-2. The ***build*** option: A method function that masterminds the normalization of your widget UI hydration.
+In the previous example, we've crafted a simple widget that conveys a greeting message.  
+The `model` function establishes the widget's initial data store, and the `template` option defines the UI structure using the string based markup texts.  
+Note how the model returned property was to be accessed within the template tags directly. 
+This widget UI build gots updated whenever the model returned properties changes or got mutated.
 
-The build function runs only once throughout the life of a widget, and uses its returned value to build the widget UI in pixel.
-
-if the build method returns a string,it will be passed and compiled as a textNode.
-
-The build function must return a render function in form of an arrow function or an instance of the ***Pixel.Template*** function.
-
-You can return an instance of ***Pixel.Template*** with a Parameter of javascript multline string literal, if you prefer the native way of building your ui.
-
-The ***Template*** function is a pixel built in utility function used in parsing the DomStrings html markup to the Build method, you can optional return the Template instance directly without returning a render function.
-
-In the previous example, we've crafted a simple widget that conveys a greeting message. The `model` function establishes the widget's initial data store, and the `build` function defines the UI structure using the `Pixel.Template ` function.
-
-The widget gets updated whenever the model returned properties changes or got mutated.
-
-A render function is required when building your UI using the `H` hyperscript function
- 
-Here is an example of using the `H` component by returning a render function in the build function instead of the `Pixel.Template` function.
+Meanwhile , if you prefer a more programmatic way to build your UI, pixel provides you with the `build` method which must return a render function.  The build method gets the `template` option ignored once is presented ,even if it does not return a valid UI instance.  
+A render function is a function returned by the build function which in return also returns an instance of the `el` hyperscript function.   
+A render function is required when building your UI using the `el` hyperscript function like in the example below
 
 ```javascript
-const { H } = Pixel//destructured from the global Pixel object
-let app={
+import { el } from 'pixel'
+export default{
   
   build(){
-    return ()=>H('h1', 'My heading');
+    return ()=>el('h1',{ class:'myheading' }, 'Hello World! from Pixel');
   }
 }
 ```
 MeanWhile, while returning a render function, an  arrow function is recommended.
 
-Another optional native and simple way of encapsulating your ui is by using the template option, which is parsed string of html markup texts.  e.g
+Another optional native and simple way of encapsulating your ui from the build method if you prefer using the string based markup text is by using the `Template` utility function.  e.g
 
 ```javascript
+import { Template } from 'pixel'
 let app={
-  
-    template:`
+  build(){
+    return  Template`
         <!--your html template strings -->
     `
+  }
 }
 ```
-The template option will be ignored if the build function is present even if it does'nt return an UI instance.
+Notice in  the widget that a render function is not required but us a fundamental concept while returning UI instance from the build method.  
+You can directly return an instance of `Template` component without a render function with a Parameter of javascript multline string literal, if you prefer the native way of building your ui from the build method.
+
+The build function runs only once throughout the life of a widget, and uses its returned value to build the widget UI in pixel.
+
+if the build method/render function directly returns a string,it will be passed and compiled as a textNode.  
+The build function must return a render function in form of an arrow function or an instance of the `Template` function.
 
 We will continue this documentation using the template option throughout our examples.
 
 ### **Widgets as Art, Initial Entry point.**
 
-In PixelJs, you're not just building widgets; you're crafting art. Each widget is like a brushstroke, contributing to the canvas of your application. Think about the composition, the flow, and the visual poetry you create through your widgets.
+In pixel, you're not just building widgets; you're crafting art. Each widget is like a brushstroke, contributing to the canvas of your application. Think about the composition, the flow, and the visual poetry you create through your widgets.
 
 When building with pixel, there must be an entry point for your app build. This is a fundamental concept.
 
-The `Pixel.initBuild` component is used to create an initial entry point widget, other child widgets can be passed here as components, pages or building blocks to the webpage.
-
-You can then use the Pixel inbuilt routing framework to create a navigation through pages.
+The `initBuild` component is used to create an initial entry point widget, other child widgets can be passed here as components, pages or building blocks to the `initBuild` widget.
 
 The initBuild method is passed a widget as its first Parameter.
-This is an initial entrypoint of the app, we will learn how to use other widgets as child widgets.
+This is an initial entrypoint of the app, we will learn how to use other widgets as child widgets  later on in this document.
 
 Study the code below.
 ```javascript
@@ -196,7 +202,7 @@ Your widget template will be injected into the selected dom element, clearing al
 
 Pixel provides you an efficient way of encapsulating templates logic into your Pixel template without using the default javascript multline string interpolation system.
 
-You can iterpolate state instances into the template by using the double curly braces, `{{ count }}`. 
+You can iterpolate model instances into the template by using the double curly braces, `{{ count }}`. 
 
 Data values exposed through the model option can directly be referenced from inside the mustache tags expression text.
 
@@ -213,33 +219,31 @@ let app={
 ```
 
 `{{` and `}}` is the opening and closing tag.
-This are the default settings. Any text within this tags will be parsed as javascript expression with the state instances in scope.
+This are the default settings. Any text within this tags will be parsed as javascript expression with the model instances in scope.
 
-This mustache tags can only accepts single expressions,parsing multiple statements will raise a Pixel template Error.
+This mustache tags can only accepts single expressions,parsing of statements will raise a Pixel template Error.
+Expressions are syntaxs that can return a value, like a function call `value()` or using a variable `count`.
+Statements are like declaring a function/variable/class  or iterating using the `for` loop Statement, or conditional Statement using `if/else-if/else` or deleting an object property using the `delete` keyword.
 
 During template compilation, calling of a function that does not return a primitive value, will return an empty string or 'undefined' in some cases since we target in Dom text interpolation.
 e.g.
 
-`{{ func() }}` or tenary operations e.g , `{{ count ? count : 0 }}` are all  valid template interpolation in pixel provided it does'nt consist of more than a single expression or other unsupported construct like variable declaration.
+`{{ func() }}` or tenary operations e.g , `{{ count ? count : 0 }}` are all  valid template expression provided it does'nt consist of a statement or more than a single expression
 
 Many javascript keyword will not be accepted if found within the template tags.
-
-Here are the regex pattern of pixel unsupported template tag expression.
+keywords like 
 ```javascript
- /(?:\.\.|\/\/|\/\*|\*\*|\[=|==\+|-\+|\+=|\-=|\*=|\/=|%=\*\*=|&&=|\|\|=|<=|>=|\breturn\b|\bthrow\b|\bfunction\b|\bnew\b|\btypeof\b|\bdelete\b|\binstanceof\b|\bvoid\b|\bnull\b|\bundefined\b|\bconst\b|\blet\b|\bvar\bclass\b)/;
-
+function,delete,for,if,else,else-if,const,var,let,class,super,constructor
 ```
-
-This construct cannot be used within these tag or attribute Binding
 
 To customize these mustaches tags, you will ve to setup a widget configuration option known as the  `buildConfig`  in your  widget which is an object of widget configuration settings. 
 Then you parse in an option `delimiters` with an array value of two datas consisting of two string values,  an opening and closing tags. 
 
 e.g
 ```javascript
-export default{
+let app={
     buildConfig:{
-        delimiters:['[['/*the opening tag*/,']]'/*the closing tag*/]
+        delimiters:['[[',']]']
     }
 }
 
@@ -249,7 +253,7 @@ The values will be used in interpolating template strings instead of the default
 
 ### **Building Blocks: Components Based Architecture**
 
-PixelJs encourages a component-based architecture, allowing you to create modular and reusable UI elements. 
+pixel encourages a component-based architecture, allowing you to create modular and reusable UI elements. 
 
 Let's create a simple header widget and compose it into a larger application structure:
 
@@ -288,7 +292,7 @@ Here, we've created a simple header widget (`header`) and seamlessly integrated 
 This means widgets can be nexted down the thread as much as you wish, by composing a widget into another that is composed into a larger Component.
 
 Before a widget can be used in another widget as a tag , it must be registered in the `widgets` object option.
-
+Many widgets  as possible can be used within the `Header`  widget provided it's registered.
 ***Note:*** During widget registration, be sure it followed the pixel widget naming rules. 
 Must not conflict with any built in pixel widgets, must contain atleast one of these characters .
 
@@ -299,13 +303,14 @@ Must not conflict with any built in pixel widgets, must contain atleast one of t
  
 ###### **Usuported Widget naming construct**
  1. Must not contain  html own tag  characters ( < , > )
+ 2. Must not start with a number or a hyphen
 
-If it posseses none of this requirments, pixel will raise a ***Widget registration Warn***.
+If it posseses none of this requirments, pixel will raise a `Widget registration Warn`.
 
 ### **Handlers**
 Pixel provide an intuitive way of defining stateful method Handlers.
 
-Handlers helps you perfornm stateful logic or functions  on state datas.
+Handlers helps you perfornm stateful logic or functions  on model datas.
 
 To define  methods on your widget, define a handlers object option in the widget options.
 
@@ -324,12 +329,12 @@ let app={
     }
   },
   template:`
-<button on:click='increment'>Clicked me {{ count }} times</button>`
+<button dir-on:click='increment'>Clicked me {{ count }} times</button>`
 }
 ```
 Example using hyperscript.
 ```javascript
-const { H ) = Pixel
+const { el ) = Pixel
 let app={
   model(){
     return {
@@ -342,29 +347,29 @@ let app={
     }
   },
   build(){
-    return ()=>H('button', { onClick:this.increment }, 'Clicked me' + this.count + 'times' )
+    return ()=>el('button', { onClick:this.increment }, 'Clicked me' + this.count + 'times' )
   }
 }
 ```
 
 Handlers defined here are automatically exposed to the template instances directly and can be accessed within both the template and attribute scope like in the examples above.
 
-For calling a handler, pixel provides you with the `on:handler` event caller, or the `@handler` shortcut pattern.
+For calling a handler, pixel provides you with the `$$on:handler` event caller, or the `@handler` shortcut pattern.
 
-Pixel supports all non depreciated event calls through the `on:xxx` or `@xxx` event  triggering directives.
+Pixel supports all non deprecated event calls through the `$$on:xxx` or `@xxx` event  triggering directives.
 
 You can also parse modifiers to your handlers when been called. They are to be separated using pipes character after the eventName
 
 e.g.
-`<button on:click|once='increment' />`
+`<button $$on:click|once='increment' />`
 
 Modifiers can be chained 
 
-`<button on:click|once|stop|trusted='increment' />`
+`<button $$on:click|once|stop|trusted='increment' />`
 
 For passing modifiers to handlers when using a hyperscript powered UI, you needs the `withModifiers` macro .
 ```javascript
-const { H, withModifiers }=
+const { el, withModifiers }=Pixel
 let app={
   model(){
     return {
@@ -377,7 +382,7 @@ let app={
     }
   },
   build(){
-    return ()=>H('button', { onClick:withModifiers(this.increment, ['Prevent', 'trusted', 'nonpassive']) }, 'Clicked me' + this.count + 'times' )
+    return ()=>el('button', { onClick:withModifiers(this.increment, ['Prevent', 'trusted', 'nonpassive']) }, 'Clicked me' + this.count + 'times' )
   }
 ```
 Accepts a first argument of the handler, and an array of modifiers strings names.
@@ -393,15 +398,19 @@ Here are Pixel supported event modifiers
 7. **passive:** Sets the passive modifier to true
 8. **nonpassive:** Explicitly sets the passive modifier to false.
 
-Explore their usage to perform logic on state data:
+Explore their usage to perform logic on model data:
+
+Events can be chained too, like when you wish to incorparate the same handler to more than one event, pixel provides you a stress saving  semantics that stops you from writing different attributes and directives for each of the events when they have to use the same handler and maybe share same modifiers.
+`<button $$on:click.hover.keydown='increment' />`  Using the dot sepaeator, you can chain as many events as possible.   
+`<button $$on:click.hover|present|trusted|capture='increment' />`  They all share from the modifiers being passed.
 
 ### **Reacting to Changes: Crafting Dynamic Reactive mentality**
 
-In the world of PixelJs, think of your application as a living, breathing entity. The reactive nature of PixelJs means your UI responds dynamically to changes in data.
+In the world of Pixel, think of your application as a living, breathing entity. The reactive nature of Pixel means your UI responds dynamically to changes in data.
 
-Embrace this reactivity – it's not just a feature; it's a mindset. Your UI evolves as your data evolves.
+Embrace this reactivity – it's not just a feature; it's a mindset. Your UI evolves as your data revolves.
 
-PixelJs excels at reactivity making it easier in building dynamic widgets.
+Pixel excels at reactivity making it easier in building dynamic widgets.
 
 Let's create a button that increments a counter each time it's clicked:
 Notice how the button counter displays responds to the user interaction
@@ -417,7 +426,7 @@ let app= {
     };
   },
   template:`
-      <button on:click='increment'>
+      <button $$on:click='increment'>
         Clicked {{ count }} times
       </button>` ,
   handlers: {
@@ -434,8 +443,8 @@ Now, a button increments a counter with every click by calling the `increment` m
 
 This reactivity system may not be effective when a data been mutated is accesed from an object based dataType like a Set, Map, Array, or a plain object.
 
-Utilize the `Pixel.data` macro for reactive object dataTypes reactivity hydration:
-Its returned datas are exposed to the template instances directly as `<propName\>.$data`.
+Utilize the `data` macro for deep reactive object dataTypes reactivity hydration:
+Its returned datas are exposed to the template instances directly as `<propName>.$data`.
 
 here is a minimal example
 
@@ -470,15 +479,14 @@ By utilizing the `data` macro, this helps us handle dependency tracking for next
 
 ### **Pixel UI Symphony: Templating as Expressions**
 
-PixelJs templates are more than just HTML with placeholders. They are expressions of intent, a language to communicate with your UI.
+Pixel templates are more than just HTML with placeholders. They are expressions of intent, a language to communicate with your UI.
 
-View your templates as a dialogue with your application – a conversation that shapes the user experience.
+View your templates as a dialogue with your application – a conversation that shapes the user experience using an efficient and dynamic implemention.
 
-
-PixelJs introduces a powerful templating language for expressing UI elements. Let's explore the templating features with an example:
+Pixel introduces a powerful templating language for expressing your UI elements using simple html markup syntax.  
+Let's explore the templating features with an example:
 
 ```javascript
-const { Template } = Pixel;
 
 let app ={
   model() {
@@ -489,16 +497,16 @@ let app ={
   template:`
       <div>
         <h1>Welcome, {{ name }}</h1>
-        <input px:model='name' placeholder='Type your name'>
+        <input $$model='name' placeholder='Type your name'>
       </div>`
   ,
 };
 
 ```
 
-Example using the hyperscript powered UI  , you will need the `withDirectives` macro to use the `px:model` directive.
+Example using the hyperscript powered UI  , you will need the `withDirectives` macro to use the `$$model` directive.
 ```javascript
-const { H, withDirectives }=Pixel
+import { el, withDirectives } from 'pixel'
 let app={
   model(){
     return {
@@ -506,23 +514,23 @@ let app={
     }
   },
   build(){
-    return ()=> H('div', 
+    return ()=> el('div', 
       [
-        H('h1', 'Welcome, '+ this.name ),
-        H("input", withDirectives({ placeholder : "Type your name"},
-          [{ name:"model", propName:"name", modifiers:[] } , ]),   )
+        el('h1', 'Welcome, '+ this.name ),
+        el("input", withDirectives({ placeholder : "Type your name"},
+          [{ name:"model", value:"name", modifiers:[] } , ]),   )
       ]
       )
   }
 ```
 The `withDirectives` macro takes the elements normal attributes as its first argument, then an array containing objects of directives options.
-Which are the directive name, state based propName and an array of modifiers. 
+Which are the directive name, model based propertyName as value and an array of modifiers if any. 
 
 Can accept as many directives as possible.
 
-In this example, an input field dynamically updates the `name` text based on user input. The `px:model` directive establishes a two-way binding between the input and the data.
+In this example, an input field dynamically updates the `name` text based on user input. The `$$model` directive establishes a two-way binding between the input and the data.
 
-PixelJs templates provide a concise and expressive way to define UI logic.
+Pixel templates provide a concise and expressive way to define UI logic.
 
 Confused of what directives are , we ll learn of that soon.
 
@@ -530,11 +538,11 @@ Confused of what directives are , we ll learn of that soon.
 
 In pixel, dom templates is made to be an essential made easy for all , especially for people who comes from native html background.
 
-Tags can be immediately closed if they expects no children nodes , this helps you omit a closing tag for html elements that Requires a closing tag.
+Tags can be immediately closed if they expects no children nodes , this helps you omit a closing tag for html elements that Requires a closing tag and saving you the stress of writing a closing tag since there are no children elements to wrap inbetween.
 ```html
 <element attr='value' />
+<p/>
 ```
-
 If this is an element that Requires a closing tag, if you omit the immediately closing Syntax like , `<element attr-value >` or not including a closing tag, pixel will include all nodes following it as its children.
 
 for example...
@@ -543,12 +551,11 @@ for example...
 Hello Pixel
 <input>
 ```
-
 In the above code, Both the `Hello Pixel` text and the input element are all child nodes of th p element since the `p` element Requires a closing tag and none  was provided.
 
 The immediate closing syntax, `<p />` helps close  the element without a closing tag.
 
-In terms of void elements, ` like input, br, img ` etc , they can be rendered without being immediately closed or a closing tag.
+In terms of void elements, like  the ` input, br, img ` elements , they can be rendered without being immediately closed or a closing tag.
 
 When parsing attributes, attributes names and value cases sensitivity are maintained.
 
@@ -556,17 +563,20 @@ If an attribute value does not contain a space or special characters that may co
 
 e.g.
 `<element attr=my Value />` ×Bad
+`<element attr='my Value' />` √great
+`<element innerHtml=<div/> />` ×Bad
+`<element innerHtml='<div/>' />` √great
 
-the `Value` text path will be compiled as a different attribute. It should be quoted if they belong to a single attribute property.
+the `Value` text path in the first example above will be compiled as a different attribute. It should be quoted if they belong to a single attribute property.
 
-For example `<element attr=myValue />` works perfectly fine, Pixel accepts non cased attributes values once they follow the Pixel attributes passing mechanism.
+For example `<element attr=myValue />` works perfectly fine, Pixel accepts non cased attributes values once they follow the pixel attributes passing caveats.
 
 Also when your attribute name matches your attribute value text, you can just pass the attribute while omiting the value part. 
 This works like the native javascript objects option mapping.
 
-For example `<element *name=name />` can just be written as `<element *name />` or using the `px:` binding directive, `<element px:name />`  or  even without the binding semantics `<element  name />`
+For example `<element *name=name />` can just be written as `<element *name />` or using the `$$bind` binding directive, `<element $$bind:name />`  or  even without a binding if no binding is required `<element  name />`
 
-This also works in directives cases.
+This also works in direct  use of directives cases.
 e.g.
 ```javascript
 let app={
@@ -575,24 +585,28 @@ let app={
       text:'Pixel Explorer'
     }
   },
-  template:` <h1 px:text /> `
+  template:` <h1 $$text /> `
 }
 ```
-In the above example code, `text` will be mapped as the value of the `px:text` directive.
+In the above example code, `text` will be mapped as the value of the `$$text` directive. 
+The above widget will  result in the following dom node
+```html
+<h1 innerTEXT="Pixel Explorer" ></h1>
+```
 
 ### **Attributes Data binding : Connecting your UI system**
 
-To bind an attribute value from a widget instance data, use the single asterisks ***`*`*** data binding mechanism. 
+To bind an attribute value from a widget instance data, use the `$$bind` data binding directive. 
 
-`*attr=data` is a shorthand way of binding data Attributes to the official `px:attr=data` .
+`*attr=data` is a shorthand way of binding data Attributes to the official binding directive `$$bind:attr=data` .
 
-The `px:` data binding  directive is the official method, but we ll continue with the use of the asterisks method throughout the rest of this documentation as it's shorter and easier to reason about.
+The `$$bind` data binding  directive is the official method, but we ll continue with the use of the asterisks method throughout the rest of this documentation as it's shorter and easier to reason about.
 
 For example, `*class='color'` will bind the class attribute to the value of `color` expression, meaning that the text value, `color` will be evaluated as a javascript expression with the model state instances in scope.
 
-Same rules implies as in template mustache tags. Once an attribute name is preceded with an asterisks, its value will be treated as a javascript expression.
+Same rules implies as in template mustache tags  except that here, values may also return none primitive values like `Sets,Object,Arrays,RegRxp,class,function`  instances. Once an attribute name is preceded with an asterisks, its value will be treated as a javascript expression.
 
-Data binding in PixelJs is not just connecting variables; it's orchestrating a symphony of interactions. 
+Data binding in Pixel is not just connecting reactive variables with the template attribute; it's orchestrating a symphony of interactions. 
 
 Envision your UI elements harmonizing with the underlying data. Your application is a symphony where each note resonates with a data point.
 
@@ -607,18 +621,26 @@ let app={
   },
   // ...
   template:`
-    <p *class='color.$data + name'>Hello, Pixel!</p>`;
+    <p *class='color.$data + name'>Hello, Pixel!</p>
+    <input $$model=color >
+    `;
+    
   ,
 };
 ```
 
-This example binds the `class` attribute to the value of `color` concentenated with the name property.
+This example binds the `class` attribute to the value of `color` concentenated with the name property resulting in the dom node as follows
+```html
+<p class="bg-info myParagraph">Hello, Pixel!</p>
+```
+And an input element that is bound to the color model property.
+Changes to the input value updates the `class` content of the paragraph element.
 
 #### **Dynamic Attribute Names and Values**
 
 Use square brackets `[]` to specify dynamic attribute names or values. You can aswell Dynamically reference properties from widget data instances:
-
-Attribute binding concept implies as the attribute must be proceded by the asterisks 
+Once an attribute Name is enclosed within square brackets, the text within the enclosed bracket will be binded to the model public instances.
+Same rules applies as with the mustache interpolation and must return a primitive value.
 
 Watch the example...
 
@@ -632,11 +654,12 @@ let app={
     }
   },
   // ...
-  template:`<p *[name]='value.$data'>Dynamic Attribute</p>`;
+  template:`<p [name]='value.$data'>Dynamic Attribute</p>`;//<p class="value.$data">Dynamic  Attribute</p>
+  //The attribute value not bound in this case.
   ,
 };
 ```
-Appending the asterisks helps pixel decide when to bind a data property to a widget state data.
+Appending the asterisks binds the contents Attribute value not Attribute name.
 
 ### **Pixel directives**
 
@@ -644,77 +667,92 @@ Pixel provides directives that allow you to conditionally display elements, bind
 
 Directive is a special attribute used in manipulating a node or widget before, during or after compilation.
 
-Pixel directives are not just instructions; they are artistic attributes guiding the flow of your application or widget build. See `px:if` as a creative decision, `px:for` as a rhythmic pattern, and `px:data` as a dynamic palette.
+Pixel directives are not just instructions; they are artistic attributes guiding the flow of your application or widget build. See `$$if` as a creative decision, `$$for` as a rhythmic pattern, and `$$data` as a dynamic palette.
 
 Here are some commonly used directives:
 
-##### px:skip 
-To skip the compilation of an elements children and innerContent, use the `px:skip` attribute. 
+##### $$raw 
+To skip the compilation of an elements children and innerContent, use the `$$raw` attribute. 
 
 compilation of all children of the element will be skipped while building this element.
 
-The `px:skip` directive does not need to be passed a value, it presence on an element is considered and defaults to truthy, considers only boolean values, other values are ignored and falls back to `true`. 
+The `$$raw` directive does not need to be passed a value, it presence on an element is considered and defaults to truthy, considers only boolean values, other values are ignored and falls back to `true`. 
 
-Scopes to html elements nodes only.
-Will raise a `Pixel Directives warn:` if used  on a pixel widget since it's only an element based directive.
+Scopes to html elements nodes only and will be consumed by a root element when passed as a widget prop if there is a single root element within the widget.
 
-#### **Conditional rendering**
+#### **Conditional rendering Directives**
 
 To render elements/widget based on some evaluated result of an expression or value, Pixel provides you with some useful condition based directives.
 
-##### px:if
+##### $$if
 
 ```javascript
 let app={
-  template:`<button px:if='false'></button>`
+  template:`<button $$if='false'></button>`
   
 }
 ```
 
 this element will not render since the condition render result is falsy
 
-##### px:else-if
+##### $$else-if
 
-Checks if the previous element/widget  has a `px:if`/`px:else-if` directive, if not found, will raise an Exception.
+Checks if the previous element/widget  has a `$$if`/`$$else-if` directive, if not found, will raise an `Pixel Error`.
 
-The `px:else-if` directive ,if available on the next element or widget following a `px:if` or other `px:else-if` element/widget , will be processed if, the `px:if`, or previous `px:else-if ` if any, evaluates to false
+The `$$else-if` directive ,if available on the next element or widget following a `$$if` or other `$$else-if` element/widget , will be processed if, the `$$if`,ir `$$else-if ` on the previous element/widget, evaluates to false
 Inoder to make it effective, should be passed to the next element or widget after the previous relative conditioned element/widget 
 
 If unable  to find a relative conditional directive on the previous element/widget, will raise a pixel conditional Directive Error.
 
-##### px:else
-The `px:else` directive , displays its element if the previous `px:if` or `px:else-if` , if any, statements are falsy
+##### $$else
+The `$$else` directive , displays its element if the previous `$$if` or `$$else-if` , if any, statements are falsy
 
-Its always a gotcha to pass a px:if alongsode the px:for ditective, if possible, avoid px:if with px:for.
+Its always a gotcha to pass a $$if alongsode the $$for directive, if possible, avoid $$if with $$for on the same element/Widget.
 
 #### List rendering
 
-##### px:for
+##### $$for
 list rendering helps you render a widget or an element, from an iterable value , the resulting value will be available on the element, or widget rendering scope.
 
-To achieve this , pixel provides you with the `px:for` directive.
+To achieve this , pixel provides you with the `$$for` directive.
 
-here is a minimal example on using 'px:for' directive.
+here is a minimal example on using '$$for' directive.
 ```javascript
+import { data  }  from 'pixel
 let app={
-
-  template:` <MyWidget px:for='item of $data.Packages' *data='item'> This is {{ item }} </MyWidget>`
+  model(){
+    return {
+      fruits:data({
+        orange:{id:223, color:'yellow',shape:'circle',count:56},
+        mango: {id:3570,color:'green',shape:'rect',count:911},
+        pearl:{id:67,color:'navy-blue',shape:'rectangle',count:2},
+      })
+    }
+  },
+  template:`
+  <div $$for="[ name, value ] of fruits.$data">
+    <h1 >{{name}} </h1>
+    <h3 >COLOR: {{value.color}}</h3>
+    <h3 >SHAPE: {{value.shape}}</h3>
+    <p>it's over {{ value.count }} pieces</p>
+  </div>
+`
 }
 ```
 
-`px:for `encapsulates element datas, and creates the relative data based on the evaluasted loop data, then passes the positional arguments to the element/widget context.
+`$$for `encapsulates element datas, and creates the relative data based on the evaluasted loop data, then passes the positional arguments to the element/widget context.
 
 It also follows the common javascript  forloop structure.
 
 ###### Accepted constructs
 
-`item in obj`,
+`item of iterable`,
 
 `[ key, value ] of iterable`,
 
 `[ value ] in iterable`,
 
-`[ index, count ] of numberVal`,
+`[ index, count ] of number`,
 
 `count in 5`,
 
@@ -722,18 +760,18 @@ It also follows the common javascript  forloop structure.
 
 `[ count ] in 5`
 
-`iterableValueRef`
+`iterable`
 
 
-The `px:for` directive can iterate over any iterable  object or number value type.
+The `$$for` directive can iterate over any iterable  object or number value type.
 
-Both a parenthesis `()`,  block brackets `[]`, curly bracket `{}` can all be used in enclosing the key value pairs.
+Both a parenthesis `()`,  block brackets `[]` and curly bracket `{}` can all be used in enclosing the key value pairs.
 
 It's recommended to use the `for...of` when iterating through an object over the `for...in` iterator protocol except when iterating over a none object data type, e.g A number.
 
 Like in `[ text ] in arrayData `.
 
-The `for...in` iterator attimes may produce unexpected result when used on an object data type expecially in cases where key/value pairs is required.
+The `for...in` iterator at times may produce unexpected result when used on an object data type expecially in cases where key/value pairs is required.
 
 We  do not recommend the use of key value paires in `for...in` loops, since the value of the value path  reference will remain "undefined";
 
@@ -745,9 +783,8 @@ Both the `for...of` and `for...in` can be used interchangeably.
 
 It's included in Pixel's support for completeness.`
 
-If a single reference is passed, it references the value data. If the iterated data is a Number, it will reference the number count.
-
-In be enclosed within bracked or not.
+If a single reference is passed, it references the value data. If the iterated data is a Number, it will reference the number count.  
+Can be enclosed within bracked or standalone.
 
 For example...
 
@@ -762,19 +799,19 @@ An iterable or a number can just be passed without a looping format , like key o
 
 e.g
 ```javascript
-template:`<input px:for="iterable" >`
+template:`<input $$for="iterable" >`
 ```
 
-***Note:*** No  value of key or value is passed to the context, remember.
+***Note:*** No  value of key/index or value is passed to the context, remember.
 
 #### ***Artistic Directives***
 
-##### px:model
+##### $$model
 
-Data instances defined and exposed from the model method option can be two way binded efficiently using the 'px:model' directive.
+Data instances defined and exposed from the model method option can be two way binded efficiently using the '$$model' directive.
     e.g.
 ```javascript
-const { Template } = Pixel
+const { data } = Pixel
 
 let app={
   model(){
@@ -785,22 +822,21 @@ let app={
   }
   template:`
     
-    <input px:model='value.$data'>
+    <input $$model='value.$data'>
     <h3> {{ value.$data}} </h3>
     `
 }
 ```
-By using the `px:model` directive, the input element is now bound to and from the value state data, which means, the input is been populated with the data from the value property, any update to the input will aswell update the value property, hereby triggering a state rerendering.
+By using the `$$model` directive, the input element is now bound to and from the value state data, which means, the input is been populated with the data from the value property, any update to the input will aswell update the value property, hereby triggering a state rerendering.
 
-Scoped to Input, Textarea and option elements only.
+Scoped to Input, Textarea and select elements only.
 
-##### px:data
+##### $$data
 
-Accessing a node object from inside a widget and touch-manipulation on dom objects is achieved using the 'px:data' directive.
+Accessing a node object from inside a widget and side effect manipulation on dom objects can be achieved using the '$$data' directive.
 
-`px:data` is used to reference in template variables.
+`$$data` is used to reference in template variables.
 ```javascript
-const { Template } = Pixel
 
 let app={
   model(){
@@ -811,11 +847,12 @@ let app={
   }
   template:`
     
-    <input px:data=value >
+    <input $$data=value >
     `,
   handlers:{
     doSomething(){
-      this.value//will now be populated with the instance of the input element
+     console.log(this.value)//<input>
+     //will now be populated with the instance of the input element
     }
   }
 }
@@ -823,9 +860,9 @@ let app={
 ```
 Value of `value` will be populated with the element or widget instance if passed to a widget tag.
 
-##### px:text
+##### $$text
 
-Injecting an innerText content into a Dom Node is achieved using the `px:text` directive.
+Injecting an innerText content into a Dom Node is achieved using the `$$text` directive.
 
 This directive uses the `element.innerText` method to populate an element's innerText with the provided string value.
 
@@ -843,35 +880,104 @@ let app={
   }
   template:`
     
-    <p px:text=text > </p>
+    <p $$text=text > </p>
 5}
 ```
 
  
-##### px:html
+##### $$html
 
-Same as `px:text` only used in inserting innerHtml into an element.
+Same as `$$text` only used in inserting innerHtml into an element.
 
-##### px:bind
+##### $$bind
 
-Used in binding reactive data instance, a replacement for the asterisks binding.
-
+Used in binding attributes to the reactive data instance.
+```javascript
+let app={
+  model(){
+    return {
+      value:'m-5 primary btn'
+    }
+  },
+  template:`<button $$bind:class='value' > Hello Pixel</button>`
+}
+```
+The `$$bind` directive can be chained  with  another directive with  the exception of the `$$model`,`$$data` and the `$$on`  directives since they are autoBinded by default.  
+Other directives  can be chained to the `$$bind`.
+`<button $$bind:$$text='value' > Hello Pixel</button>`   
+Cannot chain more  than one directive to `$$bind`.   
+Since `$$bind` is been used too frequently, pixel provides  a shortform of invorking  the binding directive using the  asterisks (`*`).  
+```html
+<button $$bind:class='value' > Hello Pixel</button>
+<!--can just  be written as  -->
+<button *class='value' > Hello Pixel</button>
+```
+`$$bind` can also be used to parse an object of elements  attributes and values.
+```html
+`<button $$bind="{ class:stateInstance+' btn', innerText:'click me'}" />
+```
+This  works  as like the pixel spread syntax, you  can however declare  the object within the model  instance  and reference it  from the  binding attribute value. 
+```html
+<button $$bind=buttonProps />
+```
+Or more preferably, you can use the pixel attribute spread syntax binding.  
+```html
+<button ...buttonProps />
+```
+The spread syntax cannot be used on a none plain javascript object.  
+Pixel also provide way more useful directives and an API on how to build Custom directives on both widget and html elements
 Contact  the Pixel builtin directives API for more about Pixel directives.
 
-PixelJs also provide way to build Custom directives on both widget and html elements
+##### **Custom Directive**
 
+Pixel provides a declarative interface for building customized directives.
+This is useful when you want to incorparate useful and self defined functionality into a PixelDomInstance .
+
+You can create a fully functional directive using a function or an object consisting of hooks callback.   
+directives must be registered using the directives option.
+Here  is an example of creating a custom directive 
+```javascript
+
+export default{
+  directives:{
+    autoFocus(el, value, modifiers){
+      //receives the element/Widget instance, value being  passed and and array modifiers
+      el.focus()
+    },//a function directive behaves as the created hook
+    beautify:{//an option based directive accepts LifeCycleHooks methods e.g. created, mounted, unMounted, 
+    
+      created(el, value, modifiers){
+        el.style.background='#0a3039'
+      },
+      mounted(el, value, modifiers){
+        
+      },
+      preCreate(nodeObjectValue, value, modifiers){
+        //Reaceives thw nodeObjectValue as passed to the defineVNodeElement module
+      }
+    }
+  },
+  template:`
+  <input placeholder='Write your content' $$autoFocus >
+  `
+}
+```
+Custom widget can also be used the same way as built in directives.  Beware of pixel builtin directives name while registering your custom in order not to conflict
+
+Read the directives API Docs for more Details on using directives.
 
 ### **Display rendering**
 
-PixelJs offers flexibility in rendering your UI widgets.
+pixel offers flexibility in rendering your UI widgets.
 
-You have two options for rendering your UI widgets: using template strings or the `H` Hyperscript function.
+You have two options for rendering your UI widgets: using template strings or the `el` Hyperscript function.
 
 Choose the rendering option that best suits your coding style and project requirements.
 
 #### **Native html templating system**
 
-Define your UI structure directly using template strings. Widgets has to be Registered through the `widgets` option for accessibility:
+Define your UI structure directly using template strings. Widgets has to be Registered through the `widgets` option for accessibility:  
+Consider it as a way pixel enables you create your own tag elements .
 
 ```javascript
 let app= {
@@ -890,51 +996,55 @@ let app= {
 
 #### **The Hyperscript Function: programmatic templating approach**
 
-The `H` function is a hyperscript function for creating virtual DOM nodes, offering a programmatic approach to widget definition:
+The `el` function is a hyperscript function for creating virtual DOM nodes, offering a programmatic approach to widget definition:
 
 Choose the rendering option that best suits your coding style and project requirements.
 
-It takes the element name or a widget instance as the first argument, followed by attributes and children. Children can be plain texts, or other H objects, 
+It takes the element name or a widget instance as the first argument, followed by attributes and children. Children can be plain texts, or other el objects, 
 
-The `H` function can only be used or returned with a render function from the build function
+The `el` function can only be used or returned with a render function from the build function
 
-Here is an example using the H module
+Here is an example using the el module
 ``` javascript
 let app={
   build(){
-    return ()=>H('p', { class:'name '}, /*more children like texts or more H objects */   H('input'))
+    return ()=>el('p', { class:'name '}, /*more children like texts or more el objects */   el('input'))
   }
 }
 ```
-H macro can accept as many child `H` instances as possible.
+el macro can accept as many child `el` instances as possible.
 
 ```javascript
 let app={
   // ...
   build() {
-    return ()=>H('div', [
-      H('p','Header'),
-      H('input', { type: 'text' }),
+    return ()=>el('div', [
+      el('p','Header'),
+      el('input', { type: 'text' }),
     ]);
   },
 };
 ```
 For multiple root Nodes, you can wrap them in square bracket
-`return ()=>[H('p', 'Header'), H('input')]`
+`return ()=>[el('p', 'Header'), el('input')]`
 
-the first argument is required and  must be a string value of an valid html/svg tag name, an unresolved NodeMake instance or an instance of a widget, other two arguments  can be dynamicaly passed as children `H` nodes or attributes. 
+the first argument is required and  must be a string value of a valid html/svg/resolved Custom NodeMake tag name, an unresolved NodeMake instance or an instance of a widget, other two arguments  can be dynamicaly passed as children `el` nodes or attributes. 
 
-Accepts only three arguments, whereas 2nd and 3rd arguments can be passed dynamicaly,  if there are no need for any, it absence does not matter as there is no contextual defined position for any of the both, unlike other frameworks where you have to pass a positional arguments or null.
+The el function accepts only three arguments, whereas 2nd and 3rd arguments can be passed dynamicaly,  if there are no need for any, it absence does not matter as there is no contextual defined position for any of the both, unlike other frameworks where you have to pass a positional arguments or null  to the hyperscript function.
 
 ```javascript
 import MyWidget from 'widgets/pages.js'
 let app= {
   
   build() {
-    return ()=>H('div',
-      H('p', 'Header'),
-      H('input', { type: 'text' }),
-      H(MyWidget)
+    return ()=>el('div',
+      [
+        el('h1', 'Header'),
+        el('input', { type: 'text' }),
+        el(MyWidget),
+        el('p',['A child text node',el('br')],{ class:'m-5 text-primary'}),
+        el('NodeMakeElement')
+      ]
     );
   },
 };
@@ -949,9 +1059,9 @@ In addition to the basics, Pixel offers some advanced features that can enhance 
 ### **Params**
 You can pass Parameters  to your widgets to make them more dynamic and reusable. 
 
-Params is a consistent way of passing state based datas from the parent down to the child widget
+Params is a consistent way of passing model based datas from the parent down to the child widget
 
-Define the params option in the widget's options object and access them in the template using $params.
+Define the params option in the widget's options object and access them in the template as `$params.xxx`.
 
 validation can be a type function, or an object consisting of type , default, or required, and a validator method which returns a conditional boolean value
 
@@ -988,7 +1098,7 @@ Remember when passing an in template expressions, like objects/array/function or
 
 In cases where some kind of complex expression might be involved, its recommended to define the data in the model data method, then reference it from the template.
 
-Params will be exposed to the template instance as `$params` within the child widget
+Params will be exposed to the template instance as `$params.xxx` within the child widget
 
 Validations will raise a Pixel Error or warn , if failed or when a validator function returns false.
 
@@ -1041,7 +1151,7 @@ Can be used same way as other normal dataType.
 ### ***Custom Nodes: Element free Styling***
 
 Pixel allows you to create custom elements by using the NodeMake module. You can register your custom elements by calling node.resolve(). This is useful when you want to encapsulate complex functionality into reusable components.
-for a custom element, use the Pixel.NodeMake macro, then pass in the name '<required>', props, templates '<required>', style and plugins  as an object options.
+for a custom element, use the `NodeMake` macro, then pass in the name '<required>', props, templates '<required>', style and plugins  as an object options.
 
 here is a minimal example on creating a pixel custom element
 ```javascript
@@ -1054,9 +1164,9 @@ To register the custome node  if you are using the string template, ` node.resol
 
 It will be available to use in your widget Template, globally, does not require registration.
 
-If you tend to use it through the render Function, `H` macro, it must be availble , or imported into the namespace and passed as the first argument.
+If you tend to use it through the render Function, `el` macro, it's resolve instance tag name can be used as `el`'s first Parameter , or import an unresolved instance into the namespace and passed as the first argument.
 
-NodeMake also accepts the custom elements LifeCycleHooks
+NodeMake also accepts all the native custom elements LifeCycleHooks
 e.g.
 
 ***`onConnected, onDisconnected, onAdopted and onAttrsChanged`***
@@ -1067,7 +1177,7 @@ NodeMake props same as a widget params, with validations and inheritance for non
 
 Slots provide a way to pass content to your child widget, from the parent widget. 
 
-You can define slots  your widget's template using the <slot> tag. The passed content will be used to replace the slot element.
+You can define slots on  your widget's template using the <slot> tag. The passed content will be used to replace the slot element.
 
 Slot tags with no name attribute, will specifically be rendered as a default slot, you can as well, specifically set a default slot by setting the name attribute to default.
 ```html
@@ -1075,6 +1185,7 @@ Slot tags with no name attribute, will specifically be rendered as a default slo
         <h1>My widget heading</h1>
         <slot/>
       </div>
+      <slot name=default />
     `
 ```
 Slot tags can also be named or dynamically named using binding to model data properties.
@@ -1084,33 +1195,38 @@ e.g
 <slot *name='dataProp'/><!-- dynamic slot naming -->
 ```
 
-To parse slots contents for slots elements, Pixel provides you with the `px:slot` directive on elements/widgets.
+To parse slots contents for slots elements, Pixel provides you with the `$$slot` directive on elements/widgets.
 e.g
 ```html
         <Widget>
-            <template px:slot='header'>
+            <template $$slot='header'>
                 <!--Slot contents goes here -->
             </template>
             <input>
         </Widget>
   
 ```
-Any element/widget can be passed as a slot content by specifying the slot to which it belongs to through the `px:slot` directive.
+Any element/widget can be passed as a slot content by specifying the slot to which it belongs to through the `$$slot` directive.
+Slot elements can be passed default contents by providing inner cointent to it.  When no slot is specified for it, the default slot will be rendered.
+```html
+<slot name=header > <h2>A default slot content</h2></slot>
+```
 
 #### **Pixel slots passing caveat**
 
 Slots works same as in other frameworks that uses the slot system, with slight differences in pixel.   
 If a child widget has only a single root element, Pixel will try to parse all default slots to its innerHtml if, there is no default slot provided, and it has no innerHtml content.
 
-To disable this action, you can set the `inheritSlots` settings to false in your buildConfig settings option.
+To disable this action, you can set the `inheritSlots` settings to false in your buildConfig settings option  as it defaults to true.
 
 All widget instances of the parent, are available, within the child widget scope, but not the other way round.  
 but if need be to access a child widget's data within the scope it's defined in the parent, pixel provides you with the `fallThrogh` setting option in the child widget's buildConfig.
 
-access to state instances are to be exposed directly, the `this` keyword would not be available in the scope,and so,  should be passed as a string format  e.g
+An Onject of string values bound to the  model public instance.  
+Access to model instances are to be exposed directly, the `this` keyword would not be available in the scope,and so,  should be passed as a string format  e.g
 
 ```javascript
-export default{
+let app={
   buildConfig:{
     fallThrogh:{
       count:'count.$data',//direct access to widget instance datas like in the string interpolation system
@@ -1121,37 +1237,38 @@ export default{
 }
 
 ```
-This will be exposed withing the scope of the child widget tag as `$fall[xxx]` or `this.$fall[xxx]` if using the hyperscript function. e.g
+Only strings values that can be resolved to a valid child widfet public instance path are allowed.  You can perfom computation within the strings as its passed as an  expression, or call a handler withing tge strings  texts.  
+This will be exposed to the scope of the child widget tag as `$fall[xxx]` or `this.$fall[xxx]` if using the hyperscript function. e.g
 ```html
     <Widget>
       <!-- fallThrogh attributes of this child widget will only be available within this scope of Widget instance as $fall-->
-        <h1>{{ $fall.name }}</h1>
+        <h1>{{ $fall.<xxx> }}</h1>
     </Widget>
 ```
 
-Elements with no specified slot, will be rendered into the default slot, if any default slot element is provided.
+Elements with no specified slot, will be rendered into the default slot, if any default slot element is provided or the  child element  has a  single root element with no innerHtml contents or childNodes.
 
-Slot contents are merged , and replaces  the matching slot element within the child element.
+Slot contents are merged , and replaces  the matching slot element within the child widget template.
 
 ### **The `Build` function**
 
 The build function is the widget major building compilation engine.
 The build function has access to some useful widget options data as parameters, through two arguments, `[params, context]` provided.
 
-The params parameter is a reference to `this.$params` datas object while the context is aswell an object, with access to, styles, events, slots and attrs.
+The params parameter is a reference to `this.$params` datas object while the context is aswell an object, with access to, styles, events, slots ,attrs and  $hydrated context  .
 
 This is useful when utilizing the hyperscript pattern.
 Here is an example
 ```javascript
-export default{
+let app={
     build(params, context){
         return //...
     }
 }
 ```
-This are also available within the this keyword put peovided here for simplicity.
+This properties can be accessed from the use of the `this` keyword but are provided here for simplicity.
 
-The can be accessed with the ***$*** character appended to the `styles, events, slots and attrs` data instances. 
+They can be accessed by Appending  the ***$*** character to the `styles, events, slots and attrs` data instances. 
 for example...
 ```javascript
 const { log } = Pixel
@@ -1165,11 +1282,11 @@ let app={
 ```
 ### **Widget type system**
 
-Pixel also accepts a function and class as a widgets, but with slight edge  cases.
+Pixel also accepts the use of functions and class objects as valid widgets, but with slight edge  case.
 
 Function widget works as the scope of the build function, with no data state of it's own.
-The `Pixel.Template` macro  is provided to help the functional widget  access  the pixel rich templating syntax.
-Here is a simple pixel functional widget
+The `Template` macro  is provided to help the functional widget  access  the pixel rich templating syntax.
+Here is a simple pixel functional widget using the Template component system.
 ```javascript
 const { Template }=Pixel
 function FW(){
@@ -1186,7 +1303,7 @@ Class widgets are perfect and statefull widget encapsulation, in short, it was u
 
 Pixel does not utilize the constructor function, like React  did, instead, pixel takes its defined method options as pixel options.
 
-A pixel class widget must extend the base `Pixel.Widget` class. 
+A pixel class widget must extend the base `Widget` class. 
 e.g.
 ```javascript
 const { Widget }= Pixel
@@ -1207,57 +1324,54 @@ class myCW extends Widget{
 
 Pixel recommends the use of object widget for declarative syntax
 
-
-
 #### **LifeCycleHooks**
 
-  Pixel provides you with some usefull callback functions that run at some specific stage of the life of a widget.
+Pixel provides you with some usefull callback functions that run at some specific stage of the life of a widget.
     
-##### beforeBuild: 
-Called Synchronously except in the case of an asynchronous widget, before the widget instances are instanciated
+##### preBuild: 
+Called Synchronously except in the case of an asynchronous widget, before the widget instances are instanciated or any build process  is even started.
     
-##### onBuilt:
+##### postBuild:
 Called Synchronously except in the case of an asynchronous widget, after all widget instances are instanciated and after running the build function and creating all widget instances.
     
-##### beforeMount:
+##### preMount:
 <Promise Based> Called Asynchronously before inserting the widget UI into the dom.
     
 ##### onMounted:
 <Promise Based> Called Asynchronously after inserting the widget UI build into the dom.
     
-##### beforeUpdate: 
+##### preUpdate: 
 <Promise Based> Called  Asynchronously before starting an update on any change on a statefull datas.
     
 ##### onUpdated:
 <Promise Based> Called Asynchronously after updating the dom of changes the reactive datas.
     
-##### beforeDestroy: 
+##### preDestroy: 
 <Promise Based> Called Asynchronously before destroying the widget instances and unmounting from the dom.
     
 ##### onDestroyed: 
 <Promise based> Called Asynchronously after destroying all widget instances and unmounted from the dom
     
     
-LifeCycleHooks has there `this` keyword bound to the widget state instances with the Exception of the `beforeBuild` hook.  
+LifeCycleHooks has there `this` keyword bound to the widget model instances with the Exception of the `preBuild` hook.  
 Contact the LifeCycleHooks API for more detailed information.
     
 ### **Dynamic Widget**
-    Widgets can be dynamicaly rendered, expecially, when resorting to in dom templates, 
+Widgets can be dynamicaly rendered, expecially, when resorting to in dom templates, this can be achieved using the px-build built in widget.
     
-    this can be achieved using the px-build buit in widget.
+It accepts one required property, **self** which can be any registered widget instance or a valid  html/svg tag name.
     
-    it accepts one required property, **self** which can registered any registered widget instance.
-    
-    attributes or params for the widget pased to self, can be passed alongside the self params. children are passed as children to px-build
+Attributes or params for the widget pased to self, can be passed alongside the self params with `self` as first params.  
+Children are passed as children to px-build
     
 ### **Data Observation**
-  To perfom a data Observation within the widget instance datas, the 'observers' option can be used.
+To perfom a data Observation within the widget instance datas, the 'observers' option can be used.
   
-  Within the observe object option, pixel acceptd only  object, with names that references the widget defined model instances datas
+Within the observe object option, pixel accepts only  object, with names that references the widget defined model instances datas
   
-  Does not  accept the use of nested property accessor as metthod neme e.g
+Does not  accept the use of nested property accessor as metthod name e.g
   
-  ```javascript
+```javascript
   let app={
     observer:{
       '$data.value':()=>{
@@ -1265,14 +1379,14 @@ Contact the LifeCycleHooks API for more detailed information.
       }
     }
   }
-  ```
-  Pixel will raise an observer error on access to a nexted property while naming an `observes` property.
+```
+Pixel will raise an observer error on access to a nexted property while naming an `observes` property.
   
-  To set up an observer method for the property of ***$data.value*** inasmuch as the target  data is a primitive data, or would not require nexted property accessing.
+To set up an observer method for the property of `$data.value` inasmuch as the target  data is a primitive data, or would not require nexted property accessing.
   
-  You can specifically set the method name to 'value'.
+You can specifically set the method name to 'value'.
   here is an example.
-  ```javascript
+```javascript
   let app={
     model(){
       return {
@@ -1286,18 +1400,18 @@ Contact the LifeCycleHooks API for more detailed information.
         //with parameter values of the new assigned value and it's former value
       },
       value(){
-        //here is an observer method for the 'value.$data' state instance
+        //here is an observer method for the 'value.$data' model instance
       }
     }
   }
-  ```
+```
 Observer methods gets triggered each time the select prop calls its setter function.
 
-For Observation of nexted object props, you can acomplish such tax within the onMounted LifeCycleHooks by using the `this.observer` macro.
+For Observation of nexted object props, you can acomplish such tax within the onMounted LifeCycleHooks by using the `observer` macro.
 
 ```javascript
 
-const { Template, data, observe } = Pixel
+const { data, observe } = Pixel
 
 let app= {
   model(){
@@ -1312,7 +1426,7 @@ let app= {
     observe('obj.$data.info.age' , ()=>{
      // a callback function
     })
-    //this.observe accepts two arguments, the path to the reactiveo object to watch, and a callback function,
+    //observe accepts two arguments, the path to the reactive object to watch, and a callback function,
     //Recommended to be an arrow function, so to be able to access the onMounted scope this keyword.
     
   }
@@ -1320,10 +1434,10 @@ let app= {
 
 ```
 
-Precisely, you can watch more than one property using the `Pixel.observe` component , by passing an arrow function that returns the value of the live properties you wish to observe.
+Precisely, you can watch more than one property using the `observe` component , by passing an arrow function that returns the value of the live properties you wish to observe.
 
 ```javascript
-const { Template, data , observe} = Pixel
+const { data , observe} = Pixel
 
 let app= {
   model(){
@@ -1336,10 +1450,14 @@ let app= {
   onMounted(){
     
     //We are targeting to watch the age property of obj.$data.info
-    observe( (oldV, newV)=> this.obj.$data.info.age + this.count, ()=>{
+    observe( ()=> this.obj.$data.info.age + this.count, (newV, oldV)=>{
      // a callback function
     })
-    
+    //if both properties may not be concentenated, you may use an array  to  parse in the strings  of the props path
+    observe( ['obj.$data.info.age' ,'count'], (newV, oldV)=>{
+     // a callback function
+    })
+    //NOTE:this must be omitted, and you must nit return it  from a function.
   }
 }
 ```
@@ -1358,8 +1476,8 @@ Example usage
 const { initBuild }=Pixel
 let build=initBuild({
   //widget options
-  template:`<p>{{ $base.$data.text }}</p>`
-})
+  template:`<p>{{ $base.text }}</p>`
+}).property('text','Hello Pixel')
 //build.property('text','cursor-pointer');
 accepts two parameters, a property name and the property data ref.
 ```
@@ -1400,7 +1518,7 @@ let app={
 ```
 
 The styleSheet option is a complete css  Styling with scope functionality.
-If you wish to make a paticular style global, to go beyond the scope of the present widget, prepend the `@g` directive to an independent style sheet.
+If you wish to make a paticular style global, to go beyond the scope of the present widget, prepend the `@g` directive to an independent style sheet selector.
 for example...
 ```css
 @g .btn{
@@ -1416,7 +1534,7 @@ While the second sheet is scoped only to the widget template only.
 
 #### **Inline style binding**
 
-Pixel provides you with a helpful semantics that can help you pass styles within the template using the style attribute.
+Pixel provides you with a helpful semantics that can help you pass styles within the template using the style Inline attribute.
 
 A plain object can be psssed to the style attribute using the data binding syntax.
 
@@ -1424,7 +1542,8 @@ Here is a minimal example ...
 ```html
 <h1 *style="{ color:red , 'font-size':'18px', borderRadius:'10px'}" >My heading</h1>
 ```
-Notice how we single quoted the `font-size` propName for containing a special character,a hyphen(-) and the propValue `18px` for containing a mix of a number and an aphabet.
+Notice how we single quoted the `font-size` propName for containing a special character,a hyphen(-) and the propValue `18px` for containing a mix of a number and an aphabet.  
+The single quote was used since the outer value was quoted using the double quote. It may be preferable to define this data objects in the model and bind them from the style attribute
 
 MeanWhile, you can use the javascript provided css style property semantics, by Capitalizing a letter whenever there occured a hyphen replaced space like in the last property of the style attribute value in the previous example, the `borderRadius`.
 
@@ -1438,12 +1557,16 @@ let app={
   }
 }
 ```
-The styleClass option is passed an object, the object must receive property values of object type.
+The styleClass option is passed an object, the object must receive property values of an object type.
 This properties are exposed to the widget scope as `this.$styles.headStyle` or to the template as `$styles.headStyle`.
 You can simply define the style object using the `data` macro, and return it from the model method.
 Whatever way you choose , both the reactivity and responsiveness are maintained.
-
-Its also privided to the context variable of the  build function as `context.styles`.
+MeanWhile it's also provided to the context variable of the  build function as `context.styles`.  
+Also an array of style objects can be parsed to the style binding.
+```html
+<element *style="[styleObj,{ margin:'10px', background:'#0a3039' }, elementStyles ]" />
+```
+Pixel will iterate through the array values and parse the resulting objects as styles  
 
 #### **Class binding**
 
@@ -1463,16 +1586,91 @@ The above example will result in a button element as below.
 ```html
 <button class="largeBtn btn">Click me</button>
 ```
-Since the `bg-dark` property has a falsy value.
+Since the `bg-dark` property has a falsy value, it was omitted.
 
-### **Custom Directive**
+
 
 ### **Mustache Block Helpers***
 
-`{{ safe >> stringValues }}`
+Pixel provides in  mustache tags configuration setup  while compiling mustache tag expressions.  
+Below is a simple example of using the block helpers.
+`{{ @foo >> model_based_expressions }}`
+A template block helper is recognized by appending the `@` character before the block name and separating the block name from the actual expression using double greaterthan character `>>`  
+Block helpers can be aswell passed modifiers just  like passing modifiers to directives.  
+`{{ @safe|mod|once >> stringValues }}`. Modifiers are separated using pipe `|`  just  like it's directive counterpart and can be chained aswell.  
+Blocks helpers can however be chained, separating each block with the  dot `.` character.  
+`{{ @safe.@html|mod|once >> stringValues }}`
 
+#### Custom blocks
+
+Custom block helper can be generated  through a simple function which is to be registered on the blocks option before it can be used within the widget template.  
+Customization helps you integrate some useful and complex functionality that may not ve been provided by the default components and gives you the full power of javascript over you dynamicaly rendered contents
+See below
+```javascript
+export default{
+  model(){
+    return {
+      name:'pixel
+    }
+  }
+  blocks:{
+    capitalize(value, modifiers){
+      //receives the  resolved value and an  array of modifiers as Parameters
+      return value.charAt(0).toUpperCase();//the returned value will be used during rendering
+    }
+  },//Usage in template
+  template:`<h1>Hello {{ @capitalize >> name  }}</h1>`
+}
+```
+While building custom blocks, note it must return the actuall modified value  you want rendered.    
+
+While chaining blocks,mind how it's ordered,  since it matters.   
+For example `{{ @safe.@html|mod >> stringValues }}` results to a block,  consisting of an `html` block helper chained to a `safe` block.  
+In this case, since the `safe` block comes before the `html`  block, the later will be passed the return value of the former and used as it's value.  
+All modifiers provided are passed to each chained block.
+
+You can also typecheck the values been expected  by using conditional statements on the resolved value.  
+Reference the Pixel blocks helpers API for more information.
 
 ###  **Pixel Plugin  mechanism**
+
+Plugin is an interface  that reduces repeating of some global implemention on a build and helps create codes that improves reusability.  
+There  are some use cases of plugins which we will explore in this document.   
+Like you have some utility handlers, widgets,blocks,directives and also other plugins aswell that you are porting over to other developers. It's gonna be stressful to go over this modules and maybe register them globally/locally one after the other.  
+Using the plugin system , you can make the registrations yourself and just port a simple object/function and it's dependencies to other developers.
+
+A plugin can be defined using an object with just a plugin method or a function which acts as the plugin method itself.
+A plugin is installed calling the install method on the `initBuild` instance.  
+`initBuild(app).install(plungin)` method and can be chained.
+Watch the  example code below
+```javascript
+import  { initBuild } from 'pixel'
+import buttonCounter from './widgets/buttonCounter.js
+const my_plugin={
+  plugin(build, options){
+    build.widget('buttonCounter',buttonCounter)
+    //a plugin can also contain other complex computations on the widget instance
+  }
+}
+function FuncPlugin(build, options){
+  //plugin scope
+}
+
+let app={
+  
+}
+initBuild(app).install(my_plugin,{/*config options*/})//plugin installation  can be chained to alongside other global methods  since they still  returns an instance of PIXEL_BUILD  with the exception of the  mount method which must be called last.
+        .install(FuncPlugin)
+```
+
+### **Widget custom event listening**
+
+
+
+### ***Pixel Agents***
+
+
+
 
 ### **API documentation**
 
@@ -1480,70 +1678,146 @@ Since the `bg-dark` property has a falsy value.
 
 1. ***`<px-build />`:***
 
-Global NameSpace: `Pixel.Build`
+Global NameSpace: `Build`
 
+params:
+  self:<required>
+**Description:** A built in widget useful for rendering widgets dynamicaly.
+Accepts one required params ,  The `self` params, which describes a native/resolved custom element tag name or an internally registered widget name.
+If binded to a model property from the template or accessed using tge hyperscript `this`, will raise a pixel warn since the pixel model instances are proxied objects/data. Except the data was to be parsed using the `rawData` function. 
+Watch the example below
+```javascript
+import { rawData } from 'pixel'
+export default{
+  model(){
+    return {
+      inModelWidget:rawData({
+        template:`<h1>Hello Pixel!</h1>`
+      })
+    }
+  },
+  template:`
+    <px-build *self=inModelWidget />
+  `
+}
+```
+> **Note**: Does not require binding if the name be  passed is not an in model instance property.
+
+The widget can be accessed from the template as `px-build` but can be imported from pixel itself as `Build` while using the hyperscript building system.  
+Other properties/attributes passed to the `px-build`  widget ,except the self params, will be resolved as attributes/properties of the returned elememt .  
+Children passed to `px-build` will be passed to the resolved elememt/widget, including the defined slots within the defined widget template.
 
 2. ***`<px-fragment />`:***
 
-Global NameSpace: `Pixel.Fragment`
+Global NameSpace: `Fragment`
+
+**Description:** `px-fragment` is a built in widget that is used to  render a set of elements without having to wrap them within an enclasing tag.  
+This is technically useful, expecially when rendering a slot content and don't want to get them wrapped within an enclosing wrapper element.
+```html
+<ButtonCounter >
+  <px-fragment $$slot='content'>
+    <h1>This is a counter button</h1>
+    <p>Click on me</p>
+    Thanks
+  </px-fragment>
+</ButtonCounter>
+```
+The `px-fragment` expects/requires no params .  
+Available from the global pixel as `Build` if need be of compiling it using the `el` render and hyperscript functions
 
 3. ***`<px-for />`:***
 
-Global NameSpace: `Pixel.For`
+Global NameSpace: `For`
 
+params:
+  - iterable:<required> An iterable data type like `Object,Array,Set,Map` or optionally a number value 
+  - context:<optional> An optional params that is passed a set of context variables.
+
+Description: This is built on top the `for` directive and simplifies the use of the `for` loop rendering.
+For example  
+```javascript
+import { data  }  from 'pixel
+export default{
+  model(){
+    return {
+      fruits:data({
+        orange:{id:223, color:'yellow',shape:'circle',count:56},
+        mango: {id:3570,color:'green',shape:'rect',count:911},
+        pearl:{id:67,color:'navy-blue',shape:'rectangle',count:2},
+      })
+    }
+  },
+  template:`
+  <px-for *iterable=fruits.$data context=[ name, value ]>
+    <h1 >{{name}} </h1>
+    <h3 >COLOR: {{value.color}}</h3>
+    <h3 >SHAPE: {{value.shape}}</h3>
+    <p>it's over {{ value.count }} pieces</p>
+  </px-for>
+`
+}
+```
+Passed all children of the `px-for` widget and ports it to a default slot which works with the `$$for` as a fundamental building block.
+The iterable is required an must  be parsed an iterable or Object data type.  
+Context expects an array of names to ve passed as context variables within the loop body.  
+
+Pixel namespaces harbours the `px-for` widget as `For`.
+  
 4. ***`<px-if />`:***
 
-Global NameSpace: `Pixel.If`
+Global NameSpace: `If`
+
+
 
 5. ***`<px-else-if />`:***
 
-Global NameSpace: `Pixel.ElseIf`
+Global NameSpace: `ElseIf`
 
 6. ***`<px-else />`:***
 
-Global NameSpace: `Pixel.Else`
+Global NameSpace: `Else`
 
 7. ***`<px-animation />`:***
 
-Global NameSpace: `Pixel.Animation`
+Global NameSpace: `Animation`
 
 8. ***`<px-transition />`:***
 
-Global NameSpace: `Pixel.Transition`
+Global NameSpace: `Transition`
 
-9. ***`<px-live-widget />`:***
+9. ***`<px-stay-awake />`:***
 
-Global NameSpace: `Pixel.LiveWidget`
+Global NameSpace: `LiveWidget`
 
 10. ***`<px-markup />`:***
 
-Global NameSpace: `Pixel.Markup`
+Global NameSpace: `Markup`
 
 11. ***`<px-await />`:***
 
-Global NameSpace: `Pixel.Await`
+Global NameSpace: `Await`
 
 12. ***`<px-send-frame />`:***
 
-Global NameSpace: `Pixel.SendFrame`
+Global NameSpace: `SendFrame`
 
-13. ***`<px-markup />`:***
+13. ***`<px-extend />`:***
 
-Global NameSpace: `Pixel.Markup`
+Global NameSpace: `Extend`
 
 `#### **Utility functions API**
 
-* `Pixel.withDirectives()`:
+* `withDirectives()`:
 
 Arguments: 
-  -  `<Object>` Element's original attributes.
-  -  `<Array` An array value containing of objects with Directives properties.
+  - Attributes: `<Object>` Element's original attributes.
+  - Directives: `<Array` An array value containing of objects with Directives properties.
       1. `name:<String>` Directive name.
       2. `modifiers:<Array>` Modifiers to be passed to the directive if any.
       3. `value:<Any>` Directive value   
 Interface:
 ```javascript
-function withDirectives( Attributes:<Object> , Directives: <Array> ) <Object>
+function withDirectives( Attributes:<Object> , Directives: <Array> ) : <Object>
 
 ```
 
@@ -1553,34 +1827,38 @@ Helpers function that provides the use of directives within the hyperscript Inte
 It accepts an array of directive objects.  
 Contact the hyperscript directives usage guide for more information.
 
-* `Pixel.withModifiers()`:
+* `withModifiers()`:
 
 Arguments:
-  - `<Function>` Handler function.
-  - `<Array>` An array of modifiers in string format.  
+  - Handler: `<Function>` Handler function.
+  - Modifiers: `<Array>` An array of modifiers in string format.  
   Interface:
 ```javascript
-  function withModifiers( handler: <Function> ,  Modifiers : <Array> ) <Function>
+  function withModifiers( Handler: <Function> ,  Modifiers : <Array> ) : <Function>
 ```
 Details:  
 Helpers function that provides the use of modifiers within the hyperscript Interface
 
-* `Pixel.data`:
+* `data()`:
 
 Arguments:
-  - `<Any>` Data values to be watched amd made reactive
+  - DataValue: `<Any>` Data values to be sibcribed to and to a reactive data ref.  
   
-* `Pixel.nextTick()`:
+  Interface:
+```javascript
+function data( DataValue:<Any> ) : <DataRefObject>
+```
+* `nextTick()`:
 
 Arguments:
-  - `<Function>` A callback function to be called after a dom update .
-  - `<TimeOut instance>` An optional timeout instance
+  - Callback: `<Function>` A callback function to be called after the next dom update circle is completed.
+  - TimeOut:`<TimeOutInstance>` An optional timeout instance
 Interface:
 ```javascript
-function nextTick( callback:<Function> )
+function nextTick( Callback:<Function> , TimeOut:<TimeOutInstance> ) : <void>
 ```
 Details:  
-nextTick waits for the dom to rerender after mutating a state property before being called.  
+nextTick waits for the dom to rerender after mutating a model property before being called.  
 For  example
 ```javascript
 let { nextTick }=Pixel
@@ -1596,46 +1874,46 @@ let app={
   }
 }
 ```
-* `Pixel.Template<BackTicks>`:
+* `Template<BackTicks>`:
 
 Arguments:
-  - `<String>` Backtick based arguments generator.
+  - Template: `<String>` Backtick based arguments generator.
   
 Interface:
 ```javascript
-function Template<String>
+function Template<String> : <PixelDomInstance>
 ```
-* `Pixel.AsyncWidget()`:
+* `AsyncWidget()`:
 
 Arguments:  
-  - `<Widget>` A widget to be rendered or turn asynchronous.  
+  - Widget: `<Widget>` A widget to be rendered or turn asynchronous.  
 This functionality can be achieved by setting the async setting to false in the `buildConfig` option.  
 Interface:  
 ```javascript
-function AsyncWidget( Widget:<Object>|<Class>|<Function> ) <AsynchronousWidgetInstance>
+function AsyncWidget( Widget:<Object>|<Class>|<Function> ) : <AsynchronousWidgetInstance>
 ```
 
-* `Pixel.defineWidget()`:
+* `defineWidget()`:
 
 Arguments:  
-  - `<Object>|<Class>|<Function>` A valid pixel widget instance  
+  - Widget: `<Object>|<Class>|<Function>` A valid pixel widget instance  
   
 Interface:
 ```javascript
-function defineWidget(Widget:<Object>|<Class>|<Function> ) <WidgetInstance>
+function defineWidget(Widget:<Object>|<Class>|<Function> ) : <WidgetInstance>
 ```
 
 Details:  
 Used in resolving and  officialy defining a wodget
 
-* `Pixel.NodeMake()`:
+* `NodeMake()`:
 
 Arguments:
-  - `<Object>`  
+  - Options: `<Object>` Valid widget options also used in building custom elements.
   
 Interface:
 ```javascript
-function NodeMake(Options:<Object>) <CustomElementInstance>
+function NodeMake(Options:<Object>) : <CustomElementInstance>
 ```
 
 Details:  
@@ -1644,60 +1922,80 @@ Accepts only an object parameter with options.
 
 Contact the custom element guide for deeper guide.
 
-* `Pixel.VNode()`:
+* `VNode()`:
 
-* `Pixel.mapFor()`:
+* `mapFor()`:
 
-* `Pixel.H()`:
+* `el()`:
 
-* `Pixel.initBuild()`:
+Arguments: 
+  1. `<String>|<PixelDomInstance>` >>required
+  2. `<Object>|<Array>`
+  3. `<Object>|<Array>`
+  
 
-* `Pixel.initSSRBuild()`:
 
-* `Pixel.ref()`:
+* `initBuild()`:
 
-* `Pixel.initAsyncBuild()`
+Arguments :
+  
 
-* `Pixel.defineVNode()`:
 
-* `Pixel.buffer()`
 
-* `Pixel.defineParams()`
 
-* `Pixel.resolve()`
 
-* `Pixel.createMarkup()`
+* `initSSRBuild()`:
 
-* `Pixel.createStyleSheet()`
+* `ref()`:
 
-* `Pixel.observe()`
+* `initAsyncBuild()`
 
-* `Pixel.defineStyleClass()`
+* `defineVNodeElement()`:
 
-* `Pixel.extend()`
+* `buffer()`
 
-* `Pixel.createDataModel()`
+* `defineParams()`
 
-* `Pixel.defineSlots()`
+* `resolve()`
 
-* `Pixel.expose()`
+* `createMarkup()`
 
-* `Pixel.defineHandlers()`
+* `createStyleSheet()`
+
+* `observe()`
+
+* `defineStyleClass()`
+
+* `extend()`
+
+* `injectDataModel()`
+
+* `defineSlots()`
+
+* `expose()`
+
+* `hang()`
+
+* `fork()`
+
+* `data()`
+
+* `defineHandlers()`
 
 Arguments:
   - `<Object>` An object definition of handlers as methods.  
   
 Interface:
 ```javascript
-function defineHandlers(Handlers:<Object>) <Null>
+function defineHandlers(Handlers:<Object>) : <void>
 ```
 Details:  
-Can only be used effectively within the build function and the beforeBuild LifeCycleHook.  
+Can only be used effectively within the build function and the preBuild LifeCycleHook.  
 This macro is usefull expecially when writing a Function widget.
 
 It prototypes widget Handlers by registering provided method options into the state handlers record.
 
-* `Pixel.registerWidgets()`
+* `registerWidgets()`
 
 Arguments:
   - `<Object>` An object definition of widgets options.    
@@ -1707,12 +2005,12 @@ function registerWidgets(Widget:<Object>) <Null>
 ```
 
 Details:  
-Can only be used effectively within the build function and the beforeBuild LifeCycleHook.  
+Can only be used effectively within the build function and the preBuild LifeCycleHook.  
 This macro is usefull expecially when writing a Function widget.
 
 It prototypes the widget registration process.
 
-* `Pixel.exposeDirectives()`
+* `exposeDirectives()`
 
 Arguments:
   - `<Object>` An object definition of valid custom Directives.  
@@ -1721,26 +2019,26 @@ Interface:
 function exposeDirectives(Directives:<Object>) <Null>
 ```
 Details:  
-Can only be used effectively within the build function and the beforeBuild LifeCycleHook.  
+Can only be used effectively within the build function and the preBuild LifeCycleHook.  
 This macro is usefull expecially when writing a Function widget.
 
 It prototypes widget custom directives by registering provided options into the state custom directives stack .
 
-* `Pixel.hydrate()`
+* `hydrate()`
 
-* `Pixel.onBuilt()`
+* `postBuild()`
 
 Arguments:
   - `<Function>` a callback function  
 Interface:  
 ```javascript
-  function onBuilt(Callback:<Function>) <Null>
+  function postBuild(Callback:<Function>) <Null>
 ```
 Details:   
-A macro used in entailing the onBuilt LifeCycleHooks within the build function or a function widget.  
-Accepts only a single parameter,a Callback method to be stalled as the onBuilt hook.
+A macro used in entailing the postBuild LifeCycleHooks within the build function or a function widget.  
+Accepts only a single parameter,a Callback method to be stalled as the postBuild hook.
 
-* `Pixel.onMounted()`
+* `onMounted()`
 
 Arguments:
   - `<Function>` a callback function  
@@ -1752,19 +2050,19 @@ Details:
 A macro used in entailing the onMounted LifeCycleHooks within the build function or a function widget.  
 Accepts only a single parameter,a Callback method to be stalled as the onMounted hook.
 
-* `Pixel.beforeMount()`
+* `preMount()`
 
 Arguments:
   - `<Function>` a callback function  
 Interface:  
 ```javascript
-  function beforeMount(Callback:<Function>) <Null>
+  function preMount(Callback:<Function>) <Null>
 ```
 Details:   
-A macro used in entailing the beforeMount LifeCycleHooks within the build function or a function widget.  
-Accepts only a single parameter,a Callback method to be stalled as the beforeMount hook.
+A macro used in entailing the preMount LifeCycleHooks within the build function or a function widget.  
+Accepts only a single parameter,a Callback method to be stalled as the preMount hook.
 
-* `Pixel.onDestroyed()`
+* `onDestroyed()`
 
 Arguments:
   - `<Function>` a callback function  
@@ -1776,31 +2074,31 @@ Details:
 A macro used in entailing the onDestroyed LifeCycleHooks within the build function or a function widget.  
 Accepts only a single parameter,a Callback method to be stalled as the onDestroyed hook.
 
-* `Pixel.beforeDestroy()`
+* `preDestroy()`
 
 Arguments:
   - `<Function>` a callback function  
 Interface:  
 ```javascript
-  function beforeDestroy(Callback:<Function>) <Null>
+  function preDestroy(Callback:<Function>) <Null>
 ```
 Details:   
-A macro used in entailing the beforeDestroy LifeCycleHooks within the build function or a function widget.  
-Accepts only a single parameter,a Callback method to be stalled as the beforeDestroy hook.
+A macro used in entailing the preDestroy LifeCycleHooks within the build function or a function widget.  
+Accepts only a single parameter,a Callback method to be stalled as the preDestroy hook.
 
-* `Pixel.beforeUpdate()`
+* `preUpdate()`
 
 Arguments:
   - `<Function>` a callback function  
 Interface:  
 ```javascript
-  function beforeUpdate(Callback:<Function>) <Null>
+  function preUpdate(Callback:<Function>) <Null>
 ```
 Details:   
-A macro used in entailing the beforeUpdate LifeCycleHooks within the build function or a function widget.  
-Accepts only a single parameter,a Callback method to be stalled as the beforeUpdate hook.
+A macro used in entailing the preUpdate LifeCycleHooks within the build function or a function widget.  
+Accepts only a single parameter,a Callback method to be stalled as the preUpdate hook.
 
-* `Pixel.onUpdated()`
+* `onUpdated()`
 
 Arguments:
   - `<Function>` a callback function  
@@ -1816,39 +2114,39 @@ Accepts only a single parameter,a Callback method to be stalled as the onUpdated
 
 #### **Directives API**
 
-1. `px:data`
+1. `$$data`
 
-Used to assign an dom element or a widget instance to a state property.
+Used to assign an in dom element or a widget instance to a model property.
 
-2. `px:for`
+2. `$$for`
 
 iterable rendering dirextive.
 
-3. `px:if`
+3. `$$if`
 
 
-4. `px:else-if`
+4. `$$else-if`
 
-5. `px:else`
+5. `$$else`
 
-6. `px:model`
+6. `$$model`
 
-7. `px:bind`
+7. `$$bind`
 
 8. `on:<eventName>`
 
-10. `px:text`
+10. `$$text`
 
-11. `px:slot`
+11. `$$slot`
 
-12. `px:skip`
+12. `$$raw`
 
-13. `px:html`
+13. `$$html`
 
-14. `px:<dataVariable>`
+14. `$$<dataVariable>`
 
 
-16. `px:scoped`
+16. `$$scoped`
 
 
 #### **Widget options API**
@@ -1877,7 +2175,7 @@ Type : `Function` | `<Object>`
 
 Details:
 
-A method used in instanciating widget state datas. Must return an object of properties that are to be exposed to the widget and template scope as the Widget's state datas.
+A method used in instanciating widget model datas. Must return an object of properties that are to be exposed to the widget and template scope as the Widget's model datas.
 
 e.g.
 ```javascript
@@ -1962,7 +2260,7 @@ Details:
 
 A naming option used to define a name for the widget, to be used  for  the widget when  no optional naming argument  is provided.
 
-Useful expecially, during the resolving process of the widget.
+Useful expecially, during the resolving process of the widget and helps Pixel in being more specific during debuging and error handlin.
 
 6. ##### `styleClass`
 
@@ -2103,7 +2401,7 @@ let app={
 ```
 Do not use an arrow function for this option.
 
-12. ##### `beforeBuild`
+12. ##### `preBuild`
 
 Type: `Function`
 
@@ -2114,30 +2412,30 @@ An function/method, that is to be called synchronously, before a widget  buildin
 Only the `$attrs` and `$slots`  are exposed to the methos scope.
 ```javascript
 let app={
-  beforeBuild(){
+  preBuild(){
     //only the 'thia.$attrs' and 'this.$slors' are exposed from within the this  keyword.
   }
 }
 ```
 Do not use an arrow function for this option.
 
-13. ##### `onBuilt`
+13. ##### `postBuild`
 
 Type: `Function`
 
 Details:
 
-An function/method, that is to be called synchronously after building the widget and initializing state properties and before the widget mounting process is started.
+An function/method, that is to be called synchronously after building the widget and initializing model properties and before the widget mounting process is started.
 ```javascript
 let app={
-  onBuilt(){
+  postBuild(){
     //The this scope exposed here
   }
 }
 ```
 Do not use an arrow function for this option.
 
-14. ##### `beforeUpdate`
+14. ##### `preUpdate`
 
 Type: `Function`
 
@@ -2146,14 +2444,14 @@ Details:
 An function/method, that is to be called asynchronously, before a  reactive  Dom update is  triggered.
 ```javascript
 let app={
-  beforeUpdate(){
+  preUpdate(){
     //The this scope exposed here
   }
 }
 ```
 Do not use an arrow function for this option.
 
-15. ##### `beforeDestroy`
+15. ##### `preDestroy`
 
 Type: `Function`
 
@@ -2162,7 +2460,7 @@ Details:
 An function/method, that is to be called asynchronously, before a widget  instance is destroyed, and removed from the Dom.
 ```javascript
 let app={
-  beforeDestroy(){
+  preDestroy(){
     //The this scope exposed here
   }
 }
@@ -2201,7 +2499,7 @@ e.g
 let app={
   build(params, { slots, events, attrs, styles }){
     //The this scope exposed here
-    return H('h1', "Pixel Explorer")
+    return el('h1', "Pixel Explorer")
   }
 }
 ```
@@ -2222,12 +2520,12 @@ let app={
   directives:{
     MyDir:{
       created(element, value, modifiers){
-        //Directive code
+        //Directive created hook statement
       }
     }
   }, //Usage  of custom directives in templates
   template:`
-  <p  :MyDir='true' > Pixel Explorer</p>
+  <p  px-MyDir='true' > Pixel Explorer</p>
   `
 }
 ```
@@ -2250,7 +2548,7 @@ let app={
   }
 }
 ```
-Contact the `Pixel.Config` API documentation for more information on `buildConfig` options use cases.
+Contact the `Config` API documentation for more information on `buildConfig` options use cases.
 
 #### **`build.config`  settings API**
 
@@ -2281,14 +2579,14 @@ When a widget has a single root element with no `innerHtml` content, pixel will 
 
 This behavior can be stoped by setting the `inheritSlots` option to `false`.
 
-- `fallThrogh` `<Depreciated>`
+- `fallThrogh` `<Deprecated>`
 
-> `This functionality is Depreciated and may be removed in future updates`
+> `This functionality is Deprecated and may be removed in future updates`
 
 Type: `Object` | `<String>`
 
 Details:  
-Pixel allows passing of state data props in a reversed manner , from a child widget to it's scope within the consumer parent's widget using the `fallThrogh` option.  
+Pixel allows passing of model data props in a reversed manner , from a child widget to it's scope within the consumer parent's widget using the `fallThrogh` option.  
 
 Contact the slot guide for more Details.
 
@@ -2318,7 +2616,7 @@ let app={
   buildConfig:{
     delimiters:['[[', ']]'],//Usage
   },
-  tempalate:`<h2> This is the [[ text ]]</h2>`
+  tempalate:`<h2> This is [[ @safe>>text ]]</h2>`
 }
 ```
 
@@ -2330,21 +2628,21 @@ default: `false`
 
 Details:  
 To build a widget asynchronously, this option  can be turn true.  
-This functionality can be achieved by utilizing the `Pixel.AsyncWidget` macro.
+This functionality can be achieved by utilizing the `AsyncWidget` macro.
 
 ### **Best Practices**
 
-As you dive deeper into PixelJs, consider adopting best practices to ensure clean and maintainable code. Here are some recommendations:
+As you dive deeper into pixel, consider adopting best practices to ensure clean and maintainable code. Here are some recommendations:
 
 - **Modular Components:** Break down your UI into small, reusable components.
-- **Effective Naming:** Use clear and meaningful names for variables, widgets, and handlers.
+- **Effective Naming:** Use clear and meaningful names for model properties, widgets, block helpers, directives, plugins, agents, and handlers.
 - **Reactive Data Usage:** Leverage reactive data for efficient UI updates.
-- **Observer Methods:** Use observer methods for data changes that require specific reactions.
+- **Observer Methods:** Use observer methods for data changes that require specific customized reactions.
 
 ### **Conclusion**
 Congratulations! You've learned the basics of using Pixel to empower your creativity and build of web apps with speed. You now know how to define widgets, use template strings, handle methods and reactive data, bind attributes, apply directives, and render your UI widgets.
 
-Additionally, you've explored advanced features like params, custom elements, observers, plugins and slots.
+Additionally, you've explored advanced features like params, custom elements, observers, template blocks helpers, plugins, slots, agents and some useful configuration options.
 
 Pixel offers a powerful and flexible framework for developing dynamic and interactive web applications. Remember to consult the official Pixel documentation and explore the additional resources for more in-depth information and examples.
 
