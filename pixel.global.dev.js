@@ -84,6 +84,7 @@ const Pixel=(function(global){
   const hasDir_bind=key=>/^dir\-\-[a-zA-Z0-9\-_|[\]]+/.test(key)
   const hasSpread_bind=key=>/^\.\.\.[^.?]+/.test(key);
   const hasAsterisks_bind=key=>/^\*[a-zA-Z0-9\-_|[\]]+/.test(key)
+  const hasProp=(obj, prop)=>new Set(Object.keys(obj)).has(prop);
   const validWidgetOptions="build,model,widgets,preBuild,postBuild,preMount,onMounted,preUpdate,onUpdated,onDestroyed,preDestroy,handlers,params,buildConfig,styleSheet,directives,template,name,observers,templateSrc,styleSheetSrc,blocks,signals,hang,fork,slots,markdown,markdownSrc,slots";//valid widget options---
   const stringBasedOptions="name,template,styleSheet,templateSrc,styleSheetSrc,markdown,markdownSrc";
   const methodBasedOptions="build,model,preBuild,postBuild,preMount,onMounted,preUpdate,onUpdated,onDestroyed,preDestroy";
@@ -127,26 +128,34 @@ const Pixel=(function(global){
   const hasLowerCase=str=>str.match(/[a-z]/g);
   const hasDigit=dig=>dig.match(/[0-9]/g);
   const NodeTypeMap={ ELEMENT_NODE:1, ATTRIBUTE_NODE:2, TEXT_NODE:3, CDATA_SECTION_NODE:4, ENTITY_REFERENCE_NODE:5, ENTITY_NODE:6, PROCESSING_INSTRUCTION_NODE:7, COMMENT_NODE:8, DOCUMENT_NODE:9, DOCUMENT_TYPE_NODE:10, DOCUMENT_FRAGMENT_NODE:11, NOTATION_NODE:12 }
-  const IsValidElement=(vnode)=> vnode instanceof Element
+  const isNativeElement=(vnode)=> (vnode instanceof HTMLElement || vnode instanceof SVGElement);
   const IS_TEXT_NODE=node=>node && isEQ(node.nodeType, NodeTypeMap.TEXT_NODE);
   const IS_ATTRIBUTE_NODE=node=>node && isEQ(node.nodeType, NodeTypeMap.ATTRIBUTE_NODE);
-  const IS_ELEMENT_NODE=node=>node && IsValidElement(node) && isEQ(node.nodeType, NodeTypeMap.ELEMENT_NODE);
+  const IS_ELEMENT_NODE=node=>node && isNativeElement(node) && isEQ(node.nodeType, NodeTypeMap.ELEMENT_NODE);
   const IS_ENTITY_NODE=node=>node && isEQ(node.nodeType, NodeTypeMap.ENTITY_NODE);
   const IS_DOCUMENT_TYPE_NODE=node=>node && isEQ(node.nodeType, NodeTypeMap.DOCUMENT_TYPE_NODE);
   const IS_DOCUMENT_NODE=node=>node && isEQ(node.nodeType, NodeTypeMap.DOCUMENT_NODE);
   const IS_NOTATION_NODE=node=>node && isEQ(node.nodeType, NodeTypeMap.NOTATION_NODE);
   const IS_DOCUMENT_FRAGMENT_NODE=node=>node && isEQ(node.nodeType, NodeTypeMap.DOCUMENT_FRAGMENT_NODE);
-  const IS_CDATA_SECTION_NODE=node=>node && IsValidElement(node) && isEQ(node.nodeType, NodeTypeMap.CDATA_SECTION_NODE);
+  const IS_CDATA_SECTION_NODE=node=>node && isNativeElement(node) && isEQ(node.nodeType, NodeTypeMap.CDATA_SECTION_NODE);
   const IS_PROCESSING_INSTRUCTION_NODE=node=>node && isEQ(node.nodeType, NodeTypeMap.PROCESSING_INSTRUCTION_NODE);
   const IS_ENTITY_REFERENCE_NODE=node=>node && isEQ(node.nodeType, NodeTypeMap.ENTITY_REFERENCE_NODE);
   const IS_COMMENT_NODE=node=>node && isEQ(node.nodeType, NodeTypeMap.COMMENT_NODE);
   const TypeMethods={isString, isFunction, isPObject, isArray, isBoolean, isNumber, isDate, isSymbol, isSet, isMap}
-  const isCustomVNode=node=>node?.is_Custom_Node && _validateType(node, HTMLElement);
+  class pixelCustomNativeElement extends HTMLElement{
+    params=[]
+    constructor(){
+      super();
+    }
+    static ObservedAttributes=this.params
+  }
+  const isCustomElement=node=>  node instanceof  HTMLElement && !IS_VALID_TAGNAME(node.localName);
   const isChildrenNode=val=> {
-    let res = isPrimitive(val) || isArray(val) || isPixelVNode(val) || isPixelBuild(val) || isCustomVNode(val);
+    let res = isPrimitive(val) || isArray(val) || isPixelVNode(val) || isPixelBuild(val) || isCustomElement(val)  || isSlotInstance(val);
     if(!res && isFunction(val)) return isChildrenNode(val());
     return res;
   }
+  const isBaseWidget=widget=> widget instanceof Widget;
   const isProxy=value=>_validateType(value, Proxy);
   class Type{
     type=undefined
@@ -169,8 +178,10 @@ const Pixel=(function(global){
   const None=new NoneType();
   const isAnyType=data=>_validateType(data, AnyType);
   const isNoneType=data=>_validateType(data, NoneType);
-  const validPixelWidget=(w)=>(isPObject(w) || isFunction(w) || isClass(w)) && !isProxy(w);
-  function parseScript(script){return new Function(`"use strict"; return ${script}`)();}//helps compile string values to javascript statement
+  const validPixelWidget=(w)=>(isPObject(w) || isPFunction(w) || isClass(w)) && !isProxy(w);
+  function parseScript(script){
+    return new Function(`"use strict"; return ${script}`)();
+  }//helps compile string values to javascript statement
   const isInDom=element=> isEQ(element.getRootNode(),document);
   const GLOBAL_EVENTS="abort,animationcancel,animationend,animationiteration,animationstart,auxclick,blur,error,focus,canplay,canplaythrough,cancel,change,click,close,contextmenu,dblclick,drag,dragend,dragenter,dragleave,dragover,dragstart,drop,durationchange,emptied,ended,formdata,gotpointercapture,input,invalid,keydown,keypress,load,keyup,loadeddata,loadedmetadata,loadend,loadstart,lostpointercapture,mousedown,mouseenter,mouseleave,mousemove,mouseout,mouseover,mouseup,mousewheel,wheel,pause,play,playing,pointerdown,pointermove,pointerup,pointercancel,pointerover,pointerout,pointerleave,pointerenter,pointerlockchange,pointerlockerror,progress,ratechange,reset,resize,scroll,securitypolicyviolation,seeked,seeking,select,selectstart,selectionchange,slotchange,stalled,submit,suspend,timeupdate,touchcancel,touchend,touchstart,touchmove,transitioncancel,transitionrun,transitioned,transitionstart,waiting,volumechange,autocompleteerror,autocomplete";//Html event names managed by pixel on elements
   const IS_VALID_EVENT_HANDLER=eventName=>_mapValue(GLOBAL_EVENTS, eventName);
@@ -179,7 +190,9 @@ const Pixel=(function(global){
     if(isClass(construct)) return val instanceof construct;
     return false;
   }
-  const instance_Has_Widget=(self, name )=>_mapValue(BUILT_IN_WIDGETS, name) || _mapValue(self.register.widgets || {}, name ) ;
+  function instance_Has_Widget(self, name ){
+    return _mapValue(BUILT_IN_WIDGETS, name) || _mapValue(self.register.widgets || {}, name ) ;
+  }
   const normalize_Widget=(self, name)=>_mapValue(BUILT_IN_WIDGETS, name) ? BUILT_IN_WIDGETS[name] : _mapValue(self.register.widgets, name) ? self.register.widgets[name]: null;
   const isSlotInstance=val=> _validateType(val, slotInstanceMap);
   const requestMethods="POST,GET,PATCH,HEAD,DELETE,PUT,CONNECT,OPTIONS,TRACE";
@@ -187,6 +200,7 @@ const Pixel=(function(global){
   const isPixelVNode=vnode=>vnode instanceof PixelVNode;
   const isPixelBuild=widget=>widget instanceof _Pixel_Build;
   const isWidgetResolver=data=>_validateType(data, _WidgetResolver);
+  const isDirectiveResolver=data=>_validateType(data, _DirectiveResolver);
   function isReactiveValue(value){
     
   }
@@ -195,6 +209,11 @@ const Pixel=(function(global){
   }
   function isShallowReactiveValue(value){
     
+  }
+  
+  function _$compiler_engine_hydrator(){
+    class Pixel{}
+    global=new Pixel();
   }
   class PixelGlobalSettings{
     debug=true
@@ -206,7 +225,7 @@ const Pixel=(function(global){
     isAsync=false
   }
   const Global_Settings= new PixelGlobalSettings()
-  class pixelCompilerEngineSettings{
+  class pixelCompilerConfig{
     debug(debug){
       Global_Settings.debug=debug
     }
@@ -272,7 +291,6 @@ const Pixel=(function(global){
     }
     return false;
   }
-  class Pixel{}
   function Signal(name, callback, options){
     this.name=name;
     this.receiverRecord=new Set()
@@ -304,7 +322,7 @@ const Pixel=(function(global){
   }
   class PixelVNode{
     constructor(){
-      if (IsValidElement(this.$element)) define(this.$element, 'pixelVNode',{value:this, enumerable, configurable})
+      if (isNativeElement(this.$element)) define(this.$element, 'pixelVNode',{value:this, enumerable, configurable})
     }
     base_element=undefined
     get_parent_element(){
@@ -313,13 +331,12 @@ const Pixel=(function(global){
     render_tracked=false
     $element=undefined
     slot_name=undefined
-    before_create=undefined
-    created_hook=undefined
-    mounted_hook=undefined
+    created_hook=new Set()
     widget_instance=undefined
-    updated_hook=undefined
+    updated_hook=new Set()
+    mounted_hook=new  Set()
+    init_hook=new Set()
     _vnode_key=undefined
-    destroyed_hook=undefined
     patch_tracks=new Set()
     conditional_record={ src:undefined, res:false, passed:false}
     compiler_options=new Object()
@@ -343,25 +360,9 @@ const Pixel=(function(global){
       if(isPixelVNode(node)){
          this.$element.append(node.$element)
          this.NodeList.add(node)
-      }else do_Nothing
+      }else pass
       return this;
     }
-    insertBefore(){
-      
-    }
-    insertAfter(){
-      
-    }
-    normalizeVnode(){
-      
-    }
-    remove(){
-      
-    }
-    replace(){
-      
-    }
-    
   }
   function isTagMatch(open, close){//match syntax for a $$for opening and closing tags
     let res=false;
@@ -580,7 +581,43 @@ const Pixel=(function(global){
     if(hasIFWithFor(props, conditionals) && isLT(keyIndex(props, '$$if'), keyIndex(props, '$$for'))) return _$Conditional_Dir_Resolver(self, props, [type, props,  children, self], px__VNode, siblings);
     else if(hasOwn(props, '$$for')) return _$Directive_$For_Loop$_Renderer(self, {type, props, children, self}, px__VNode, siblings);
     else if(has_Intersect_Prop(conditionals.split(','), props)) return _$Conditional_Dir_Resolver(self, props, [type, props,  children, self], px__VNode, siblings);
-    else return createElementVNode(type, children, props, self,px__VNode);
+    else return createPixelElement(type, children, props, self,px__VNode);
+  }
+  function arrSet(myset){
+    const arr=[];
+    for(let value of myset.values()){
+      arr.push(value)
+    }
+    return arr;
+  }
+  function callSetHooks(self, hooks, element, bindObj={}){
+    function Callback(){
+      for(const hook of hooks.values()){
+        try{
+          hook.call(bindObj, element||self, hook.value, hook.modifiers);;
+        }catch(err){
+          $Debug("Unresolved problem during the call of the "+hook.name+" hook of custom "+hook.dirName+" directive",  self, true);
+          $Debug(err);
+          return element;
+        }
+      }
+      return element;
+    }
+    return Callback();
+  }
+  function PixelElementLifeCircleHooks(self, element, px__VNode){
+    if(len(px__VNode.created_hook)){
+      element=callSetHooks(self, px__VNode.created_hook, element, self.model);
+    }
+    if(len(px__VNode.mounted_hook)){
+      whenMounted(self, element, ()=>{
+        callSetHooks(self, px__VNode.mounted_hook, element, self.model);
+      })
+    }
+    if(len(px__VNode.updated_hook)){
+      
+    }
+    return  element
   }
   class PixelElementVNode extends PixelVNode{
     constructor(type, props, children, self, is_hyperscript=false, ctx, siblings){
@@ -591,8 +628,10 @@ const Pixel=(function(global){
       }
       if(ctx) this.LabContext=ctx;
       const frameDirectives="$$for,$$if,$$else-if,$$else";
-      if(!is_hyperscript && has_Intersect_Prop(frameDirectives.split(','), props)) this.$element=VNodeManager(self, {type, props, children}, null, this, siblings);
-      else this.$element=createElementVNode(type, props, children, self, this);
+      let element;
+      if(!is_hyperscript && has_Intersect_Prop(frameDirectives.split(','), props)) element=VNodeManager(self, {type, props, children}, null, this, siblings);
+      else element=createPixelElement(type, props, children, self, this);
+      this.$element=isNativeElement(element) ? PixelElementLifeCircleHooks(self, element, this) : element;
     }
   }
   class PixelFragmentVNode extends PixelVNode{
@@ -601,12 +640,15 @@ const Pixel=(function(global){
       this.$element=_createFragment(self)
       for(let node of vnodes.values()){
         if(isPrimitive(node)){
-          if(isNull(node) || isEmptyStr(node)) do_Nothing;
+          if(isNull(node) || isEmptyStr(node)) pass;
           else node=new PixelTextVNode(self, String(node), this) ;
         }else if(isRender(node)) node=node(self);
         if(isPixelVNode(node)){
           this.$element.append(node.$element)
           this.NodeList.add(node);
+        }else if(isCustomElement(node)){
+          this.$element.append(node);
+          this.NodeList.add(node)
         }
       }
     }
@@ -629,7 +671,7 @@ const Pixel=(function(global){
     }
   }
   function renderSlots(options){
-    if(!isPObject(options)){//renderimg of slots contents in hypeescript
+    if(!isPObject(options)){//renderimg of slots contents in hyperscript
       $Debug(`expects an Object as a positional argument  to "renderSlots" method`, self, true);return;
     }
     return new slotInstanceMap(options);
@@ -656,15 +698,33 @@ const Pixel=(function(global){
     }else if(!attributes && isChildrenNode(children)) res=children;
     return res;
   }
-  function createElementVNode(type, props, children, self, px__VNode){
-    if(isString(type) && IS_VALID_TAGNAME(type)) return _createNativeElement(...arguments);
+  function _resolveCustomNativeElement(self, nativeArgs, px__VNode){
+    let { type, attributes, children }=nativeArgs;
+    const body=createPixelElement('body');
+    let attrsStr="";
+    for(const [key, attr]  of entries(attributes||{})){
+      attrsStr=`${attrsStr} ${key}="${attr}"`;
+    }
+    if(isRender(children) ? children() : children){
+      children=isRender(children) ? children() :  children;
+      if(!isString(children)) body.append(isPixelVNode(children)  ? children.$element  : isPixelWidgetVNode(children) ? children.build.$element : children);
+      else body.innerHTML=children;
+      children=body.innerHTML;
+    }
+    const html=`<${type} ${attrsStr.trim()}> ${children||''} </${type}>`;
+    const customEl=new DOMParser().parseFromString(html,'text/html').body.childNodes[0];
+    if(isCustomElement(customEl) || isNativeElement(customEl)) return customEl;
+  }
+  function createPixelElement(type, props, children, self, px__VNode){
+    if(isString(type) && (IS_VALID_TAGNAME(type) || !instance_Has_Widget(self, type))) return _createNativeElement(...arguments);
     else return _createWidgetElement(...arguments);
   }
+  
   function _createNativeElement(type, attributes, children, self, px__VNode){
     const argsCount=len(new Set(arguments));
     let element;
     const is_hyperscript=px__VNode?.is_hyperscript || false;
-    if(px__VNode)  define(px__VNode, '_vnode_key',{value:_generate_UUID(7), enumerable})
+    if(px__VNode)  px__VNode._vnode_key=_generate_UUID(7)
     if(isString(type)){
       if(IS_VALID_TAGNAME(type)){
         element=document.createElement(type);
@@ -672,7 +732,7 @@ const Pixel=(function(global){
         if(self && len(self) && px__VNode) {
           px__VNode.px_hash_=self.ownProperties.px_hash_
         }
-      }
+      }else return _resolveCustomNativeElement(self, { type, attributes, children}, px__VNode);
     }
     if(attributes && hasOwn(attributes, '$$raw')  && !is_hyperscript){
       const name=attributes['$$raw'];
@@ -681,7 +741,7 @@ const Pixel=(function(global){
     }
     element.PATCH_FLAGS=new Set()
     if(children && !IS_HTML_VOID_TAG(type)) {
-      if(hasOwn(px__VNode.compiler_options,'dir--raw')){ 
+      if(px__VNode && hasOwn(px__VNode.compiler_options,'dir--raw')){ 
         if(!isFalse(px__VNode.compiler_options['dir--raw'])){
           element.innerHTML=attributes.$$rawChildrenData$$
         }else element= _initiateChildNodes(self, children, px__VNode, element );
@@ -689,6 +749,7 @@ const Pixel=(function(global){
       } else element= _initiateChildNodes(self, children, px__VNode, element );
     }
     if(attributes) element=AttributeManager(attributes, element, self, px__VNode)
+    
     if(self) element.setAttribute("data-px_hash_", self.ownProperties.px_hash_|| "")
     if(!is_hyperscript && element.hasAttribute('$$ref')){
       const attr=element.getAttribute('$$ref');
@@ -720,7 +781,7 @@ const Pixel=(function(global){
       px__VNode.widget_instance=widget;
       if(widget.ownProperties.slot_name) px__VNode.slot_name=widget.ownProperties.slot_name;
       return widget && isPixelBuild(widget) ? widget.build.$element : '';
-    }else if((validPixelWidget(type) || isWidgetResolver(type)) || is_hyperscript){
+    }else if((validPixelWidget(type) || isWidgetResolver(type)) && is_hyperscript){
       if(isWidgetResolver(type)){
         if (instance_Has_Widget(self, type.name) ){
           let widget=normalize_Widget(self, type.name);
@@ -735,8 +796,10 @@ const Pixel=(function(global){
         }
       }
       const widget=CompilePatcher(self, type, type, px__VNode)
-      px__VNode.is_mount_root=true;
-      px__VNode.widget_instance=widget;
+      if(px__VNode) {
+        px__VNode.is_mount_root=true;
+        px__VNode.widget_instance=widget;
+      }
       if(widget.ownProperties.slot_name) px__VNode.slot_name=widget.ownProperties.slot_name;
       return widget && isPixelBuild(widget) ? widget.build.$element : '';
     }
@@ -802,13 +865,15 @@ const Pixel=(function(global){
     try{
       value=_Evaluate_THIS( self.model , ref, self, px__VNode?.LabContext) ;
     } catch(err){
-        $Debug(`Accessor Error::\n\nvalue "${data}" property value was accessed during render, but not initialized on model or is undefined\n\nat at\n ..."${name} property \n\n${err}`, self, true);return;
-        return null;
+        if(!returnRef){
+          $Debug(`Accessor Error::\n\nvalue "${ref}" property value was accessed during render, but not initialized on model or is undefined\n\nat at\n ..."${name} property \n\n${err}`, self, true);
+          return;
+        }else  return ref
     }
     return value 
   }
   const hasBlockInstance=(self, name)=>_mapValue(BUILT_IN_BLOCKS, name) || _mapValue(self.register.blocks, name);
-  const normalize_Block=(self, name)=>hasOwn(BUILT_IN_BLOCKS, name) ? BUILT_IN_BLOCKS[name] : self.register.blocks[name] || do_Nothing;
+  const normalize_Block=(self, name)=>hasOwn(BUILT_IN_BLOCKS, name) ? BUILT_IN_BLOCKS[name] : self.register.blocks[name] || pass;
   const BUILT_IN_BLOCKS={
     upper(value, modifiers){
       return String(value).toUpperCase();
@@ -872,24 +937,26 @@ const Pixel=(function(global){
   const widgetPassableDirectives="html,text,raw,scoped"
   const autoBindedDirectives="model,for,ref,bind,on"
   const NodeBasedDirectives="html,text,raw,model,scoped";
+  const hyperscriptDirectives="html,text,ref,slot,on,scoped";
+  const isHyperscriptDirective=dir=>_mapValue(hyperscriptDirectives, dir);
   const cond_Directives="if,else-if,else";
   const isPixelDirective=dir=>_mapValue(PixelDirectives, dir);
   const isNodeBaseDirective=dir=>_mapValue(NodeBasedDirectives, dir)
   function _Evaluate_THIS(obj, str, self, optional){
     // Check if the expression contains //semicolons
     if (str.includes(';')) {
-      throw new Error('Invalid expression: \n\n";" not allowed\n Only single expressions are allowed.');return;
+      throw new Error('Invalid expression: \n\n";" not allowed\n Only single expressions are allowed.', self, true);return;
     }// Use a regular expression to match statements or multiple expressions
     const statementRegex = /^(?:let|var|const|if|for|while|do|switch).*$/;
     if (statementRegex.test(str)) {
-      throw new Error('Invalid expression:\n\n Only single expressions are allowed and no statement.');
+      throw new Error('Invalid expression:\n\n Only single expressions are allowed and no statement.', self, true);
     }// Use a regular expression to remove comments from the expression by using string .replace regex method
     const commentRegex = /\/\/.*|\/\*[^]*?\*\//g;//comment matching regular expression
     const expressionWithoutComments = str.replace(commentRegex, '');// Use a regular expression to match any remaining unsupported constructs and statement keywords
     // const unsupportedRegex = /(?:\.\.|\/\/|\/\*|\*\*|\[=|==\+|-\+|\+=|\-=|\*=|\/=|%=\*\*=|&&=|\|\|=|<=|>=|\breturn\b|\bthrow\b|\bfunction\b|\bnew\b|\btypeof\b|\bdelete\b|\binstanceof\b|\bvoid\b|\bnull\b|\bundefined\b|\bconst\b|\blet\b|\bvar\bclass\b)/;
     const unsupportedRegex = /(?:\.\.|\breturn\b|\bthrow\b|\bfunction\b|\bnew\b|\bdelete\b|\bvoid\b|\bnull\b|\bundefined\b|\bconst\b|\blet\b|\bvar\bclass\b)/;
     if (unsupportedRegex.test(expressionWithoutComments)) {
-      throw new Error(`Invalid expression: \n\nUnsupported constructs are not allowed.\n\n"${expressionWithoutComments}"`);
+      throw new Error(`Invalid expression: \n\nUnsupported constructs are not allowed.\n\n"${expressionWithoutComments}"`, self, true);
     }
     const getValue = new Function('obj','$$$ctx', `
       with(obj){
@@ -905,8 +972,7 @@ const Pixel=(function(global){
     try{
       value = getValue(obj, isPObject(optional) ? optional : null);
     }catch(error){
-      $Debug(`error during the Compilation of template expresion \n???????\n"${str}`, self, true);
-      $Debug(`${error}`);
+      throw new  Error(error);
     }
       return value;
   }
@@ -932,7 +998,7 @@ const Pixel=(function(global){
   }
   function push_Unique(arr, val){
     try{
-      if(arr.includes(val)) do_Nothing();
+      if(arr.includes(val)) pass();
       else arr.push(val);
     }catch(error){
       $Debug(error);
@@ -1084,8 +1150,9 @@ const Pixel=(function(global){
         if(hasAsterisks_bind(key)) key='$$bind:'+key.slice(1);
         else if(hasAt_bind(key)) key='$$on:'+key.slice(1);
       }
-      if(has$$_bind(key) && isPixelDirective(directive_sep(key)[0].slice(2)) &&  !is_hyperscript){
-         element=__Resolve__Directives(self, key, attr, element, px__VNode)
+      if(has$$_bind(key)){
+        if(isPixelDirective(directive_sep(key)[0].slice(2)) &&  !is_hyperscript) element=_Resolve_Builtin_Directives(self, key, attr, element, px__VNode);
+        else if(!is_hyperscript)element=_Resolve_Custom_Directives(self, key, attr, element, px__VNode);
       }else if(isHTMLIDLAttributes(key) && !isHTMLBooleanAttributes(key)){
         if(isEQ(key,'style')) parse_Style_Binding(self, attr, element);
         else element[key]=attr
@@ -1093,7 +1160,10 @@ const Pixel=(function(global){
       else if(isEQ(key, 'class')) parse_Class_Binding(self, attr, element);
       else if(hasSpread_bind(key) && !is_hyperscript) return Attribute_Spread(self, { key:attr}, element,  px__VNode);
       else if(key.startsWith('on') && IS_VALID_EVENT_HANDLER(key.slice(2).toLowerCase())) element[key.toLowerCase()]=attr;
-      else{
+      else if(isEQ(key,'$$@@dir$$--render')){
+        justifyHyperscriptDirectiveBuffer(self, attr,  element, px__VNode);
+        delete props[key];
+      }else{
         try{ 
           element.setAttribute(key, attr||'');
         }catch(err){
@@ -1103,6 +1173,34 @@ const Pixel=(function(global){
       }
      })
      return element;
+  }
+  function justifyHyperscriptDirectiveBuffer(self, directives, element, px__VNode){
+    for(const buff of directives.values()){
+      let { name, value, modifiers }=buff;
+      if(isHyperscriptDirective(name)) callHDir(self, buff, element, px__VNode )
+      else {
+        
+      }
+    }
+  }
+  function callHDir(self, direct, element, px__VNode){
+    hyperscriptDirectives.split(',').forEach((dir)=>{
+      log(dir)
+      if(isEQ(direct.name, dir)) $$dir_HTML(self, direct.value, element, px__VNode, true);
+      else if(isEQ(direct.name, dir)) $$dir_HTML(self, direct.value, element, px__VNode);
+      else if(isEQ(direct.name, dir)) $$dir_SLOT(self, direct.value, element, px__VNode);
+      else if(isEQ(direct.name, dir)) $$dir_ON(self, direct.value, element, px__VNode);
+      else if(isEQ(direct.name, dir)) $$dir_ON(self, direct.value, element, px__VNode);
+      else if(isEQ(direct.name, dir)) $$dir_ON(self, direct.value, element, px__VNode);
+    })
+    if(isPixelDirective(direct.name) && !isHyperscriptDirective(direct.name)){
+      $Debug(`came commit buffering on the "${direct.name}" directive`);
+      return;
+    }else if(!hasProp(self.register.directives||{}, direct.name) && !isHyperscriptDirective(direct.name)){
+      $Debug(`unresolve directive name passed to buffer\n\n"${direct.name}" is not defined\nMake sure this is registered globally/localy through this widget instance thread`, self, true, "during resolving of the 'buffer' object");
+      return;
+    }
+    
   }
   function boolAttrsParse(vnode, key, attr){
     if(!isEQ(attr, false)) {
@@ -1119,53 +1217,69 @@ const Pixel=(function(global){
     vnode = AttributeManager({ ['$$bind']:value }, vnode, self)
     return vnode;
   }
-  function _With_Custom_Directives(self, data={}, vnode, px__VNode){
-    const { key, attr } = data;
+  function _With_Custom_Directives(self, data, vnode, px__VNode){
+    let { key, attr } = data || {};
+    attr =bindKeyAsValue(key, attr);
     let value=_$runModelBind(self, attr, px__VNode, true)
     let has_modifiers=false;
     let modifiers=key.includes('|') ? key.split('|') : null ;
-    if(modifiers && len(modifiers)) has_modifiers=true;
-    const Name= bool(has_modifiers) ? modifiers.shift() : key ;
+    if(modifiers && isGT(len(modifiers),1)) has_modifiers=true;
+    let Name= bool(has_modifiers) ? modifiers.shift() : key ;
+    Name=directive_sep(key)[0].slice(2);
     if( !hasOwn(self.register.directives, Name )){
       $Debug(
         `((Undefined Directives Reference))\n\n "${key}" directive is not a registered pixel directive on this widget\n\nat...........at>>>.\n ${vnode.outerHTML}`
         );return vnode;
     }
     const directive= self.register.directives[Name];
-    let action =  isFunction(directive) ? directive :  null;
-    if(!action || !isFunction(action)){
-      if(isPObject(directive) && isTrue(!hasOwn(directive, 'created' ) && !hasOwn(directive, 'mounted') )) {
-        $Debug(`((Directive Error))\n\ndirective object does not return an "created/mounted" method`); return vnode;
-      }else if(!isPObject(directive) && !isFunction(directive)) {
-        $Debug(`((Directive Error))\n\n directive value is not a function`); return vnode;
-      }
-    }
-    const Obj_Modifier={};
-    if(len(modifiers)){
-      for(const val of modifiers.values()){
-        define(Obj_Modifier, val, {value:val, enumerable})
-      }
-    }
-    if(isPObject(directive)){
-      if(hasOwn(directive, 'created')){
-        if(!isFunction(directive['created'])){
-          $Debug(`((Directive created hook))\n\n Custom directive created hook is not a function`); return vnode;
+    const CustomDir ={  created:pass, updated :pass,  mounted :pass}
+    const LCH="created,mounted,updated,init";
+    if(isPFunction(directive)) CustomDir.created=directive;
+    else if(isPObject(directive) ){
+      if( !has_Intersect_Prop(LCH.split(','), keys(directive))) {
+        $Debug(`((Directive Error))\n\ndirective object does not return an "created/mounted/updated/init" method`, self, true); return vnode;
+      }else{
+        for(const [ name, hook] of  entries(directive)){
+          if(new Set(LCH.split(',')).has(name)){
+            if(!isPFunction(directive[name])){
+            $Debug(`((Custom direction))\n\ncustom Directive "${Name}" ${name}  hook is not a function`,self, true);return vnode;
+            }else {
+              const Obj_Modifier={};
+              if(len(modifiers)){
+                for(const val of modifiers.values()){
+                  define(Obj_Modifier, val, {value:val, enumerable, configurable})
+                  }
+              }
+              hook.modifiers=Obj_Modifier;
+              hook.value=value;
+              hook.dirName=Name;
+              CustomDir[name]=hook;
+            }
+          }
         }
-        action= directive['created']
       }
     }
-    action.call(self.model , vnode, {value}, Obj_Modifier);
-    let mountedHook;
-    if(isPObject(directive)){
-      if(hasOwn(directive, 'mounted')){
-        if(!isFunction(directive['mounted'])){
-          $Debug(`((Directive mounted hook))\n\n Custom directive mounted hook is not a function`); return vnode;
-        }
-        mountedHook = directive['mounted'].bind( self.model );
-        define( vnode, 'mountedDirectiveHook', { value :{ hook : mountedHook , self, modifiers:Obj_Modifier , value }});
+    if(!isNativeElement(vnode) && !vnode.$$$customDirs){
+      define(vnode, '$$$customDirs',{value:{
+        init_hook:new Set(), 
+        created_hook:new Set(),
+        mounted_hook:new Set(),
+        updated_hook:new Set(),
+      }, enumerable, configurable});
+    }
+    for(let hook of LCH.split(',').values()){
+      if(!isPass(CustomDir[hook])) {
+        if(isNativeElement(vnode) || !validPixelWidget(vnode))px__VNode[hook+'_hook'].add(CustomDir[hook]);
+        else vnode.$$$customDirs[hook+'_hook'].add(CustomDir[hook]);
       }
     }
     return vnode;
+  }
+  function isPass(func){
+    return isPFunction(func) && isEQ(func.name,'pass');
+  }
+  function _Resolve_Custom_Directives(self, key, attr, vnode, px__VNode){
+    return _With_Custom_Directives(self, { key, attr}, vnode, px__VNode);
   }
   function _Run_With_Modifiers(vnode, modifiers, func, events, runImmediately=true){
     if(!isFunction(func)){
@@ -1179,7 +1293,7 @@ const Pixel=(function(global){
     function __With_Modifiers(event){
       if(modifiers.has('prevent')) event.preventDefault()
       if(modifiers.has('stop')) event.stopPropagation()
-      if(modifiers.has('trusted')) func=event.isTrusted ? func : do_Nothing
+      if(modifiers.has('trusted')) func=event.isTrusted ? func : pass
       if(modifiers.has('self')){
         if(!vnode.isEqualNode(event.target)) return;
       }
@@ -1191,7 +1305,7 @@ const Pixel=(function(global){
   }
   function addMod(Callback, modifiers){
     if(!isFunction(Callback)){
-      $Debug(`Callback argument passed  to addMod is not a function`);return do_Nothing
+      $Debug(`Callback argument passed  to addMod is not a function`);return pass
     }else if( modifiers && !isArray(modifiers)){
       $Debug(`Having a problem during tge call of the "addMod" method.\n\nPositional argument, :"Modifiers" must be of type "Array". `);
       modifiers=[];
@@ -1218,23 +1332,44 @@ const Pixel=(function(global){
       return has$$_bind(lastAttr) ? lastAttr.slice(2) : lastAttr
     }else return value;
   }
-  function __Resolve__Directives(self, key, attr, vnode, px__VNode){
-    let item =bindKeyAsValue(key, attr);
-    let name=directive_sep(key)[0].slice(2);
-    if(isEQ(name, 'bind')) {
+  function $$dir_HTML(self, value, vnode, px__VNode, text ){
+    const is_hyperscript=px__VNode.is_hyperscript;
+    if(!is_hyperscript) value=_$runModelBind(self, item, px__VNode, true)
+    if( isPrimitive(value)) {
+      const innerProp=isTrue(text) ? 'innerText' : 'innerHTML';
+      if(!vnode)  self.model.$attrs[innerProp]=value ||'';
+      else vnode[innerProp]=value||'';
+    }
+  }
+  function $$dir_SLOT(self, item, vnode, px__VNode){
+    get_Object_Value(self.model, item, true);
+    const iswt=!isNativeElement(vnode)
+    let value=_$runModelBind(self, item, px__VNode, true)
+    if(!isString(value)){
+      $Debug(`value Error::\n\n slot name undefined or is not a string\n\n Error resolving slot  directive name reference on "${iswt  ?  self.ownProperties.name : vnode.localName}"`);return;
+    }
+    if(!iswt) px__VNode.slot_name=value;
+    else vnode.$attributes['@@slotName']=value;
+  }
+  function $$dir_BIND(self, prop, el, px__VNode ){
+    const { key, attr }=prop;
+    if(isNativeElement(el)){
       key=directive_sep(key);
       key.shift();
       if (isGT(len(key)),0) key=key.join(':')
-      vnode=bind_directive_receiver(self,{key, item}, vnode, px__VNode)
-    }else if(isEQ(name, 'html')){
-      get_Object_Value(self.model, item, true)
-      let value=_$runModelBind(self, item, px__VNode, true)
-      if( isPrimitive(value)) vnode.innerHTML= value || '';
-    }else if(isEQ(name, 'text')){
-      get_Object_Value(self.model, item, true)
-      let value=_$runModelBind(self, item, px__VNode, true)
-      if( isPrimitive(value)) vnode.innerText= value || '';
-    }else if(isEQ(name, 'ref')){
+      return bind_directive_receiver(self,{key, attr}, el, px__VNode)
+    }else widgetBindingReceiver(self, key, attr, el, px__VNode)
+  }
+  function $$dir_ON(self){
+    
+  }
+  function _Resolve_Builtin_Directives(self, key, attr, vnode, px__VNode){
+    let item =bindKeyAsValue(key, attr);
+    let name=directive_sep(key)[0].slice(2);
+    if(isEQ(name, 'bind')) vnode=$$dir_BIND(self, {key, item}, vnode, px__VNode)
+    else if(isEQ(name, 'html')) $$dir_HTML(self, item, vnode, px__VNode);
+    else if(isEQ(name, 'text')) $$dir_HTML(self, item, vnode, px__VNode, true);
+    else if(isEQ(name, 'ref')){
       try{
         get_Object_Value(self.model, item);
       }catch(err){
@@ -1242,12 +1377,7 @@ const Pixel=(function(global){
       }
       vnode.setAttribute('$$ref', value)
     }else if(isEQ(name, 'slot')){   
-      get_Object_Value(self.model, item, true)
-      let value=_$runModelBind(self, item, px__VNode, true)
-      if(!isString(value)){
-        $Debug(`value Error::\n\n slot name undefined or is not a string\n\n Error resolving slot  directive name reference on "${vnode.localName}"`);return;
-      }
-      px__VNode.slot_name=value;
+      $$dir_SLOT(self, item, vnode, px__VNode);
     }else if(isEQ(name, 'model')){
       if(!Is_Form_Element(vnode)){
         $Debug(`Compilation Error::\n\n cannot bind a data model to  a none form element`);return;
@@ -1273,7 +1403,7 @@ const Pixel=(function(global){
     }else if(isEQ(name, 'on')){
       if(isString(attr)){
         const signalsRegex=/^(@@)/g
-        if(signalsRegex.test(attr)) attr=attr.replace(signalsRegex, (match, at)=>match='$signals.');
+        if(signalsRegex.test(attr)) attr=attr.replace(signalsRegex, (match)=>match='$signals.');
         try{
           attr=attr.split(' ').join('');
           attr=_$runModelBind(self, has_Object_Prop(self.model, attr) || has_Object_Prop(px__VNode.LabContext||{}, attr) ? attr.trim() : `()=>{${attr.trim()}}`, px__VNode);
@@ -1288,9 +1418,9 @@ const Pixel=(function(global){
       }
       const modifiers=key.split('|');
       const events=modifiers.shift().slice(5).split('.')
-      if(len(modifiers)) _Run_With_Modifiers(vnode, modifiers, isFunction(attr) ? attr : do_Nothing, events);
+      if(len(modifiers)) _Run_With_Modifiers(vnode, modifiers, isFunction(attr) ? attr : pass, events);
       else {
-        for(let event of events.values()) vnode.addEventListener(event, isFunction(attr) ? attr : do_Nothing);
+        for(let event of events.values()) vnode.addEventListener(event, isFunction(attr) ? attr : pass);
       }
     }
     return vnode;
@@ -1307,45 +1437,35 @@ const Pixel=(function(global){
     }
     return event;
   }
-  function El_Mounted_Directive_Hook(self, node){
-    if(node.mountedDirectiveHook){
-      new Promise((res, rej)=>{
-        res(node.getRootNode()===document)
-      }).then(()=>{
-        const modifiers=node.mountedDirectiveHook.modifiers;
-        const value=node.mountedDirectiveHook.value;
-        node.mountedDirectiveHook.hook(node, { value } , modifiers );
-      })
-    }
-  }
-  function _renterNodeObjects(render, recursive=false){
+  function _renterNodeObjects(self, render, recursive=false){
     let response;
     if(isArray(render())){
       const NodeList=[];
       for(let build of render().values()){
-        let data=_renterNodeObjects(()=>build, true);
+        let data=_renterNodeObjects({},()=>build, true);
         NodeList.push(data)
       }
-      response=new PixelFragmentVNode(this, NodeList)
+      response=new PixelFragmentVNode(self, NodeList)
     }else if(isString(render())){
-      response=new PixelTextVNode(this, render())
+      response=new PixelTextVNode(self, render())
     }else if(isPObject(render)){
-      const { type, props, children } = render()
-      response=new PixelElementVNode(type, props, children, this)
+      
+      const { type, props, children } = render
+      response=new PixelElementVNode(type, props, children, self )
     }
     if(recursive) return response
     return response ? returnRender(response) : null
   }
   function $scarfold(render){
-    return _renterNodeObjects(render);
+    return _renterNodeObjects(this, render);
   }
   function el(type, propsOrChildren, childrenOrProps){
     let props;
-    const lab=new  Set()
-    if(isPObject(propsOrChildren)){ 
+    const lab=new  Set();
+    if(isPObject(propsOrChildren) && !isSlotInstance(propsOrChildren)){ 
       props=propsOrChildren;
       lab.add('propsOrChildren')
-    }else if(isPObject(childrenOrProps)){ 
+    }else if(isPObject(childrenOrProps) && !isSlotInstance(childrenOrProps)){ 
       props=childrenOrProps;
       lab.add('childrenOrProps')
     }
@@ -1362,11 +1482,12 @@ const Pixel=(function(global){
     }
   }
   class Widget {
-    constructor(){}
-    model=new Object()
+    constructor(){
+      define(this, 'model', {value:{}})
+    }
     isClassBasedWidget=true;
   }
-  class Build extends Widget{
+  class Build extends Widget {
     constructor(self){ super();
     }
     static BUILT_IN_WIDGET=true;
@@ -1380,24 +1501,25 @@ const Pixel=(function(global){
       return ()=> el(params.self, attrs);
     }
   }
-  class Fragment extends Widget{
-    constructor(){ super(); }
+  class Fragment extends Widget {
+    constructor(){ 
+      super();
+    }
     static BUILT_IN_WIDGET=true;
-    build(){ return ()=> [el('slot')];}
+    build(){ 
+      return ()=> el('slot');
+    }
   }
-  class Transition extends Widget{
-    constructor(){ super(); }
+  class Transition extends Widget {
+    constructor(){ 
+      super();
+    }
     params={ 
-      onStart:{
-        type:Function
-      },
-      onEnd:{
-        type:Function
-      }
-      
+      onStart:Function,
+      onEnd:Function
     }
     build(){
-      return  ()=> el('section', { class:'slide'},[el('slot')])
+      return  ()=> el('section', { class:'slide'}, el('slot'))
     }
     styleSheet=`
     .slide{
@@ -1407,17 +1529,29 @@ const Pixel=(function(global){
     }
     `
   }
-  class Animation extends Widget{
-    
+  class Animation extends Widget {
+    constructor(){
+      super()
+    }
     build(){
-      return ()=> el()
+      return ()=> el('slot')
     }
   }
-  class Await extends Widget{
-    
+  class Await extends Widget {
+    constructor(){
+      super()
+    }
+    build(){
+      return ()=> el('slot')
+    }
   }
-  class Portal extends Widget{
-    
+  class Portal extends Widget {
+    constructor(){
+      super()
+    }
+    build(){
+      return ()=> el('slot')
+    }
   }
   const BUILT_IN_WIDGETS={ 'px-fragment':Fragment, Fragment, 'px-build':Build, Build, 'px-transition':Transition, Transition, 'px-animation':Animation, Animation, 'px-await':Await, Await, 'px-portal':Portal, Portal };
   function modelManager(opts,self){
@@ -1461,9 +1595,9 @@ const Pixel=(function(global){
     });
       assign(self.model, self.register.handlers);
   }
-  function paramsManager(opts, self, ceElOp=false){
+  function paramsManager(opts, self){
     const params= opts.params ;
-    const props=isTrue(ceElOp) ? opts.props : opts.$attributes;
+    const props=opts.$attributes;
     if(params && !_validateType(params, [ Object, Array ])){
       $Debug(`Param option type validation failed, \n\n unexpected data type ${getType(params)}`);return;
     }
@@ -1477,14 +1611,9 @@ const Pixel=(function(global){
     }
     let paramsSet;
     if(params && len(params)){
-      if(self.is_Custom_Node){
-        define(self, '$props',{value:{}, configurable, enumerable})
-        paramsSet=self.$props;
-      }else{
-        define(self.model, '$params',{value:{}, enumerable, configurable, writable})
-        define(self.model, '$attrs',{value:{}, enumerable, configurable})
-        paramsSet=self.model.$params;
-      }
+      define(self.model, '$params',{value:{}, enumerable, configurable, writable});
+      define(self.model, '$attrs',{value:{}, enumerable, configurable})
+      paramsSet=self.model.$params;
       entries(params).forEach(([ind, param])=>{
         if(has$$_bind(ind)){
           $Debug(`Params validation error"${ind}" passed to widget as a pixel directive binding,\n\nthe "$$" may not be appended or used on a params identifier`);return;
@@ -1556,33 +1685,25 @@ const Pixel=(function(global){
         }
       })
     }
-    const attributes=self.model.$attrs;
+    if(!self.model.$attrs) define(self.model, '$attrs',{value:{}, enumerable, configurable})
     entries(props||{}).forEach(([ind, value])=>{
-      if(!hasOwn(paramsSet||{}, ind) && !isEQ(ind, '@@Events')){
-        define(self.model.$attrs, ind, {value, configurable,enumerable, writable});
-      }
+      if(!hasOwn(paramsSet||{}, ind) && !isEQ(ind, '@@Events')) define(self.model.$attrs, ind, {value, configurable,enumerable, writable});
     })
   }
-  function $$consumeLifeCircleHooks(self, opts){
-    const hooks="preBuild,PostBuild,preUpdate,onUpdated,preMount,onMounted,preDestroy,onDestroyed";
-    for(let hook of hooks.split(',').values()){
-      if(_mapValue(opts. hook)) do_Nothing;
-      else if(!isFunction(opts[hook])){
-        $Debug(`"${hook} Callback" hook must be a function \n\n type of "${getType(opts[name])}" found`);return;
-      }else{
-        define(self.operands._LIFECIRCLEHOOKS, hook, { values:opts[hook].bind(), enumerable, configurable } );
-      }
-    }
-  }
   function _hydrate_$Attributes(opts, self, vnode){
-    vnode=vnode();
-    if( IsValidElement(vnode.$element) && IS_ELEMENT_NODE(vnode.$element)){
+    vnode=isRender(vnode) ? vnode() : vnode;
+    if( isNativeElement(vnode.$element) && IS_ELEMENT_NODE(vnode.$element)){
       if(self.core.settings.inheritAttrs) AttributeManager( self.model.$attrs, vnode.$element, self);
     }
     return  returnRender(vnode);
   }
   function setupClassBasedWidget(options, self){
-    const widget=Object.create(new options());
+    const instanciate=new options();
+    if(!isBaseWidget(instanciate)){
+      $Debug(`Class widget must extend the base "Widget" class\n\nThe "${options.name}" widget failed to extend the base widget class`, self, true);
+      return {};
+    }
+    const widget=Object.create(instanciate);
     if(options.$attributes) widget.$attributes=options.$attributes;
     if(options.$children) widget.$children=options.$children;
     return widget;
@@ -1629,7 +1750,7 @@ const Pixel=(function(global){
   function _preCompile_StyleSheet(opts, self, vnode){
     let CssStylesheet=self ? opts.styleSheet : opts.styles;
     if(CssStylesheet){
-      const styleEl=createElementVNode('style', { type:'text/css'}, null);
+      const styleEl=createPixelElement('style', { type:'text/css'}, null);
       const id=Math.floor(Math.random()*(100000000 * 9999999999999) + 10000000);
       const selectorPattern = /([^\r\n{]+)\s*{/g;
       const ModifiedCssStylesheet=CssStylesheet.replace(selectorPattern, (match, text)=>{
@@ -1642,11 +1763,10 @@ const Pixel=(function(global){
     }
     return returnRender(vnode);
   }
-  
   function _$slotHydrationRenderer(self, opts, vnode){
     const slots=self.core.slots;
-    if(!len(slots))  return vnode
-    vnode=vnode()
+    if(!len(slots))  return vnode;
+    vnode=isRender(vnode) ? vnode() : vnode;
     const slot_elements=vnode.$element.querySelectorAll('slot');
     const assynedSlots=new Set()
     for(let slot_el of slot_elements.values()){
@@ -1656,7 +1776,7 @@ const Pixel=(function(global){
         assynedSlots.add(slotN);
       }else if((!slotN || isEmptyStr(slotN)) && !assynedSlots.has('default') && hasOwn(slots, 'default')) slot_el.replaceWith(slots.default(self)?.$element);
     }
-    if(!len(slot_elements) && IsValidElement(vnode.$element) && IS_ELEMENT_NODE(vnode.$element) && isEmptyStr(vnode.$element.innerHTML) && hasOwn(slots, 'default')){
+    if(!len(slot_elements) && isNativeElement(vnode.$element) && IS_ELEMENT_NODE(vnode.$element) && isEmptyStr(vnode.$element.innerHTML) && hasOwn(slots, 'default')){
       const inheritSlot=self.core.settings.inheritSlot;
       if(isTrue(inheritSlot)) {
         const slotContent=hasOwn(slots, 'default') ? slots.default() : null;
@@ -1739,18 +1859,19 @@ const Pixel=(function(global){
     delete options.$attributes['@@Events'];
   }
   function $construct_With_Signals(self, options){
-    if(!options.signals && !options.$attributes ) return;
-    define(self.model, '$signals', {value:self.operands._SIGNALS,enumerable, configurable, writable});
-    const signals=new Set(options.signals)
-    for(const  [ key, event] of entries(options?.$attributes['@@Events']||{})){
+    if(!len(options.signals) && !options.$attributes ) return;
+    define(self.model, '$signals', {value:{},enumerable, configurable, writable});
+    const signals=new Set(options.signals);
+    const $$events=options?.$attributes ? options.$attributes['@@Events'] : {}
+    for(const  [ key, event] of entries( $$events || {})){
       if(signals.has(key)){
-        self.model.$signals[key]=new Signal(key, event?.callback || do_Nothing, event?.options);
+        self.model.$signals[key]=new Signal(key, event?.callback || pass, event?.options);
         delete options.$attributes['@@Events'][key]
       }
     }
-    options.signals.forEach((signal)=>{
+    (options.signals||[]).forEach((signal)=>{
       if(!hasOwn(self.model.$signals, signal)){
-        self.model.$signals[signal]=new Signal(signal, do_Nothing )
+        self.model.$signals[signal]=new Signal(signal, pass )
       }
     });
     map_Events_Fall(self, options);
@@ -1776,12 +1897,14 @@ const Pixel=(function(global){
     Observer_Track(self, options);
     Register_$Observer(self, options);
     installCD_(self, options);
+    __Generate_Widget_Hash(self);
+    return options;
   }
-  function _generate_UUID(length) {
+  function _generate_UUID(length, type) {
     const alpaNum ='A,a,B,b,C,c,D,d,E,e,F,f,G,g,H,h,I,i,J,j,K,k,L,l,M,m,N,n,O,o,P,p,Q,q,R,r,S,s,T,t,U,u,V,v,W,w,X,x,Y,y,Z,z,0,1,2,3,4,5,6,7,8,9,$';
     let letters=alpaNum.split(',');
     let id = '';
-    let stack=[]
+    let stack=[];
     for(let i = 0; i < len(letters); i=i){
       const randomIndex = Math.floor(Math.random() * len(letters));
       stack.push(letters[randomIndex]);
@@ -1805,29 +1928,32 @@ const Pixel=(function(global){
     if(self.model.$attrs) define(self.model, '$attrs', {value:__Proxy_Setup(self, self.model.$attrs, true)})
     if(self.model.$params) define(self.model, '$params', {value:__Proxy_Setup(self, self.model.$params, true)});
   }
-  const default_LifeCycleHooks=()=>Object.create({
-    preBuild(){}, postBuild(){}, preMount(){}, onMounted(){}, preUpdate(){}, onUpdated(){}, preDestroy(){}, onDestroyed(){}
-  })
   function createCordinateProps(self, opts){
     define(self, 'model',{value:{}, configurable, enumerable})
     define(self, 'ownProperties', {value:{ name:opts.name || 'UnknownWidget', slot_name:hasOwn(opts, '$attributes')  ? opts.$attributes['@@slotName'] : undefined }})
     if(has_Object_Prop(opts, '$attributes.@@slotName')) delete opts.$attributes['@@slotName'];
     define(self, 'register',{value:{ directives:{}, blocks:{}, widgets:{}, handlers:{}, agents:{}}, enumerable,  configurable})
-    define(self,'operands',{value:{ _OBSERVERS:{}, _LIFECIRCLEHOOKS:default_LifeCycleHooks(), _SIGNALS:{} }, enumerable, writable, configurable});
+    define(self,'operands',{value:{ _OBSERVERS:{}, _LIFECIRCLEHOOKS:{} }, enumerable, writable, configurable});
     define(self, 'core',{value:{utils:{}, settings:Object.create(Global_Settings), slots:{}, map:{ is_hyperscript:false }}})
     define(self, '$globals',{value:{register:{ directives:{}, blocks:{}, widgets:{}, handlers:{}, agents:{}}, setupOptions:{}, $hanger:{}}})
   }
   function _induceSlotContents(self, options){
-    if(!hasOwn(options, '$children')) return;
+    if(!hasOwn(options, '$children') || !(options.slots && len(options.slots))) return;
     const px__VNode=options.$children?.px__VNode;
-    const is_hyperscript=px__VNode ? px__VNode.is_hyperscript : hasOwn(options, 'build');
-    const slots=hasOwn(options.$children, 'NodeList') ? options.$children.NodeList : options.$children;
+    const is_hyperscript= options.build ? true : false;
+    let slots=hasOwn(options.$children||{}, 'NodeList') ? options.$children.NodeList : options.$children||[];
     const slottErr=(slotName, slotContent)=>{
       $Debug(`
       Problem when mapping slot element,\n\nMore than one vnode seems to be pointing to the  same slot name\nat at "${slotName}" slot Directive  of "${slotContent.$element.outerHTML} \nmaybe you should wrap them within a single template wrapper`);
       $Debug(`Note: unnamed contents will be automatically mapped  as "default" slot`);
     }
-    if(!len(slots)) return;
+    if(slots && !isArray(slots)) slots=[slots];
+    else if(!slots || !len(slots)){ 
+      if(!is_hyperscript) return;
+      if(options.slots && len(options.slots) ) defineFallbackSlotsRef(self, options);
+      else defineFallbackSlotsRef(self, { slots:[]})
+      return;
+    }
     for(let slotContent of slots.values()){
       if(isPrimitive(slotContent)){
         slotContent=new PixelTextVNode(self, String(slotContent), px__VNode);
@@ -1866,6 +1992,9 @@ const Pixel=(function(global){
       }
     }
     if(!is_hyperscript) return;
+    defineFallbackSlotsRef(self, options)
+  }
+  function defineFallbackSlotsRef(self, options){
     if(options.slots && len(options.slots)){
       for(const sn of options.slots.values()){
         if(!_mapValue(self.core.slots, sn)){
@@ -1877,38 +2006,73 @@ const Pixel=(function(global){
         }
     }
   }
-  function _$instanciateModelProps(self ){
+  function _$instanciateModelProps(self){
     const is_hyperscript=self.core.map.is_hyperscript;
     if(is_hyperscript && len(self.core.slots)){
       define(self.model, '$slots', {value:{}, enumerable, configurable});
       assign(self.model.$slots, self.core.slots);
     }
   }
+  function $ensureLifeCircleHooks(self, options){
+    const hooks="preBuild,postBuild,onMounted,preMount,onUpdated,preUpdate,preDestroy,onDestroyed"
+    const dirHKAlibi={ init_hook:'preBuild', mounted_hook:'onMounted', created_hook:'postBuild', updated_hook:'onUpdated'}
+    let customDirHk={}
+    if(options.$$$customDirs){
+      entries(options.$$$customDirs).forEach(([key, dirhk])=>{
+        if(len(dirhk)){
+          customDirHk[dirHKAlibi[key]]=function(){
+            callSetHooks(self, dirhk, null, self.model)
+          }
+        }
+      })
+      delete options.$$$customDirs;
+    }
+    hooks.split(',').forEach((hookN)=>{
+      if(options[hookN] || len(customDirHk)){
+        if(len(customDirHk) &&  hasOwn(customDirHk, hookN)){
+          let thisHook=customDirHk[hookN];
+          const user_defined_callback=options[hookN] || pass;
+          options[hookN]=function(utils){
+            if(isPFunction(thisHook)) thisHook();
+            if(user_defined_callback) user_defined_callback.call(self.model, utils)
+          }
+        }
+        self.operands._LIFECIRCLEHOOKS[hookN]=options[hookN]||pass;
+      }else self.operands._LIFECIRCLEHOOKS[hookN]=pass;
+    })
+    callbackHookWithCatch(self, self.operands._LIFECIRCLEHOOKS.preBuild,'preBuild');
+  }
+  function callbackHookWithCatch(self, hook, name){//this function calls a lifecircle hook with a catch debugger
+    try{
+      hook.call(self.model, self.core.utils);
+    }catch(err){
+      $Debug(`${err}`,self, true, `during the call of the "${name}" LifeCycle hook` );
+    }
+  }
   function _Pixel_Build(options){
     //options=sanitizedOptions(arguments, this);//sanitize received options
-    createCordinateProps(this, options)
+    createCordinateProps(this, options)//create useful properties for the widget
+    $ensureLifeCircleHooks(this, options)
     _induceSlotContents(this, options);
     options=BasedWidgets(options, this);
     setConfig(options, this); 
     _Data_Hydrations(this, options)
     $construct_With_Signals(this, options)
     __Ensure_Renderer(this, options);
-    __Generate_Widget_Hash(this)
     this.render=function(self, build){
       build=_$slotHydrationRenderer(self, options, build);
       build =  _hydrate_$Attributes(options, self, build);
       build=_preCompile_StyleSheet(options, self, build());
-      
-      
+      callbackHookWithCatch(self, self.operands._LIFECIRCLEHOOKS.postBuild, 'postBuild');
       return build();
     }
     if(isNull(options.build) && isNull(options.template))options.build=null;
-    define(this, 'build', {value:options.build || options.template , writable, enumerable});
+    define(this, 'build', {value:options.build || options.template || options.markdown , writable, enumerable});
     resolve_Proto_Call(this, options);
   }
   function isRender(build){
     return isFunction(build) && isEQ(build.name,'render');
-}
+  }
   function returnRender(build, self){
     if(isRender(build) ) build=build(self);
     return function render(self){ 
@@ -1916,13 +2080,13 @@ const Pixel=(function(global){
   }
   function get_Init_Build(self, selector, build){
     if(isFunction(self.build)){
-      self.build=self.build.bind(self.model);
       let res;
       try{
-        res = self.build(self.model.$params||{},{signals:self.model.$signals || {},attrs:self.model.$attrs || {}, slots:self.model.$slots || {}, utils:self.core.utils});
+        res = self.build.call(self.model, self.model.$params||{},{signals:self.model.$signals || {},attrs:self.model.$attrs || {}, slots:self.core.slots || {}, utils:self.core.utils});
       }catch(err){
         $Debug(`Error during the call of the build function`,self, true, DebugFlags.build);
-        $Error(err);return;
+        $Error(err);
+        return;
       }
       if(!isFunction(res)){
         $Debug(`Error during the procession of the build function\n\nfailed to return a render function when returning the build method\n \n This may conflict with the processing of returnable DOM  nodes`, self, true, DebugFlags.build);return false
@@ -1932,8 +2096,18 @@ const Pixel=(function(global){
     }else if(isString(self.build)){
       return returnRender(_HTMLParser(self.build, self));
     }else if(isNull(self.build) && selector){
+      inDomCaveatRemodeling(self);
       return returnRender(_HTMLParser( _GenerateRoot(selector).innerHTML || '', self));
-    }else return false;
+    }else return null;
+  }
+  function inDomCaveatRemodeling(self){
+    const setRegex=/^[A-Z]+/
+    for(const [ name, item] of entries(self.register.widgets)){
+      if(setRegex.test(name)) self.register.widgets[compile_to_Hyphen(name)]=item;
+    }
+    for(const [ name, item] of entries(self.register.directives)){
+      if(setRegex.test(name)) self.register.directives[compile_to_Hyphen(name)]=item;
+    }
   }
   function resolve_Proto_Call(self, opts){
     new Promise((resolve, reject)=>{
@@ -1955,10 +2129,10 @@ const Pixel=(function(global){
     let domRoot;
     if(isString(nodeSelector)){
       domRoot=document.querySelector(nodeSelector);
-      if(!IsValidElement(domRoot)){
+      if(!isNativeElement(domRoot)){
         $Debug(`error mounting widget, target not a valid element`);
         return;}
-    }else if(IsValidElement(nodeSelector) || nodeSelector.isPixel_Fragment){
+    }else if(isNativeElement(nodeSelector) || nodeSelector.isPixel_Fragment){
       domRoot=nodeSelector;
     }
     return domRoot
@@ -2000,9 +2174,13 @@ const Pixel=(function(global){
         __mountRootToken:'px__'+_generate_UUID(5),
       }
       domRoot.innerHTML='';
+      callbackHookWithCatch(this, this.operands._LIFECIRCLEHOOKS.preMount, 'preMount');
       if(isInDom(domRoot)) domRoot.append(this.build.$element || '');
       else domRoot=this.build.$element;
-      if(domRoot.isPixel_Fragment && !domRoot.trigger_Effect_Run ) define(domRoot, 'trigger_Effect_Run', {value: Widget_Effect_Trigger.bind(this)})
+      if(domRoot.isPixel_Fragment && !domRoot.trigger_Effect_Run ) define(domRoot, 'trigger_Effect_Run', {value: Widget_Effect_Trigger.bind(this)});
+      whenMounted(this, this.build, ()=>{
+        callbackHookWithCatch(this, this.operands._LIFECIRCLEHOOKS.onMounted, 'onMounted');
+      })
       return this;
     }
   }
@@ -2050,7 +2228,7 @@ const Pixel=(function(global){
       this.$globals.register.blocks[name]=func;
     }
   }
-  const globalConfigMethods=`delimiters,debug,inheritAttrs,inheritSlot,isAsync,`
+  const globalConfigMethods=`delimiters,debug,inheritAttrs,,isAsync,`
   _Pixel_Build.prototype.configDelimeters=configDelimeters;
   function configDelimeters(delimiters){
     
@@ -2076,13 +2254,21 @@ const Pixel=(function(global){
     
   }
   legalize.optionRegistry=function optionRegistry(name, type){
-    
-    
+  }
+  function whenMounted(self, build, callback){
+    return new Promise((resolve, reject)=>{
+      resolve(isEQ(isPixelVNode(build) ? build.$element.getRootNode() : build.getRootNode(), document))
+    }).then((res)=>{
+      callback();
+    })
   }
   function Render_Template(self, initBuild, update=false){
     if(self.core.map.is_hyperscript) initBuild=initBuild(self);
-    if(!isFunction(initBuild)) initBuild=returnRender(initBuild)
+    if(!isFunction(initBuild)) initBuild=initBuild
     return self.render(self, initBuild, update);
+  }
+  function nextTick(){
+    
   }
   function __Proxy_Setup(self, obj, deep=false){
     let activeWatcher=null
@@ -2233,7 +2419,7 @@ const Pixel=(function(global){
         }else if(true){
           
         }else{
-          do_Nothing();
+          pass();
         }
       }
     }
@@ -2280,24 +2466,23 @@ const Pixel=(function(global){
       return react;
   }
   function _initiateChildNodes(self, children,  px__VNode, element){
-    const is_hyperscript=px__VNode.is_hyperscript;
+    const is_hyperscript=px__VNode?.is_hyperscript;
     children=isRender(children) ? children(self, px__VNode) : children;
     if(isChildrenNode(children)){
       if(isPrimitive(children) && !isNull(children)){
         const node=new PixelTextVNode(self, String(children), px__VNode);
         element.append(node.$element);
-        px__VNode.NodeList.add(node);
+        if(px__VNode) px__VNode.NodeList.add(node);
       }else if(isArray(children)){
         for(const child of children.values()){
           element=_initiateChildNodes(self, child, px__VNode,  element)
         }
       }else if(isPixelVNode(children) ){
-        if(isPixelWidgetVNode(children)){
-          element.append(children.$element);
-        }else{
-          element.append(children.$element);
-          px__VNode.NodeList.add(children);
-        }
+        element.append(children.$element);
+        px__VNode.NodeList.add(children);
+      }else if(isCustomElement(children)){
+        element.append(children);
+        px__VNode.NodeList.add(children);
       }
     }
     return element;
@@ -2332,7 +2517,7 @@ const Pixel=(function(global){
     key.shift()
     key=key.join(':')
     if(isEQ(name,'bind')){
-       widgetBindingReceiver(self, key,param, widget, px__VNode)
+      $$dir_BIND(self, { key, attr:param }, widget, px__VNode);
     }else if(isEQ(name, 'on')){
       if(isString(param)){
         try{
@@ -2349,7 +2534,7 @@ const Pixel=(function(global){
       if(len(modifiers)) modifiers.shift()
       let opts;
       if(len(modifiers)) {
-        const mode= _Run_With_Modifiers( null, modifiers, isFunction(param) ? param : do_Nothing, events, false);
+        const mode= _Run_With_Modifiers( null, modifiers, isFunction(param) ? param : pass, events, false);
         param=mode[0];
         opts=mode[1];
       }
@@ -2359,16 +2544,7 @@ const Pixel=(function(global){
           define(widget.$attributes['@@Events'], ev,{ value: new maybeSignal(ev, param, opts) , enumerable, configurable});
         }
       }
-    }else if(isEQ(name, 'slot')){
-      let bra=_$runModelBind(self, param, px__VNode, true)
-      if(!isString(bra)){
-        $Debug(`value Error::\n\n slot name undefined or is not a string\n\n Error resolving slot  directive name reference on "<${self.ownProperties.name}>"`);return;
-      }
-      
-      widget.$attributes['@@slotName']=bra;
-    }else if(true){
-      
-    }
+    }else if(isEQ(name, 'slot')) $$dir_SLOT(self, param, widget, px__VNode);
   }
   function ResolveWidget(self, px__VNode, value, ){
     if(!instance_Has_Widget(self,value.type)){
@@ -2414,7 +2590,6 @@ const Pixel=(function(global){
       }
     }
     child=child.mount(_createFragment());//mounts the build to a pixel fragment
-    
     return child;
   }
   function set_Widget_Flag(self, widget, val, px__VNode){
@@ -2429,8 +2604,10 @@ const Pixel=(function(global){
       let name=__Attr_Name_Resolver(self, ind, px__VNode);
       if(hasAsterisks_bind(name)) name='$$bind:'+name.slice(1);
       else if(hasAt_bind(name)) name='$$on:'+name.slice(1);
-      if(has$$_bind(name) && isPixelDirective(directive_sep(name)[0].slice(2))) Widget_Directive_Handler(self, widget, {[name]:param}, px__VNode)
-      else if(hasSpread_bind(ind)) Manage_Widget_Spread(self, widget, { name})
+      if(has$$_bind(name)){
+        if( isPixelDirective(directive_sep(name)[0].slice(2))) Widget_Directive_Handler(self, widget, {[name]:param}, px__VNode);
+        else _With_Custom_Directives(self,{key:name,  attr:param}, widget, px__VNode);
+      }else if(hasSpread_bind(ind)) Manage_Widget_Spread(self, widget, { name})
       else widget.$attributes[name]=param;
     });
   }
@@ -2446,9 +2623,6 @@ const Pixel=(function(global){
     define(fragment, 'PATCH_FLAGS',{value:new Set(), configurable:true, writable:true});
     return fragment;
   }
-  function _$compiler_engine_hydrator(){
-    global=new Pixel();
-  }
   const devInfo='You are using the development version of pixel '+get_version().slice(6)+', make sure you switched to the minified build version when deploying to production with the (*.min.js) file extension';//development information
   function setupFunctionWidget(opts, self){
     const widget={};
@@ -2457,25 +2631,60 @@ const Pixel=(function(global){
     if(opts.$children) widget.$children=opts.$children;
     return widget;
   }
-  class _WidgetResolver{
-    constructor(name){
-      if(!isString(name)){
-        $Debug(`name positional argument must be a string type matching a local/globaly registered widget data`,{},true);return;
-      }
-      this.name=name || undefined;
-    }
+  class _Resolver{
     name=undefined
   }
-  function traverse(name){
-    return new _WidgetResolver(name)
+  class _WidgetResolver extends _Resolver{
+    constructor(name){
+      super()
+      this.name=name || undefined;
+    }
   }
-  function resolveDirective(name){
-    
+  class _DirectiveResolver extends _Resolver{
+    constructor(name, value, modifiers){
+      super();
+      this.name=name || undefined;
+      this.value=value;
+      this.modifiers=modifiers
+    }
+  }
+  function traverse(name){
+    if(!isString(name)){
+      $Debug(`"traverse" resolving positional argument name must be a string type matching a local/globaly registered widget data`);
+      return;
+    }
+    return new _WidgetResolver(name);
+  }
+  function buffer(name, value, modifiers){
+    if(!isString(name)){
+      $Debug(`"buffer" resolving positional argument name must be a string type matching a local/globaly registered directive data`);
+      return;
+    }else if(modifiers && !isArray(modifiers)){
+      $Debug(`argument 3 passed to buffer expects an array of modifiers strings`);
+    }
+    return new _DirectiveResolver(name||"", value, modifiers);
   }
   function withDirectives(props, dirs){
-    
+    dirs = dirs || [];
+    if(!isPObject(props)){
+      $Debug(`first positional argument passed to the  "withDirectives" macro requires a plain object  of node attributes`);
+      return {};
+    }else if(!isArray(dirs)){
+      $Debug(`provided position 2 argument on "withDirectives" macro not an array\n\nMay render  Unexpected result`);
+    }else if(len(dirs)){
+      const dirSet=new Set();
+      for(const directive of dirs.values()){
+        if(!isDirectiveResolver(directive)){
+          $Debug(`in hyperscript use of directives failed\n\nuse the "buffer"  macro for resolving of directives when building with in hyperscript mode`);
+        }else dirSet.add(directive);
+      }
+      if(len(dirSet)){
+        define(props, '$$@@dir$$--render',{value:dirSet, enumerable, configurable});
+      }
+    }
+    return props;
   }
-  function $Entity_Decoder(str){
+  function _escapeDecoder(str){
     str=str.replace(/&/g, '&amp;')     
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
@@ -2483,15 +2692,14 @@ const Pixel=(function(global){
       .replace(/\\/g, '&#39;');  
     return str;
   }
-  function _HTMLParser(html, self, parent, px__VNode){
-    if(!html) return null;
-    const selfClosedTagsRegex=/<([a-zA-Z0-9\-\_:$]*)(\s[^>]*)?\/>/gs;
-    const selfClosedTagRegex=/<([a-zA-Z0-9\-\_:$]*)(\s[^>]*?)?\/>/s;
-    const openingTagsRegex=/<([a-zA-Z0-9\-\$_:]*)(\s[^>]*?)?[\/]?>/g;
-    const closingTagsRegex=/<[\/]([a-zA-Z1-6]+)[ ]*>/g;
-    const attributesRegex=/([^=\s]*)\s*?=\s*?(?:(["'])(.*?)\2|([^"'\s>]+))/g;
-    const attrRegex=/([^=\s]*)\s*?=\s*?(?:(["'])(.*?)\2|([^"'\s>]+))/;
-    html=html.replace(openingTagsRegex, (match, tag, props)=>{
+  const selfClosedTagsRegex=/<([a-zA-Z0-9\-\_:$]*)(\s[^>]*)?\/>/gs;
+  const selfClosedTagRegex=/<([a-zA-Z0-9\-\_:$]*)(\s[^>]*?)?\/>/s;
+  const openingTagsRegex=/<([a-zA-Z0-9\-\$_:]*)(\s[^>]*?)?[\/]?>/g;
+  const closingTagsRegex=/<[\/]([a-zA-Z1-6]+)[ ]*>/g;
+  const attrRegex=/([^=\s]*)\s*?=\s*?(?:(["'])(.*?)\2|([^"'\s>]+))/;
+  const attributesRegex = /([^=\s]+)\s*=\s*(?:(["'])(.*?)\2|([^"'\s>]+))?|(\S+)(?:\s*=\s*(?:(["'])(.*?)\6|(\S+)))?/g;
+  function openingTagsHydration(html){
+    return html.replace(openingTagsRegex, (match, tag, props)=>{
       if(hasUpperCase(tag)){
         const nodeSpace=`$px-nodespace=${tag}`;
         props=!isNull(props) ? `${props} ${nodeSpace}` : nodeSpace;
@@ -2499,14 +2707,18 @@ const Pixel=(function(global){
       if(props){
         props=props.replace(attributesRegex,(mch, attr, sip, val, fall)=>{
           val=val || fall || '';
-          if(hasUpperCase(attr)) attr=`${attr}-$px`;
+          attr=isNull(attr||sip||val||fall) ? mch : attr;
+          if(attr && attr.startsWith('$px-$')||attr.endsWith('-$px')){
+            $Debug("Indecent attribute name\nShould not start with '$px-$' or end with '-$px'\n\nThis are pixel system based template formating system");
+          }
+          if(attr && hasUpperCase(attr)) attr=`${attr}-$px`;
           return `${attr}="${val}"`;
         })
         let attrsMatch=props.match(attributesRegex);
         for (let attr of attrsMatch || []){
           const attrMatch=attr.match(attrRegex);
-          const attrName=attrMatch[1];
-          if(hasUpperCase(attrName)){
+          const attrName=attrMatch ? attrMatch[1] : null;
+          if(attrName && hasUpperCase(attrName)){
             const fallbackAttr=`$px-${attrName.toLowerCase()}=${attrName}`;
             props=`${props || ''} ${fallbackAttr}`;
           }
@@ -2516,6 +2728,10 @@ const Pixel=(function(global){
       match=`<${tag} ${props || ''} ${ selfClosedTagMatch ? '/>' : '>'}`;
       return match;
     })
+  }
+  function _HTMLParser(html, self, parent, px__VNode){
+    if(!html) return null;
+    html=openingTagsHydration(html);//
     html=html.replace(selfClosedTagsRegex, (match, tag)=>{
       const closingSlashIndex=match.lastIndexOf('/');
       match=match.slice(0, closingSlashIndex);
@@ -2534,10 +2750,8 @@ const Pixel=(function(global){
             node=self ? new PixelTextVNode(self, node.textContent,  px__VNode) : node.textContent;
             NodeList.push(node)
           }
-        }else if(IS_COMMENT_NODE(node))/*Ignore comment nodes*/do_Nothing();
-        else if(isCustomVNode(node) && self){
-          NodeList.push(node)
-        }else if(IS_ELEMENT_NODE(node)){
+        }else if(IS_COMMENT_NODE(node))/*Ignore comment nodes*/pass();
+        else if(IS_ELEMENT_NODE(node)){
           let tagName=node.localName;
           if(hashedTagged(tagName)) tagName= tagName.slice(6,-4);
           const attributes={};
@@ -2557,7 +2771,7 @@ const Pixel=(function(global){
           }
           let Vnode;
           if(self){
-            if(hasOwn(attributes||{}, '$$raw')) define(attributes, '$$rawChildrenData$$',{value:$Entity_Decoder(node.innerHTML), enumerable, configurable});
+            if(hasOwn(attributes||{}, '$$raw')) define(attributes, '$$rawChildrenData$$',{value:_escapeDecoder(node.innerHTML), enumerable, configurable});
             const children=function render(self, px__VNode){
               return IS_VALID_TAGNAME(tagName) ? _HTMLParser(node.innerHTML, self, true, px__VNode ) : node.innerHTML;
             }
@@ -2578,8 +2792,8 @@ const Pixel=(function(global){
       return isGT(len(NodeList),1) ? NodeList : isEQ(len(NodeList),1) ? NodeList[0] : null ;
     }
   }
-  function _getNodeListResponse(NodeList, parent){
-    if(parent && len(NodeList)) return isGT(len(NodeList),1) ? NodeList : NodeList[0];
+  function _getNodeListResponse(NodeList, parent=false){
+    if(isTrue(parent) && len(NodeList)) return isGT(len(NodeList),1) ? NodeList : NodeList[0];
     else if(len(NodeList)) return isGT(len(NodeList),1) ?  new PixelFragmentVNode(self, NodeList) : NodeList[0] ;
     else return null ;
   }
@@ -2600,26 +2814,28 @@ const Pixel=(function(global){
     }
     
   }
-  function NodeMake(opts, options){
+  function makeNativeElement(opts){
     this.is_Custom_Node=true;
-    if(!isPObject(opts)){$Debug(`NodeMake option values must be type of object......>>>>`);return;}else if(isGT(arguments.length, 1)){$Debug(`NodeMake parameter values required only 1 argument.....\n\n${arguments.length} given>>>>>>>>>>>`);return;}
-    const isValidNodeMakeopts=opt=>_mapValue("template,styles,plugin,name,params,onConnected,onDisconnected,onAdopted,onAttrChanged",opt);
+    if(!isPObject(opts)){
+      $Debug(`makeNativeElement option argument values must be type of object......>>>>`);
+      return;
+    }else if(isGT(arguments.length, 1)){
+      $Debug(`makeNativeElement parameter values required only 1 argument.....of an object  option\n\n${arguments.length} given>>>>>>>>>>>`);
+      return;
+    }
+    const isMNEOwnOptions=opt=>_mapValue("plugin,onConnected,onDisconnected,onAdopted,onAttrChanged",opt);
     entries(opts).forEach(([key, value])=>{
-      if(!isValidNodeMakeopts(key)){$Debug(`invalid option value....\n\n "${key}" is not a recognised NodeMake option `);return;}
-      if(isEQ(key, 'styles') && !isString(value)){$Debug(`styleSheet for custom elements must be of type "Strings of css styleSheets"`);return;}
-      if(isEQ(key,'params')){
-        if(!isPObject(opts.params)){$Debug(`params value for Custom Node must be of type "object"\n\n typeof "${getType(opts.params)}" found`);return;}
+      if(!isMNEOwnOptions(key) && !isValidWidgetOption(key)){
+        $Debug(`invalid option value....\n\n "${key}" is not a recognised makeNativeElement option `);
+        return;
       }
     });
-    if(!isNull(opts.params))paramsManager(opts, this)
-    if(isNull(opts.template)){$Debug(`Custom element required a template option`);return;}else if(!isString(opts.template)){ $Debug(`string value required at the node make template option`);return;}
-    if(isNull(opts.name)){$Debug('Custom node does not have a name option\n\nname required for node registration....');return;
-    }else if(!isString(opts.name)){$Debug(`unrecovered  value type\nNodeMake name option required value of type "Strings"\n\n"${getType(opts.name)}" found`);return;
-    } else if(IS_VALID_TAGNAME(opts.name)){$Debug(`"${opts.name}" is an Html tag name .....\n\nshould not be used in Custom nodes`);return;
-    }else if(IS_HTML_DEPRECATED_TAG(opts.name)){$Debug(`an Html depreciated element tagname, \n\nshould not be used for CUSTOM_NODES`);return;
-    }else if(!opts.name.includes('-')){$Debug(`Due to inDom tag passing caveats ,Custom Nodes are termed to be named differently by using lowercases, multiwords saperated by the hyphen or underscore characters\n\n Node with name "${opts.name}" is invalid.......`);return;}
+    if(isNull(opts.template)){
+      $Debug(`Custom element required a template option`);
+      return;
+    }
     if(!isNull(opts.plugins)){
-      if(isFunction(opts.plugins))opts.plugins();
+      if(isPFunction(opts.plugins)) opts.plugins();
       else if(isPObject(opts.plugins) || isArray(opts.plugins)){
       }else{
         $Debug(`plugin type not supported for custom node`);return;
@@ -2632,56 +2848,67 @@ const Pixel=(function(global){
         if(!isFunction(value)){
           $Debug(`LifeCycle callback error\n\n"${ind}" is a callback function, received an invalid type`);return;
         }
-        if(isEQ('onConnected',ind)) define(Hooks, 'connectedCallback',{value, configurable:true});
-        if(isEQ('onDisconnected',ind)) define(Hooks, 'disConnectedCallback',{value, configurable:true});
-        if(isEQ('onAdopted',ind)) define(Hooks, 'adoptedCallback',{value, configurable:true});
-        if(isEQ('onAttrChanged',ind)) define(Hooks, 'attributeChangedCallback',{value, configurable:true});
+        if(isEQ('onConnected',ind)) define(Hooks, 'connectedCallback',{value, configurable});
+        if(isEQ('onDisconnected',ind)) define(Hooks, 'disConnectedCallback',{value, configurable});
+        if(isEQ('onAdopted',ind)) define(Hooks, 'adoptedCallback',{value, configurable});
+        if(isEQ('onAttrChanged',ind)) define(Hooks, 'attributeChangedCallback',{value, configurable});
       } 
     })
-    const pluginThis={
-      name:opts.name,
-    }
-    class Pixel_NodeMake_Element extends HTMLElement{
-      constructor(){
-        super();
-        const shadow=this.attachShadow({ mode: 'open'})
-        const template=compileTemplate(TemplateParser(opts.template, this), this, null);
-        $Data_Hash(opts, null, template);
-        shadow.appendChild(template);
-        const pluginData=opts.plugin.call(pluginThis);
+    pixelCustomNativeElement.prototype.disConnectedCallback=Hooks.disConnectedCallback || pass;
+    pixelCustomNativeElement.prototype.adoptedCallback=Hooks.adoptedCallback || pass;
+      pixelCustomNativeElement.prototype.attributeChangedCallback=Hooks.attributeChangedCallback || pass;
+    pixelCustomNativeElement.prototype.connectedCallback=connectedCallback;
+    function connectedCallback(){
+      const props=new Object();
+      if(len(entries(this.attributes))){
+        for( const [key, attr ] of entries(this.attributes)) {
+          const { name, value } = attr;
+          props[name]=value
+        }
       }
-      Pixel_NodeMake=true;
-      connectedCallback=Hooks.connectedCallback || do_Nothing;
-      disConnectedCallback=Hooks.disConnectedCallback || do_Nothing;
-      adoptedCallback=Hooks.adoptedCallback || do_Nothing;
-      attributeChangedCallback=Hooks.attributeChangedCallback || do_Nothing;
+      const shadow=this.attachShadow({ mode: 'open'});
+      const template=el(opts, props, )().$element;
+      // this.replaceWith(template)
+      shadow.appendChild(template);
+      const user_defined_callback=Hooks.connectedCallback || pass
+      user_defined_callback.call(this, ...arguments);
     }
-    this.name=opts.name;
-    this.element=Pixel_NodeMake_Element;
-    this.resolve=resolve
-    return this;
+    function render(){
+      return pixelCustomNativeElement;
+    }
+    render.define=function define(name, inherit){
+      if(!isString(name) && !isEmptyStr(name) && IS_VALID_TAGNAME(name)){
+        $Debug('Name positional argument passed to define is not a string or a valid name value\n\n or may have conflicted with native html/svg tags');
+        return;
+      }
+      if(inherit && !isString(inherit) && !IS_HTML_TAG(inherit)){
+        $Debug(`problem with the inherit value, \n\n may not be a string value or a valid HTML tagName`);
+        $Debug(`CustomElement registration failed`);
+        return;
+      }
+      customElements.define(name, pixelCustomNativeElement, inherit ? { extends:inherit} : {})
+    }
+    return render;
   }
-  NodeMake=NodeMake.bind({});
-  function resolve(useState=false){
-    useState=bool(useState);
-    customElements.define(this.name, this.element);
-  }
+  makeNativeElement=makeNativeElement.bind({});
   async function AsyncWidget(opts){
     opts=await defineWidget(opts)
     opts.isAsync=true;
     options= opts;
     return await options;
   }
-  function do_Nothing(){}
+  function pass(){}
   function defineWidget(opts){
-    if(isPrimitive(opts) || isArray(opts)){
-      $Debug(`Value Error\n\n invalid value for the defineWidget macro\n/... at /././. at`);return;
+    if(validPixelWidget(opts)){
+      $Debug(`Value Error\n\n invalid value for the defineWidget macro\n/... at /././. at`);
+      return;
     }else if(isGT(arguments.length, 1)){
-      $Debug(`Parameter Error\n\nmax-one argument required\n ${arguments.length} given`);return;
+      $Debug(`Parameter Error\n\nmax-one argument required\n ${arguments.length} given`);
+      return;
     }else if(isPObject(opts) || isFunction(opts)) return opts;
   }
   function processPIXELFile(Source) {
-    const body=createElementVNode('body');
+    const body=createPixelElement('body');
     body.innerHTML=Source
     const script=body.querySelector('script');
     const template=body.querySelector('template');
@@ -2737,7 +2964,7 @@ const Pixel=(function(global){
     for(let name of Object.keys(options)){
       if(!_mapValue(optionsName, name)) {$Debug(`${name} is not a valid defineElement options value`);return;}
     }
-    return el(options.type, options.props, options.children);
+    return el(options.type, options.props||{}, options.children);
   }
   function Req__init__(urlOrOpts,method,options={}){
     let url;
@@ -2805,13 +3032,13 @@ const Pixel=(function(global){
   function Request(urlOrOpts, methodOrOptions,options){
     return new Req__init__(...arguments)
   }
-  for(const [name, callback] of entries(Object.create(new _PixelHttpRequestModule()))) Request[name]=callback
+  for(const [name, callback] of entries(Object.create(new _PixelHttpRequestModule()))) Request[name]=callback;
   function resolveHooks(xhr, opts){
   
   }
   _$compiler_engine_hydrator()
   
-  global._PixelHttpRequestModule=_PixelHttpRequestModule
+  global._PixelHttpRequestModule=_PixelHttpRequestModule;
   global._renterNodeObjects=_renterNodeObjects;
   global.importWidget=importWidget;
   global.defineElement=defineElement;
@@ -2820,8 +3047,8 @@ const Pixel=(function(global){
   global._Evaluate_THIS=_Evaluate_THIS;
   global.None=None;
   global.renderSlots=renderSlots;
-  global.pixelCompilerEngineSettings=pixelCompilerEngineSettings;
-  global._mapValue=_mapValue
+  global.pixelCompilerConfig=pixelCompilerConfig;
+  global._mapValue=_mapValue;
   global.initBuild=initBuild;
   global.addMod=addMod;
   global._initiateChildNodes=_initiateChildNodes;
@@ -2830,6 +3057,8 @@ const Pixel=(function(global){
   global._Run_With_Modifiers=_Run_With_Modifiers
   global.initSSRBuild=initSSRBuild;
   global.log=log;//dev
+  global._Resolver=_Resolver;
+  global._DirectiveResolver=_DirectiveResolver;
   global.Portal=Portal;
   global.renderFor=renderFor;
   global.Build=Build;
@@ -2841,23 +3070,27 @@ const Pixel=(function(global){
   global._validateType=_validateType
   global.Any=Any;
   global._getNodeListResponse=_getNodeListResponse;
+  global.nextTick=nextTick;
   global._generate_UUID=_generate_UUID;
   global.Type=Type;
   global.defineWidget=defineWidget;
   global.html=html;
+  global._escapeDecoder=_escapeDecoder;
   global.withDirectives=withDirectives;
   global.traverse=traverse;
-  global.resolveDirective=resolveDirective;
-  global.createElementVNode=createElementVNode;
+  global.buffer=buffer;
+  global.createPixelElement=createPixelElement;
   global.Widget=Widget;
+  global.len=len;
   global._HTMLParser=_HTMLParser;
   global._EvalWith=_EvalWith;
   global.data=data;
   global._createNativeElement=_createNativeElement;
-  global.Request=Request
+  global.Request=Request;
+  global.isNativeElement=isNativeElement;
   global._createWidgetElement=_createWidgetElement;
   global._createTextElement=_createTextElement;
-  global.NodeMake=NodeMake;
+  global.makeNativeElement=makeNativeElement;
   global._createFragment=_createFragment;//dev
   global.$Debug=$Debug;//dev
   global.Fragment=Fragment;
