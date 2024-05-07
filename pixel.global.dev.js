@@ -26,7 +26,13 @@ const Pixel=(function(global){
   const isPrimitive=val=>!_validateType(val, [ Object, Function, Array, Date])
   const arrayMutationMethods="push,pop,shift,unshift,splice,sort,reverse";
   const setMutationMethods="add,delete,clear", mapMutationMethods="set,delete,clear";
-  const hasOwn=Object.hasOwn, assign=Object.assign, define=Object.defineProperty, entries=Object.entries, keys=Object.keys, values=Object.values;
+  const hasOwn=Object.hasOwn, assign=Object.assign, entries=Object.entries, keys=Object.keys, values=Object.values;
+  // const define=(object, propKey, value)=>{
+  //   Object.defineProperty(object, propKey,{
+  //     enumerable, configurable, value
+  //   });
+  // }
+  const define=Object.defineProperty;
   const hasProp=(obj, prop)=> prop  in obj;
   function _mapValue(obj, arg){
     return isString(obj) ? new Set(obj.split(',')).has(arg) : isPObject(obj) ? hasProp(obj, arg) : isArray(obj) ? obj.includes(arg) : isSet(obj) || isMap(obj) ? obj.has(arg) : false;
@@ -145,27 +151,6 @@ const Pixel=(function(global){
   }
   const isBaseWidget=widget=> widget instanceof Widget;
   const isProxy=value=>_validateType(value, Proxy);
-  class Type{
-    type=undefined
-    validator=undefined
-    constructor(){
-      
-    }
-  }
-  class AnyType extends Type{
-    constructor(){
-      super()
-    }
-    any_data_type=true
-  }
-  class NoneType extends Type{
-    void_data_type=true
-  }
-  const is_Custom_Type=type=>_validateType(type, Type);
-  const Any=new AnyType();
-  const None=new NoneType();
-  const isAnyType=data=>_validateType(data, AnyType);
-  const isNoneType=data=>_validateType(data, NoneType);
   const validPixelWidget=(w)=>(isPObject(w) || isPFunction(w) || isClass(w)) && !isProxy(w);
   function parseScript(script){
     return new Function(`"use strict"; return ${script}`)();
@@ -173,10 +158,10 @@ const Pixel=(function(global){
   const isInDom=element=> isEQ(element.getRootNode(),document);
   const GLOBAL_EVENTS="abort,animationcancel,animationend,animationiteration,animationstart,auxclick,blur,error,focus,canplay,canplaythrough,cancel,change,click,close,contextmenu,dblclick,drag,dragend,dragenter,dragleave,dragover,dragstart,drop,durationchange,emptied,ended,formdata,gotpointercapture,input,invalid,keydown,keypress,load,keyup,loadeddata,loadedmetadata,loadend,loadstart,lostpointercapture,mousedown,mouseenter,mouseleave,mousemove,mouseout,mouseover,mouseup,mousewheel,wheel,pause,play,playing,pointerdown,pointermove,pointerup,pointercancel,pointerover,pointerout,pointerleave,pointerenter,pointerlockchange,pointerlockerror,progress,ratechange,reset,resize,scroll,securitypolicyviolation,seeked,seeking,select,selectstart,selectionchange,slotchange,stalled,submit,suspend,timeupdate,touchcancel,touchend,touchstart,touchmove,transitioncancel,transitionrun,transitioned,transitionstart,waiting,volumechange,autocompleteerror,autocomplete";//Html event names managed by pixel on elements
   const IS_VALID_EVENT_HANDLER=eventName=>_mapValue(GLOBAL_EVENTS, eventName);
-  const isClass = val=> val.toString().startsWith('class');
+  const isClass = val=> isFunction(val) && val.toString().startsWith('class');
   const LCH="created,mounted,updated,init";
-  function isInstanceOf(construct, val){
-    if(isClass(construct)) return val instanceof construct;
+  function isInstanceOf(val, construct){
+    if(isClass(construct) || isXtruct(construct)) return val instanceof construct;
     return false;
   }
   function instance_Has_Widget(self, name ){
@@ -211,9 +196,11 @@ const Pixel=(function(global){
   function compileToRenderable(value){
     if(canRender(value)) return String(value);
     else if(_validateType(value, [Array, Date, Function])) return value.toString();
-    else return JSON.stringify(value);
+    else if(!isNull(value)) return JSON.stringify(value);
+    return "";
   }
-  
+  const arrowFNRegex=/^([(]?(.*?)*[ ]*[)]?)=>/;
+  const isAFunction=(fn)=> isPFunction(fn) && arrowFNRegex.test(fn.toString());
   function isReactiveValue(value){
     
   }
@@ -225,6 +212,29 @@ const Pixel=(function(global){
   }
   function runtimeShallowUnwrap(value){
     
+  }
+  function deepCompare(val1, val2){
+    if(isPrimitive(val1) && isPrimitive(val2) && !isEQ(val1,  val2)) return false;
+    else if(!isEQ(getType(val1), getType(val2))) return false;
+    if(isArray(val1) || isSet(val1) ){
+      if(!isEQ(len(val1), len(val2))) return false;
+      val1=isSet(val1) ? arrSet(val1) : val1;
+      val2=isSet(val2) ? arrSet(val2) : val2;
+      for(const [ key, value] of val1.entries()){
+        if(isFalse(deepCompare(value, val2[key]))) return false;
+      }
+      return true;
+    }else if(isObject(val1)){
+      if(!isEQ(len(val1), len(val2))) return false;
+      let index=0;
+      for(const [ key, value] of entries(val1)){
+        if(isFalse(isEQ(key, keys(val2)[index]))) return false
+        if(isFalse(deepCompare(value, val2[key]))) return false;
+        index++;
+      }
+      return true
+    }
+    return false;
   }
   function _$compiler_engine_hydrator(){
     global=createObj('Pixel');
@@ -274,6 +284,29 @@ const Pixel=(function(global){
       return false;
     }
   }
+  class Type{
+    constructor(type, validator){
+      this.type=type;
+      this.validator=validator;
+    }
+  }
+  class AnyType extends Type{
+    constructor(){
+      super([], function validator(value){
+        return true;
+      })
+    }
+  }
+  class NoneType extends Type{
+    constructor(){
+      super();
+    }
+  }
+  const isBaseType=type=>type instanceof Type;
+  const Any=new AnyType();
+  const None=new NoneType();
+  const isAnyType=data=>_validateType(data, AnyType);
+  const isNoneType=data=>_validateType(data, NoneType);
   function _validateType(val, type){
     if(isFunction(type) ){
       if(new Set(DataFunctionMap).has(type)){
@@ -289,14 +322,13 @@ const Pixel=(function(global){
       }else if(isClass(type) || isXtruct(type)) {
         let res=false;
         try {
-          res=val instanceof type
+          res=val instanceof type;
         }catch(err){
           return res;
         }
-        return res
+        return res;
       }
-    }else if(isAnyType(type)) return true;
-    else if(isArray(type)){
+    }else if(isArray(type)){
       let res=false;
       for(let typeF of type.values()){
         if(!isFunction(typeF)){
@@ -306,7 +338,14 @@ const Pixel=(function(global){
         if(isTrue(res)) break;
       }
       return res;
-    }
+    }else if(isBaseType(type)){
+      if(type instanceof AnyType) return true;
+      else if(type instanceof NoneType) return _validateType(val, [undefined, null, ""]);
+      let res;
+      if(type.validator) res=type.validator(val);
+      if(!isTrue(res)) res=_validateType(val, type.type);
+      return res;
+    }else if(new Set([undefined, null, "" ]).has(type)) return isString(val) ? isEmptyStr(val) : isNull(val);
     return false;
   }
   function Signal(name, callback, options){
@@ -324,7 +363,7 @@ const Pixel=(function(global){
     let hasSkip;
     let node;
     let is_hyperscript=px__VNode.is_hyperscript;
-    if(px__VNode)  define(px__VNode, '_vnode_key',{value:_generate_UUID(7), enumerable})
+    if(px__VNode)  define(px__VNode, '_vnode_key',{value:_generateUUID(7), enumerable})
     if(parent && !is_hyperscript){
       let hasSkip=hasOwn(parent, '$$raw');
       const Skip=parent['$$raw'];
@@ -358,7 +397,7 @@ const Pixel=(function(global){
     _vnode_key=undefined
     patch_tracks=new Set()
     conditional_record={ src:undefined, res:false, passed:false}
-    compiler_options=new Object()
+    compiler_options=createObj('compiler_options', { fallThrough:createObj('fallThrough')});
     px_hash_=undefined
     children_nodes_list=new Array()
     is_hyperscript=false
@@ -450,7 +489,6 @@ const Pixel=(function(global){
     return { obj:dataObject, keyName:data.key, valRef:data.value, loopType:data.type, ref:data.obj }
   }
   const hasIFWithFor=(props, cond)=> has_Intersect_Prop(cond.split(','), keys(props)) && keys(props).includes('$$for');
-  
   class renderlessVNode {
     type='conditional'
     source=''
@@ -464,7 +502,7 @@ const Pixel=(function(global){
       fragment.IS_RENDERLESS=true;
       this.$element=fragment.$element;
       this.value=value;
-      this.compiler_options=compiler_options;
+      this.compiler_options=assign(this.compiler_options,compiler_options);
       this.source=source;
       this.px__VNode=px__VNode;
       this.siblings=siblings;
@@ -581,7 +619,7 @@ const Pixel=(function(global){
         const props=assign({}, args.props);
         const Node=(type, props, children, self, is_hyperscript, ctx, NodeList)=>createVElement(type, props, children, self, is_hyperscript, ctx, NodeList);
         const loopNode=Node(args.type, props, args.children, args.self, false, ctx,  NodeList);
-        loopNode.compiler_options=assign( { props, ctx, Node, index:i, value:i+1 }, options);
+        loopNode.compiler_options=assign(loopNode.compiler_options, assign( { props, ctx, Node, index:i, value:i+1 }, options));
         options.Node=Node;
         if(loopNode) NodeList.push(loopNode);
       }
@@ -596,14 +634,14 @@ const Pixel=(function(global){
         const props=assign({}, args.props);
         const Node=(type, props, children, self, is_hyperscript, ctx, NodeList)=>createVElement(type, props, children, self, is_hyperscript, ctx, NodeList);
         const loopNode=Node(args.type, props, args.children, args.self, false, ctx,  NodeList);
-        loopNode.compiler_options=assign({  index, value:vl, }, options);
+        loopNode.compiler_options=assign(loopNode.compiler_options, assign({  index, value:vl, }, options));
         options.Node=Node
         if(loopNode) NodeList.push(loopNode);
       }
     }
-    wrapper= _getNodeListResponse(NodeList);
+    wrapper= _getNodeListResponse(NodeList, self);
     wrapper.isWidgetWrapper=true;
-    wrapper.compiler_options=options;
+    wrapper.compiler_options=assign(wrapper.compiler_options,options);
     px__VNode.NodeList.add(wrapper)
     return wrapper.$element
   }
@@ -662,17 +700,18 @@ const Pixel=(function(global){
       return
     }
   }
-  function createVElement(type, props, children, self, is_hyperscript, ctx, siblings){
+  function createVElement(type, props, children, self, is_hyperscript, ctx, siblings, ssc){
     return new PixelElementVNode(...arguments);
   }
   class PixelElementVNode extends PixelVNode{
-    constructor(type, props, children, self, is_hyperscript=false, ctx, siblings){
+    constructor(type, props, children, self, is_hyperscript=false, ctx, siblings, ssc){
       super();
       if(is_hyperscript){
         this.is_hyperscript=true;
         this.called_render=true;
       }
       if(ctx) this.LabContext=ctx;
+      if(ssc) this.LabContext=assign(ssc, this.LabContext);
       const frameDirectives="$$for,$$if,$$else-if,$$else";
       let element;
       bufferDirSetups(self, props, this);
@@ -688,6 +727,7 @@ const Pixel=(function(global){
     constructor(self, vnodes=[]){
       super();
       this.$element=_createFragment(self)
+      vnodes=!isArray(vnodes) ? [vnodes] : vnodes;
       for(let node of vnodes.values()){
         if(isPrimitive(node)){
           if(isNull(node) || isEmptyStr(node)) pass;
@@ -808,6 +848,20 @@ const Pixel=(function(global){
     const customEl=new DOMParser().parseFromString(html,'text/html').body.childNodes[0];
     if(isCustomElement(customEl) || isNativeElement(customEl)) return customEl;
   }
+  function slotScopingFallThrough(self, node, px__VNode){
+    if(!(px__VNode && isNativeElement(node) && isEQ(node.localName, 'slot') && len(px__VNode.compiler_options.fallThrough))) return node;
+    const fallThrough = px__VNode.compiler_options.fallThrough;
+    const fallThroughStore={};
+    for(const [key, value ] of entries(px__VNode.compiler_options.fallThrough)){
+      if(key.startsWith('__') && !hasProp(fallThroughStore, '_')) fallThroughStore._=value;
+      else fallThroughStore['_'+key]=value;
+      delete px__VNode.compiler_options.fallThrough[key];
+    }
+    assign(px__VNode.compiler_options.fallThrough, fallThroughStore);
+    node.px__VNode=px__VNode;
+    return node;
+    
+  }
   function createPixelElement(type, props, children, self, px__VNode){
     if(isString(type) && (IS_VALID_TAGNAME(type) || !instance_Has_Widget(self||{}, type))) return _createNativeElement(...arguments);
     else return _createWidgetElement(...arguments);
@@ -817,7 +871,7 @@ const Pixel=(function(global){
     const argsCount=len(new Set(arguments));
     let element;
     const is_hyperscript=px__VNode?.is_hyperscript || false;
-    if(px__VNode)  px__VNode._vnode_key=_generate_UUID(7)
+    if(px__VNode)  px__VNode._vnode_key=_generateUUID(7)
     if(isString(type)){
       if(IS_VALID_TAGNAME(type)){
         element=document.createElement(type);
@@ -843,31 +897,18 @@ const Pixel=(function(global){
       } else element= _initiateChildNodes(self, children, px__VNode, element );
     }
     if(attributes) element=AttributeManager(attributes, element, self, px__VNode)
-    
+    slotScopingFallThrough(self, element, px__VNode);
     if(self && self.ownProperties.px_hash_) element.setAttribute("data-px_hash_", self.ownProperties.px_hash_);
-    // if(!is_hyperscript && element.hasAttribute('$$ref')){
-    //   const attr=element.getAttribute('$$ref');
-    //   if(!has_Object_Prop(self.model,attr)){
-    //     $Debug(`Directive resolver issue::\n\n$$ref directive property value does not point to a valid model path\n"${attr}" is referenced on build, but not defined on model instance. `);return element;
-    //   }else{
-    //     let item;
-    //     try{
-    //       item=get_Object_Value(self.model, attr, true);
-    //     }catch(err){
-    //       $Debug(`undefined property path at       at\n\n"ref" directive of "${element.outerHTML} element`);
-    //       return;
-    //     }
-    //     set_Object_Value(self.model || {} , attr, {value:element})
-    //   }
-    // }
     return element;
   }
   function _createWidgetElement(type, props, children,  self, px__VNode){
     const is_hyperscript=px__VNode?.is_hyperscript;
     if(isString(type) && !is_hyperscript){
       children=children(self, px__VNode)
-      children=isString(children) ? _HTMLParser(children,  self, true, px__VNode) : isRender(children)  ? children(self, px__VNode) : children;
-      if(!isArray(children)) children=[children]
+      // log(children)
+      const childrenPrefix=(inst, VN, SC)=>isString(children) ? _HTMLParser(children,  inst, true, VN, SC) : isRender(children, SC)  ? children(inst, VN, SC) : children;
+      children=childrenPrefix(self, px__VNode);
+      if(children && !isArray(children)) children=[children]
       const widget=ResolveWidget(self, px__VNode, {type, props, children })//reso;ving a widget data object
       px__VNode.is_mount_root=true;
       px__VNode.px_hash_=self.ownProperties.px_hash_;
@@ -947,6 +988,7 @@ const Pixel=(function(global){
         const blocks=text.split('>>')
         text=_$runModelBind(self, blocks.pop(), px__VNode);
         if(len(blocks)) text=$Block_HelpersService(self,text, blocks, px__VNode);
+        
         return compileToRenderable(text);
       })
     }
@@ -969,9 +1011,10 @@ const Pixel=(function(global){
   const normalize_Block=(self, name)=>hasOwn(BUILT_IN_BLOCKS, name) ? BUILT_IN_BLOCKS[name] : self.register.blocks[name] || pass;
   const BUILT_IN_BLOCKS={
     upper(value, modifiers){
-      return String(value).toUpperCase();
+      return isString(value) ? String(value).toUpperCase() : value;
     },
     capitalize(value, modifiers){
+      if(!isString(value)) return value;
       const splitted=String(value).split(' ');
       for(let [ind, val] of entries(splitted)){
         splitted[Number(ind)]=val.charAt(0).toUpperCase()+val.slice(1)
@@ -1022,11 +1065,11 @@ const Pixel=(function(global){
     }
     return str;
   }
-  const PixelDirectives="if,else,else-if,html,text,for,raw,ref,slot,model,px,bind,on,scoped";
+  const PixelDirectives="if,else,else-if,html,text,for,raw,ref,slot,model,px,bind,on,scoped,fall";
   const widgetPassableDirectives="html,text,scoped,if,else,else-if,for,ref,slot,bind,on"
   const autoBindedDirectives="model,for,ref,bind,on"
-  const NodeBasedDirectives="html,text,raw,model,scoped,ref,if,else,else-if,slot,bind,on";
-  const hyperscriptDirectives="html,text,ref,slot,on,scoped,model";
+  const NodeBasedDirectives="html,text,raw,model,scoped,ref,if,else,else-if,slot,bind,on,fall";
+  const hyperscriptDirectives="html,text,ref,slot,on,scoped,model,fall";
   const isHyperscriptDirective=dir=>_mapValue(hyperscriptDirectives, dir);
   const cond_Directives="if,else-if,else";
   const isPixelDirective=dir=>_mapValue(PixelDirectives, dir);
@@ -1201,7 +1244,7 @@ const Pixel=(function(global){
     }
   }
   function directive_sep(key){
-    return  key.includes(':') ? key.split(':') : [key]
+    return key.includes(':') ? key.split(':') : [key]
   }
   function vnodeObserver(self, element){
     function callback(list, observer){
@@ -1223,7 +1266,9 @@ const Pixel=(function(global){
         px__VNode.PATCH_FLAGS.add('ELEMENT_ATTRIBUTES')
       }
       if(has$$_bind(key)){
-        if(isPixelDirective(directive_sep(key)[0].slice(2)) &&  !is_hyperscript) element=_Resolve_Builtin_Directives(self, key, attr, element, px__VNode);
+        let modifiers=key.includes('|') ? key.split('|') : [];
+        key=len(modifiers) ? modifiers.shift() : key;
+        if(isPixelDirective(directive_sep(key)[0].slice(2)) &&  !is_hyperscript) element=_Resolve_Builtin_Directives(self, key, attr, element, px__VNode, modifiers);
         else if(!is_hyperscript) element=_Resolve_Custom_Directives(self, key, attr, element, px__VNode);
         px__VNode.PATCH_FLAGS.add('ELEMENT_ATTRIBUTES')
       }else if(isHTMLIDLAttributes(key) && !isHTMLBooleanAttributes(key)){
@@ -1276,6 +1321,7 @@ const Pixel=(function(global){
     else if(isEQ('scoped', direct.name)) $$dir_SCOPED(self, direct.value, element, px__VNode);
     else if(isEQ('ref', direct.name)) $$dir_REF(self, direct.value, element, px__VNode);
     else if(isEQ('model', direct.name)) $$dir_MODEL(self, direct.value, element, px__VNode);
+    else if(isEQ('fall', direct.name)) $$dir_FALL(self, direct.value, element, px__VNode, direct.modifiers);
   }
   function boolAttrsParse(vnode, key, attr){
     if(!isEQ(attr, false)) {
@@ -1515,6 +1561,16 @@ const Pixel=(function(global){
     node.innerHTML=_styleSheet_hydration(self, node.innerHTML);
     return node;
   }
+  function $$dir_FALL(self, item, node, px__VNode, modifiers){
+    const isSlotEl=isNativeElement(node) && isEQ(node.localName, 'slot');
+    if(!isSlotEl) {
+      $Debug(`"$$fall" directive is only scoped to document <slot> elements only`, self, true);
+      return node;
+    }
+    let value=_$runModelBind(self, item, px__VNode, true);
+    px__VNode.compiler_options.fallThrough[len(modifiers) ? modifiers.shift() : '__'+_generateUUID(3) ]=()=>value;
+    return node;
+  }
   function $$dir_MODEL(self, item, node, px__VNode){
     if(!Is_Form_Element(node)){
       $Debug(`Compilation Error::\n\n cannot bind a data model to  a none form element`, self, true);
@@ -1540,16 +1596,18 @@ const Pixel=(function(global){
       });
     }
   }
-  function _Resolve_Builtin_Directives(self, key, attr, vnode, px__VNode){
+  function _Resolve_Builtin_Directives(self, key, attr, vnode, px__VNode, modifiers){
     let item =bindKeyAsValue(key, attr);
-    let name=directive_sep(key)[0].slice(2);
-    if(isEQ(name, 'bind')) vnode=$$dir_BIND(self, {key, item}, vnode, px__VNode)
-    else if(isEQ(name, 'html') || isEQ(name, 'text')) $$dir_HTML(self, item, vnode, px__VNode, isEQ(name, 'text'));
-    else if(isEQ(name, 'ref')) $$dir_REF(self,  item, vnode, px__VNode);
-    else if(isEQ(name, 'slot')) $$dir_SLOT(self, item, vnode, px__VNode);
-    else  if(isEQ(name, 'scoped')) vnode=$$dir_SCOPED(self, item, vnode, px__VNode);
-    else if(isEQ(name, 'model')) $$dir_MODEL(self, item, vnode, px__VNode);
-    else if(isEQ(name, 'on')) vnode=$$dir_ON(self, attr, vnode, px__VNode, key);
+    let name=directive_sep(key )[0].slice(2);
+    const callArgs=()=>[self, item, vnode, px__VNode, modifiers];
+    if(isEQ(name, 'bind')) vnode=$$dir_BIND(self, {key, item}, vnode, px__VNode, modifiers);
+    else if(isEQ(name, 'html') || isEQ(name, 'text')) $$dir_HTML(self, item, vnode, px__VNode, isEQ(name, 'text'), modifiers);
+    else if(isEQ(name, 'ref')) $$dir_REF(self,  item, vnode, px__VNode, modifiers);
+    else if(isEQ(name, 'slot')) $$dir_SLOT(self, item, vnode, px__VNode, modifiers);
+    else  if(isEQ(name, 'scoped')) vnode=$$dir_SCOPED(self, item, vnode, px__VNode, modifiers);
+    else  if(isEQ(name, 'fall')) vnode=$$dir_FALL(self, item, vnode, px__VNode, modifiers, modifiers);
+    else if(isEQ(name, 'model')) $$dir_MODEL(self, item, vnode, px__VNode, modifiers);
+    else if(isEQ(name, 'on')) vnode=$$dir_ON(self, attr, vnode, px__VNode, key, modifiers);
     return vnode;
   }
   function get_Model_Event(vnode ){
@@ -1602,17 +1660,19 @@ const Pixel=(function(global){
     return function render(self){ 
       const Node=(inst)=> createVElement(type, props, childrenOrProps, inst ,true);
       const vnode=Node(self);
-      vnode.compiler_options={ props:()=>props, children:()=>childrenOrProps, type, Node  };
+      vnode.compiler_options=assign(vnode.compiler_options,{ props:()=>props, children:()=>childrenOrProps, type, Node  });
       return vnode;
     }
   }
   class Widget {
     constructor(options, opts){
       if(!options) define(this, 'model', {value:new Model()})
-      else if(isPObject(options)){
-        for(let [key, value ] of entries(options)){
+      else if(isPObject(options)) {
+        for(const [key, value] of entries(options)){
           this[key]=value;
+          // log(key)
         }
+        // log(this, keys(options))
       }else if(isPFunction(options)){
         this.build=options;
         if(opts && isPObject(opts)) {
@@ -1851,21 +1911,11 @@ const Pixel=(function(global){
     }
     return  returnRender(()=>vnode);
   }
-  function setupClassBasedWidget(options, self){
-    const instanciate=new options();
-    if(!isBaseWidget(instanciate)){
-      $Debug(`Class widget must extend the base "Widget" class\n\nThe "${options.name}" widget failed to extend the base widget class`, self, true);
-      return {};
-    }
-    const widget=Object.create(instanciate);
-    if(options.$attributes) widget.$attributes=options.$attributes;
-    if(options.$children) widget.$children=options.$children;
-    return widget;
-  }
   function BasedWidgets(opts, self){
-    if(isClass(opts)) return setupClassBasedWidget(opts, self);
-    else if(isPFunction(opts)) return setupFunctionWidget(opts, self);
-    return opts;
+    const widget = isPObject(opts) && !isBaseWidget(opts) ? new Widget(opts) : opts;
+    if(opts.$attributes) widget.$attributes=opts.$attributes;
+    if(opts.$children) widget.$children=opts.$children;
+    return widget;
   }
   function sanitizedOptions(self, options){
     const argcount=len(options);
@@ -1937,14 +1987,18 @@ const Pixel=(function(global){
     const slots=self.core.slots;
     if(!len(slots))  return vnode;
     vnode=isRender(vnode) ? vnode() : vnode;
+    // log(vnode)
     const slot_elements=vnode.$element.querySelectorAll('slot');
     const assynedSlots=new Set()
     for(let slot_el of slot_elements.values()){
       let slotN=slot_el.getAttribute('name');
       if(hasOwn(slots, slotN) && !isNull(slots[slotN]()) && !assynedSlots.has(slotN)){
+        if(len(slot_el.px__VNode.compiler_options.fallThrough)) {
+          // log(self)
+        }
         slot_el.replaceWith(slots[slotN]().$element);
         assynedSlots.add(slotN);
-      }else if((!slotN || isEmptyStr(slotN)) && !assynedSlots.has('default') && hasOwn(slots, 'default')) slot_el.replaceWith(slots.default(self)?.$element);
+      }else if((!slotN || isEmptyStr(slotN)) && !assynedSlots.has('default') && hasProp(slots, 'default')) slot_el.replaceWith(slots.default(self)?.$element);
     }
     if(!len(slot_elements) && isNativeElement(vnode.$element) && IS_ELEMENT_NODE(vnode.$element) && isEmptyStr(vnode.$element.innerHTML) && hasOwn(slots, 'default')){
       const inheritSlot=self.core.settings.inheritSlot;
@@ -2023,11 +2077,11 @@ const Pixel=(function(global){
   }
   function dataModel(props){
     if(props && !isPObject(props)){
-      $Debug(`argument at position 1 of the "dataModel" utils macro expects a plaim object`, self, true);
+      $Debug(`argument at position 1 of the "dataModel" utils macro expects a plain object`, self, true);
       return;
     }else if(!props) return this.model;
     for(let [key, value] of entries(props)){
-      this.model[key]=value;
+      if(!hasProp(this.model, key)) this.model[key]=value;
     }
     return this.model;
   }
@@ -2094,7 +2148,7 @@ const Pixel=(function(global){
     __Generate_Widget_Hash(self);
     return options;
   }
-  function _generate_UUID(length, type) {
+  function _generateUUID(length, type) {
     const alpaNum ='A,a,B,b,C,c,D,d,E,e,F,f,G,g,H,h,I,i,J,j,K,k,L,l,M,m,N,n,O,o,P,p,Q,q,R,r,S,s,T,t,U,u,V,v,W,w,X,x,Y,y,Z,z,0,1,2,3,4,5,6,7,8,9,$';
     let letters=alpaNum.split(',');
     let id = '';
@@ -2128,7 +2182,7 @@ const Pixel=(function(global){
     return new depsRecord(self)
   }
   function __Generate_Widget_Hash(self){
-    let id=_generate_UUID(10);
+    let id=_generateUUID(10);
     const hash=`_px_${id}`;
     define(self.ownProperties, 'px_hash_', {value:hash, configurable, enumerable});
   }
@@ -2248,8 +2302,21 @@ const Pixel=(function(global){
     self.core=createObj('core',{utils:createObj('utils'), settings:createObj('settings', Global_Settings), slots:createObj('slots'), map:createObj('map',{ is_hyperscript:false }), activeObserver:null});
     self.$globals=createObj('$globals',{register:createObj('register', self.register), setupOptions:createObj('setupOptions'), $hanger:createObj('$hanger')});
   }
+  function smartSlotMapping(self, slotContent, slotName, slottErr, defaultSlotsRecord){
+    if(!isEQ(slotName, 'default') && !hasProp(self.core.slots, slotName) ){
+      self.core.slots[slotName]=returnRender(()=> slotContent);
+    }else if(isEQ(slotName, 'default')){
+      defaultSlotsRecord.add(slotContent)
+    }else{
+      slottErr(slotName, slotContent);
+      return;
+    }
+  }
   function _induceSlotContents(self, options){
-    if(!hasOwn(options, '$children') || !(options.slots && len(options.slots))) return;
+    if(!hasProp(options, '$children') && !isTrue(options.slots && len(options.slots))) {
+      defineFallbackSlotsRef(self, { slots:['default']})
+      return;
+    }
     const px__VNode=options.$children?.px__VNode;
     const is_hyperscript= options.build ? true : false;
     let slots=hasOwn(options.$children||{}, 'NodeList') ? options.$children.NodeList : options.$children||[];
@@ -2262,58 +2329,54 @@ const Pixel=(function(global){
     else if(!slots || !len(slots)){ 
       if(!is_hyperscript) return;
       if(options.slots && len(options.slots) ) defineFallbackSlotsRef(self, options);
-      else defineFallbackSlotsRef(self, { slots:[]})
       return;
     }
+    const defaultSlotsRecord=new Set();
     for(let slotContent of slots.values()){
-      if(isPrimitive(slotContent)){
+      if(isPrimitive(slotContent) && !isNull(slotContent)){
         slotContent=new PixelTextVNode(self, String(slotContent), px__VNode);
-      }
-      if(isPixelVNode(slotContent) || isRender(slotContent)){
-        if(isRender(slotContent)) slotContent = slotContent(self);
+        defaultSlotsRecord.add(slotContent);
+      }else if(isPixelVNode(slotContent) || isRender(slotContent)){
         const slotName=slotContent.slot_name || 'default';
+        if(isRender(slotContent)) slotContent = slotContent(self);
+        
         if(isEQ(slotContent.$element.localName,'template')){
-          slotContent=new PixelFragmentVNode(self, slotContent.NodeList)
+          slotContent=_getNodeListResponse(slotContent.NodeList, self);
         }
-        if( !self.core.slots[slotName] ){
-          self.core.slots[slotName]=returnRender(()=> slotContent);
-        }else if(isEQ(slotName, 'default')){
-          slotContent=new PixelFragmentVNode(self, [ self.core.slots[slotName](self), slotContent]);
-          self.core.slots[slotName]=returnRender(()=> slotContent);
-        }else{
-          slottErr(slotName, slotContent);
-          return;
-        }
+        smartSlotMapping(self, slotContent, slotName, slottErr, defaultSlotsRecord)
       }else if(isSlotInstance(slotContent) && len(slotContent.slots)){
         for(let [name, slot] of entries(slotContent.slots)){
           if(!isChildrenNode(slot())){
-            $Debug(`Unexpected "${getType(slot)}" data type passed to renderSlots  instance\n at   ... ^ "${name}" slot"\n\nexpecting a pixel valid  DOM value`,self, true);return;
-          }
-          if(isPrimitive(slot()) && !isNull(slot())) slot=returnRender(()=> new PixelTextVNode(self, String(slot(self)), px__VNode))
-          if( !hasOwn(self.core.slots, name)  ){
-            self.core.slots[name]=returnRender(()=> slot(self),);
-          }else if(isEQ(name, 'default')){
-            if(self.core.slots.default) slot=returnRender(()=> new PixelFragmentVNode(self, [ self.core.slots[name](), slot(self)]));
-            self.core.slots.default=returnRender(()=> slot(self));
-          }else{
-            slottErr(name, slot);
+            $Debug(`Unexpected "${getType(slot)}" data type passed to renderSlots  instance\n at   ... ^ "${name}" slot"\n\nexpecting a pixel valid  DOM instance value`,self, true);
             return;
           }
+          if(isPrimitive(slot()) && !isNull(slot())) slot=returnRender(()=> new PixelTextVNode(self, String(slot(self)), px__VNode))
+          smartSlotMapping(self, slot(self), name, slottErr, defaultSlotsRecord)
         }
       }
     }
+    if(len(defaultSlotsRecord)){
+      self.core.slots.default=()=>_getNodeListResponse(arrSet(defaultSlotsRecord), self);
+    }
     if(!is_hyperscript) return;
-    defineFallbackSlotsRef(self, options)
+    defineFallbackSlotsRef(self, options);
   }
   function defineFallbackSlotsRef(self, options){
+    function slotRender(def){
+      if(!isPFunction(def)){
+        $Debug(`Render functions default slot content requires to be a render function also`, self, true);
+        return null;
+      }
+      return _getNodeListResponse(def(), self)
+    }
     if(options.slots && len(options.slots)){
       for(const sn of options.slots.values()){
         if(!_mapValue(self.core.slots, sn)){
-          self.core.slots[sn]=returnRender(()=> null);
+          self.core.slots[sn]=slotRender;
         }
       }
       if(!_mapValue(self.core.slots, 'default') && !_mapValue(options.slots, 'default')){
-          self.core.slots['default']=returnRender(()=> null);
+          self.core.slots['default']=slotRender;
         }
     }
   }
@@ -2383,7 +2446,6 @@ const Pixel=(function(global){
     }
 
     _Data_Hydrations(this, options)
-    
     if(isNull(options.build) && isNull(options.template))options.build=null;
     define(this.core, 'build', {value:options.build || options.template || options.markdown , writable, enumerable});
     resolve_Proto_Call(this, options);
@@ -2394,7 +2456,8 @@ const Pixel=(function(global){
   function returnRender(build, self){
     return function render(self){ 
       build= isRender(build) ? build(self) : isFunction(build) ? build() : build;
-      return isArray(build) ? new PixelFragmentVNode(self, build) : build; }
+      return _getNodeListResponse(build, self);
+    }
   }
   function get_Init_Build(self, selector, build){
     let render;
@@ -2412,7 +2475,7 @@ const Pixel=(function(global){
         return false;
       }
       self.core.map.is_hyperscript=true;
-      render= ()=>res
+      render= ()=> _getNodeListResponse(res(), self);
     }else if(isString(self.core.build)){
       render = (inst)=> returnRender(()=> _HTMLParser(self.core.build, inst, false));
       self.core.render=render;
@@ -2420,7 +2483,6 @@ const Pixel=(function(global){
       inDomCaveatRemodeling(self);
       render = (inst)=> returnRender(()=> _HTMLParser( _GenerateRoot(selector).innerHTML || '', inst, false));
     }
-    self.core.render=render(self)
     return render(self);
   }
   function inDomCaveatRemodeling(self){
@@ -2470,7 +2532,6 @@ const Pixel=(function(global){
     })
     dataModel.call(self, assign({},self.register.properties))
   }
-  _Pixel_Build.prototype.mount=mount;
   function mount(nodeSelector){
     this.hasMountProto=true;
     let domRoot=_GenerateRoot(nodeSelector);
@@ -2492,7 +2553,7 @@ const Pixel=(function(global){
     }
     const MoutRootToken={
       IS_PIXEL_MOUNTROOT:true,
-      __mountRootToken:'px__'+_generate_UUID(5),
+      __mountRootToken:'px__'+_generateUUID(5),
     }
     domRoot.innerHTML='';
     callbackHookWithCatch(this, this.operands._LIFECIRCLEHOOKS.preMount, 'preMount');
@@ -2504,7 +2565,6 @@ const Pixel=(function(global){
     });
     return this;
   }
-  _Pixel_Build.prototype.widget=widget;
   function widget(name, widget){
     if(!isString(name) || !validPixelWidget(widget)){
       $Debug(`unrecognised global widget registration for ${name} widget`);
@@ -2516,7 +2576,6 @@ const Pixel=(function(global){
     this.protoPromisesCalls++;
     return this;
   }
-  _Pixel_Build.prototype.install=install;
   function install(plugin, options){
     if(!isPObject(plugin) && !isPFunction(plugin)){ 
       $Debug(`plugin installation Error::\n\n install argument must be an object value with  an exposed plugin installation method or a function which acts as the plugin method itself`);
@@ -2531,7 +2590,6 @@ const Pixel=(function(global){
     this.protoPromisesCalls++
     return this;
   }
-  _Pixel_Build.prototype.handler=handler;
   function handler(name, handler){
     if(!isString(name) && !isFunction(handler)){
       $Debug(`unrecognised global handler registration for ${handler}`);
@@ -2543,7 +2601,6 @@ const Pixel=(function(global){
     this.protoPromisesCalls++
     return this
   }
-  _Pixel_Build.prototype.directive=directive;
   function directive(name, directive){
     if(!isString(name) && !isFunction(dir)){
       $Debug(`unrecognised global directives registration for ${directive}`);
@@ -2555,7 +2612,6 @@ const Pixel=(function(global){
     this.protoPromisesCalls++
     return this;
   }
-  _Pixel_Build.prototype.block=block;
   function block(name, block){
     if(!isString(name) && !isFunction(block)){
       $Debug(`unrecognised global block helper registration for ${block}`);
@@ -2565,7 +2621,6 @@ const Pixel=(function(global){
       this.$globals.register.blocks[name]=func;
     }
   }
-  _Pixel_Build.prototype.property=property
   function property(name, value){
      if(!isString(name) && !isFunction(block)){
       $Debug(`unrecognised global property registration for ${value}`);
@@ -2576,43 +2631,52 @@ const Pixel=(function(global){
     }
     return this
   }
-  _Pixel_Build.prototype.configDelimeters=configDelimeters;
   function configDelimeters(delimiters){
     
   }
-  _Pixel_Build.prototype.configDebug=configDebug;
   function configDebug(debug){
     
   }
-  _Pixel_Build.prototype.configInheritAttrs=configInheritAttrs;
   function configInheritAttrs(inheritAttrs){
     
   }
-  _Pixel_Build.prototype.configIsAsync=configIsAsync;
   function configIsAsync(isAsync){
     
   }
-  _Pixel_Build.prototype.configInheritSlot=configInheritSlot;
   function configInheritSlot(){
     
   }
-  _Pixel_Build.prototype.isCustomElement=isCustomElement;
   function configIsCustomElement(isCustomElement){
     
   }
-  _Pixel_Build.prototype.configInAttrDelimiters=configInAttrDelimiters;
   function configInAttrDelimiters(inAttrDelimiters){
     
   }
-  _Pixel_Build.prototype.configSubAttrBinding=configSubAttrBinding;
   function configSubAttrBinding(subAttrBinding){
     
   }
-  _Pixel_Build.prototype.legalize=legalize;
   function legalize(){
     
   }
   legalize.optionRegistry=function optionRegistry(name, type){
+  }
+  function mountedWarning(self, name){
+    if(isTrue(self.hasMountProto)){
+      $Debug(`This "mount" method has been called and calling of methods after the widget is mounted is prohibited\n\n call to the ('.${name}') method is considered illegal`, self, true);
+      return false;
+    }
+    return true;
+  }
+  const buildMethods={ mount, widget, install, handler, directive, property, block, configDelimeters, configIsAsync, configIsCustomElement, configInheritSlot, configSubAttrBinding, configInAttrDelimiters, legalize};
+  for(let [ key, fn ] of entries(buildMethods)){
+    fn=new Proxy(fn, {
+      apply(target, thisArg, args){
+        const res = mountedWarning(thisArg, key );
+        if(isTrue(res)) Reflect.apply(...arguments);
+        return thisArg;
+      }
+    })
+    _Pixel_Build.prototype[key]=fn;
   }
   function openTaskPrefix(self){
     self.core.depsQueue.vibrate();
@@ -2630,7 +2694,7 @@ const Pixel=(function(global){
     })
   }
   function Render_Template(self, initBuild, update=false){
-    if(self.core.map.is_hyperscript) initBuild=initBuild(self, update);
+    // if(self.core.map.is_hyperscript) initBuild=initBuild(self, update);
     if(!isFunction(initBuild)) initBuild=initBuild
     return self.render(self, initBuild, update);
   }
@@ -2669,7 +2733,7 @@ const Pixel=(function(global){
   function Node_Effect_Track(self, virtualElement, virtualBuild){
     const is_hyperscript=self.core.map.is_hyperscript;
     for( const [ ind, node] of arrSet(virtualElement.NodeList).entries()){
-       const virtualNode=is_hyperscript ? arrSet(virtualBuild.NodeList)[ind] : null;
+       const virtualNode=arrSet(virtualBuild.NodeList)[ind]
       if(isPixelVNode(node)){
         if(isPixelTextVNode(node) && (isTrue(node.render_tracked || is_hyperscript))) RerenderingTextsContents(self, node, virtualNode);
         if(isPixelWidgetVNode(node)) Widget_Effect_Trigger(self, node, virtualElement);
@@ -2705,7 +2769,7 @@ const Pixel=(function(global){
   }
   function RerenderingTextsContents(self, node, vnode){
     const value=node.compiler_options.value;
-    const virtualElement= self.core.map.is_hyperscript ? vnode : new PixelTextVNode(self, value, node.compiler_options.px__VNode);
+    const virtualElement= vnode;
     if(!isEQ(node.$element.textContent, virtualElement.$element.textContent)) node.$element.textContent=virtualElement.$element.textContent
   }
   function LoopWrapperRehydration(self, node, vnode, virtualBuild){
@@ -2715,24 +2779,36 @@ const Pixel=(function(global){
     const value=!is_hyperscript ? get_Object_Value(self.model, ref) : null;
     const added=new Set();
     const removed=new Set();
+    let index=0;
     for(const [ind, atom] of arrSet(node.NodeList).entries()){
-      const index=atom.compiler_options.index;
+      index++;
+      if(deepCompare(src, value)){
+        Node_Effect_Track(self, atom, node);
+        if(isEQ(ind+1, len(node.NodeList))) return
+      }
       if(is_hyperscript){
         if(isGT(Number(ind), len(virtualBuild.NodeList))) removed.add(atom);
       }else{
-        if(isGT( isNumber(src) ? 1+index : keyIndex(src, index), len(value))) removed.add(atom);
+        if(isGT( isNumber(src) ? index : keyIndex(src, index), len(value))) {
+          removed.add(atom);
+        }
       }
+      
     }
     if(!is_hyperscript && isGT(len(value), len(src))){
+      let index=0
       for(let i=0; i<=len(value)-len(src); i++){
-        // log(len(value), len(src), _fromKey(value, len(src)))
-        added.add(_fromKey(value, len(isNumber(src) ? 1+src : src)))
+        index++
+        if(isGT(index, len(value)-len(src))) break;
+        const addedIndex= isArray(value) ? len(src)+(i) : isNumber(value) ? len(src)+index : NaN;
+        added.add(_fromKey(value, addedIndex))
       }
     }else if(is_hyperscript && isGT(len(virtualBuild.NodeList), len(node.NodeList))){
       for(let i=0;i<len(virtualBuild.NodeList)-len(node.NodeList); i++){
         added.add(arrSet(virtualBuild.NodeList)[len(node.NodeList)]);
       }
     }
+    Node_Effect_Track(self, node, virtualBuild)
     if(len(added)){
       let key =0
       for(let atom of added.values()){
@@ -2748,6 +2824,7 @@ const Pixel=(function(global){
           if(px__VNode.LabContext) ctx=assign(px__VNode.LabContext, ctx);
           addedNode=node.compiler_options.Node(type, props, children, self, is_hyperscript, ctx, node.NodeList);
           addedNode.LabContext=ctx;
+          addedNode.compiler_options.index=len(src)+key;
         }
         arrSet(node.NodeList)[len(node.NodeList)-1].$element.after(addedNode.$element);
         node.NodeList.add(addedNode);
@@ -2759,9 +2836,8 @@ const Pixel=(function(global){
         node.NodeList.delete(atom);
       }
     }
-    node.compiler_options.src=value
-    Node_Effect_Track(self, node, virtualBuild);
-    
+    node.compiler_options.src=value;
+    // Node_Effect_Track(self, node, virtualBuild);
   }
   function _fromKey(obj, key){
     return isPObject(obj) ? values(obj)[key] : isSet(obj) ? arrSet(obj)[key] : isMap(obj) ? obj[obj.keys()[key]] :  isArray(obj) ? obj[key] : isNumber(key) ? Number(key) : null;
@@ -2778,7 +2854,7 @@ const Pixel=(function(global){
     if(isChildrenNode(children)){
       if(isPrimitive(children) && !isNull(children)){
         const node=new PixelTextVNode(self, String(children), px__VNode);
-        node.compiler_options={ type:'text', value:()=>String(children), px__VNode };
+        node.compiler_options=assign(node.compiler_options,{ type:'text', value:()=>String(children), px__VNode });
         if(isTrue(node.render_tracked)) px__VNode.render_tracked=true;
         if(len(node.PATCH_FLAGS)) px__VNode.PATCH_FLAGS.add('ELEMENT_CHILDREN');
         element.append(node.$element);
@@ -2822,6 +2898,8 @@ const Pixel=(function(global){
     let name=Object.keys(props)[0];
     let key=directive_sep(name);
     let param=props[name] || "";
+    let modifiers=name.includes('|') ? name.split('|') : [];
+    len(modifiers) ? modifiers.shift() : null
     param=bindKeyAsValue(name, param);
     name=directive_sep(name)[0].slice(2);
     key.shift();
@@ -2833,6 +2911,7 @@ const Pixel=(function(global){
     else if(isEQ(name, 'model')) pass;
     else if(isEQ(name, 'html') || isEQ(name, 'text')) $$dir_HTML(self, param, widget, px__VNode, isEQ(name, 'text'));
     else if(isEQ(name, 'raw')) pass;
+    else if(isPixelDirective(name)) pass;
   }
   function ResolveWidget(self, px__VNode, value, ){
     if(!instance_Has_Widget(self,value.type)){
@@ -2864,6 +2943,7 @@ const Pixel=(function(global){
       }
       if(RefHedge && widget.$attributes) widget.$attributes.self=RefHedge || refName;
     }
+    widget= new Widget( isPObject(widget) ? assign(Object.getPrototypeOf(widget), widget) : widget);
     widget=  set_Widget_Flag(self, widget, value, px__VNode);//setting the widget flag
     let child=new _Pixel_Build(widget);//build the widget
     if(self){
@@ -2883,8 +2963,7 @@ const Pixel=(function(global){
   }
   function set_Widget_Flag(self, widget, val, px__VNode){
     if(val.children && isGT(len(val.children), 0) ){
-      const Flag={ NodeList:val.children, patchFlags:self, px__VNode }
-        widget.$children=Flag;
+      widget.$children=createObj('$children',{ NodeList:val.children||[], patchFlags:self, px__VNode });
       }
     return widget;
   }
@@ -2913,13 +2992,6 @@ const Pixel=(function(global){
     return fragment;
   }
   const devInfo='You are using the development version of pixel '+get_version().slice(6)+', make sure you switched to the minified build version when deploying to production with the (*.min.js) file extension';//development information
-  function setupFunctionWidget(opts, self){
-    const widget={};
-    widget.build=opts;
-    if(opts.$attributes)widget.$attributes=opts.$attributes;
-    if(opts.$children) widget.$children=opts.$children;
-    return widget;
-  }
   class _Resolver{
     name=undefined
   }
@@ -2943,6 +3015,9 @@ const Pixel=(function(global){
       return;
     }
     return new _WidgetResolver(name);
+  }
+  function defer(obj, prop){
+    
   }
   function buffer(name, value, modifiers){
     if(!_validateType(name, [String, Function, Object])){
@@ -3030,7 +3105,7 @@ const Pixel=(function(global){
           if(node.textContent.trim()){
             const value=node.textContent;
             node=self ? new PixelTextVNode(self, value,  px__VNode) : value;
-            if(isPixelTextVNode(node)) node.compiler_options={ type:'text', value, px__VNode };
+            if(isPixelTextVNode(node)) node.compiler_options=assign(node.compiler_options,{ type:'text', value, px__VNode });
             NodeList.push(node);
           }
         }else if(IS_COMMENT_NODE(node))/*Ignore comment nodes*/pass();
@@ -3056,14 +3131,14 @@ const Pixel=(function(global){
           if(self){
             if(hasOwn(attributes||{}, '$$raw')) define(attributes, '$$rawChildrenData$$',{value:_escapeDecoder(node.innerHTML), enumerable, configurable});
             const children=function render(self, px__VNode){
-              return IS_VALID_TAGNAME(tagName) ? _HTMLParser(node.innerHTML, self, true, px__VNode ) : node.innerHTML;
+              return IS_VALID_TAGNAME(tagName) ? _HTMLParser(node.innerHTML, self, true, px__VNode) : node.innerHTML;
             }
             let props=()=>len(attributes) ? attributes : null;
-            Vnode=createVElement(tagName, props(), children, self, false, px__VNode?.LabContext, NodeList);
-            Vnode.compiler_options={
-              props, children, type:tagName, px__VNode
-            }
-            
+            const Node=(ssc)=> createVElement(tagName, props(), children, self, false, px__VNode?.LabContext, NodeList, ssc);
+            Vnode=Node()
+            Vnode.compiler_options=assign(Vnode.compiler_options, {
+              props, children, type:tagName, px__VNode, Node
+            });
           }else{
             const children=node.innerHTML.trim() ? _HTMLParser(node.innerHTML, null, true) : null;
             Vnode={
@@ -3079,7 +3154,7 @@ const Pixel=(function(global){
   }
   function _getNodeListResponse(NodeList, parent=false){
     if(isTrue(parent) && len(NodeList)) return isGT(len(NodeList),1) ? NodeList : NodeList[0];
-    else if(len(NodeList)) return isGT(len(NodeList),1) ?  new PixelFragmentVNode(self, NodeList) : NodeList[0] ;
+    else if(len(NodeList)) return isGT(len(NodeList),1) ?  new PixelFragmentVNode(parent, NodeList) : NodeList[0] ;
     else return null ;
   }
   function html( strings, ...values){
@@ -3218,7 +3293,7 @@ const Pixel=(function(global){
     }else if(isGT(arguments.length, 2)){
       $Debug(`Parameter Error\n\nmax-one argument required\n ${arguments.length} given`);
       return;
-    }else if(isPObject(opts) || isFunction(opts)) return new Widget(opts, options);
+    }else if(isPObject(opts) || isFunction(opts)) return new Widget(opts, isPFunction(opts) ? options : null);
   }
   function processPIXELFile(Source) {
     const body=createPixelElement('body');
@@ -3385,10 +3460,11 @@ const Pixel=(function(global){
   global.Any=Any;
   global._getNodeListResponse=_getNodeListResponse;
   global.nextTick=nextTick;
-  global._generate_UUID=_generate_UUID;
+  global._generateUUID=_generateUUID;
   global.Type=Type;
   global.defineWidget=defineWidget;
   global.html=html;
+  global.defer=defer;
   global._escapeDecoder=_escapeDecoder;
   global.withDirectives=withDirectives;
   global.traverse=traverse;
