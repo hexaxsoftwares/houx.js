@@ -80,8 +80,8 @@ const Pixel=(function(global){
   const hasDir_bind=key=>/^dir\-\-[a-zA-Z0-9\-_|[\]]+/.test(key)
   const hasSpread_bind=key=>/^\.\.\.[^.?]+/.test(key);
   const hasAsterisks_bind=key=>/^\*[a-zA-Z0-9\-_|[\]]+/.test(key)
-  const validWidgetOptions="build,model,widgets,preBuild,postBuild,preMount,postMount,preUpdate,postUpdate,postDestroy,preDestroy,handlers,params,buildConfig,styleSheet,directives,template,name,observers,templateSrc,styleSheetSrc,blocks,signals,hang,fork,slots,markdown,markdownSrc";//valid widget options---
-  const widgetOptionType={ build:Function, model:Function, widgets:Object, preBuild:Function, postBuild:Function, preMount:Function, postMount:Function, preUpdate:Function, postUpdate:Function, postDestroy:Function, preDestroy:Function, handlers:Object, params:[Array, Object], buildConfig:[Object, Function], styleSheet:String, directives:Object, template:String, name:String, observers:Object, templateSrc:String, styleSheetSrc:String, blocks:Object, signals:Array, hang:Array, fork:[Array, Object], slots:Array, markdownSrc:String, markdown:String,
+  const validWidgetOptions="build,model,widgets,preBuild,postBuild,preMount,postMount,preUpdate,postUpdate,postDestroy,preDestroy,handlers,params,buildConfig,styleSheet,directives,template,name,observers,templateSrc,styleSheetSrc,blocks,signals,hang,fork,slots,markdown,markdownSrc,fallThrough";//valid widget options---
+  const widgetOptionType={ build:Function, model:Function, widgets:Object, preBuild:Function, postBuild:Function, preMount:Function, postMount:Function, preUpdate:Function, postUpdate:Function, postDestroy:Function, preDestroy:Function, handlers:Object, params:[Array, Object], buildConfig:[Object, Function], styleSheet:String, directives:Object, template:String, name:String, observers:Object, templateSrc:String, styleSheetSrc:String, blocks:Object, signals:Array, hang:Array, fork:[Array, Object], slots:Array, markdownSrc:String, markdown:String,fallThrough:Function
   }
   const isArgument=arg=>isEQ(_toStringCall(arg), "[object Arguments]");
   const len=obj=>isPObject(obj) ? Object.keys(obj).length : isArray(obj) || isArgument(obj) ? obj.length : isSet(obj) ? obj.size : isString(obj) ? obj.length : isNumber(obj) ? obj : NaN ;
@@ -201,6 +201,7 @@ const Pixel=(function(global){
   }
   const arrowFNRegex=/^([(]?(.*?)*[ ]*[)]?)=>/;
   const isAFunction=(fn)=> isPFunction(fn) && arrowFNRegex.test(fn.toString());
+  const destructureRegex=/^{(.*?)}$/
   function isReactiveValue(value){
     
   }
@@ -434,26 +435,35 @@ const Pixel=(function(global){
     return res;
   }
   function get_Loop_Data(str){
-    const keyValueRegex=/(([{|\[|\(])[ ]*(([a-zA-Z0-9.\$\_]*)[ ]*([\,][ ]*([a-zA-Z0-9\_\$]+)?)?)[ ]*([}|\]|)])[ ]+([of|in]+)[ ]+([a-zA-Z0-9.\_\$]+))/;
-    const valueRegex=/(([a-zA-Z.\_\$]+)[ ]+([of|in]+)[ ]+([a-zA-Z0-9.\-\_\$]+))/;
+    const keyValueRegex=/((\[|\()(.*?)?(\]|\)))[ ]+([of|in]+)[ ]+([a-zA-Z0-9.\_\$]+)/;
+    const DestructuredRegex=/(([\{])(.*?[ ])*?([\}]))[ ]+([of|in]+)[ ]+([a-zA-Z0-9.\_\$]+)/;
+    const valueRegex=/([a-zA-Z.\_\$]+)[ ]+([of|in]+)[ ]+([a-zA-Z0-9.\-\_\$]+)/;
     const iterableRegex=/^([a-zA-Z0-9.\_\$]+)$/
     const Loop_Data={}
-    if(str.match(keyValueRegex)){
-      str=str.replace(keyValueRegex,(match,p1, op, p2, val, rud, key,  cl, type, obj)=>{
-        if(isGT(op, 1) && isGT(cl, 1) ) {
-          $Debug(`únrecognised tags, \n must be a single opening or closing brackets`);return;
-        }else if(!isTagMatch(op, cl)){
-          $Debug(`Unmaching tags for "for" directive loop data keys mapping\n `);return;
+    if(keyValueRegex.test(str)){
+      str=str.replace(keyValueRegex,(match, p1, op, value, cl, type, obj)=>{
+        if(!isEQ(op, cl) && isGT(cl, 1) ) {
+          $Debug(`Unmaching tags for "for" directive loop data keys mapping\n opening tag does not match a closing tag\n\n found ${p1}`, self, true);
+          return;
         }
-        define(Loop_Data, 'value', {value:val});
-        if(val) define(Loop_Data, 'key',{value:key});
+        const items=value.split(' ').join('').split(',');
+        if(items[0]) define(Loop_Data, 'value', {value:items[0]});
+        if(items[1]) define(Loop_Data, 'key',{value:items[1]});
+        if(items[2]) define(Loop_Data, 'index', {value:items[2]})
         define(Loop_Data, 'type', {value:type});
         define(Loop_Data, 'obj',{value:obj});
         return match;
       })
-    }else if(str.match(valueRegex)){
-      str=str.replace(valueRegex,(match, p1, val, type, obj)=>{
-        define(Loop_Data,'value',{value:val});
+    }else if(DestructuredRegex.test(str)){
+      str=str.replace(DestructuredRegex, (match, structs,  op, items, cl, type, value)=>{
+        define(Loop_Data, 'obj', {value});
+        define(Loop_Data, 'type', {value:type});
+        define(Loop_Data, 'value', {value:structs});
+        return match;
+      })
+    }else if(valueRegex.test(str)){
+      str=str.replace(valueRegex,(match, value, type, obj)=>{
+        define(Loop_Data,'value',{value});
         define(Loop_Data,'type',{value:type});
         define(Loop_Data, 'obj' ,{value:obj});
         return match;
@@ -486,7 +496,7 @@ const Pixel=(function(global){
       $Debug(`Iteration issue\n\n"${data.type}" is not an iterator\n "of" or "in" only supported by Pixel`);
       return;
     }
-    return { obj:dataObject, keyName:data.key, valRef:data.value, loopType:data.type, ref:data.obj }
+    return { obj:dataObject, keyName:data.key, valRef:data.value, loopType:data.type, ref:data.obj, index:data.index }
   }
   const hasIFWithFor=(props, cond)=> has_Intersect_Prop(cond.split(','), keys(props)) && keys(props).includes('$$for');
   class renderlessVNode {
@@ -598,7 +608,7 @@ const Pixel=(function(global){
   }
   function _$Directive_$For_Loop$_Renderer(self, args, px__VNode){
     let wrapper;
-    const { obj, keyName, valRef, loopType, ref }=For_Loop(self, args.props['$$for'], px__VNode) || {};
+    const { obj, keyName, valRef, loopType, ref, index }=For_Loop(self, args.props['$$for'], px__VNode) || {};
       delete args.props['$$for'];
     if(loopType && isEQ(loopType, 'in') && valRef && !isNumber(obj) && isObject(obj)){
       $warn(`((Warning))\n\nWe do not recommend the use of key value paires in 'for...in' loops while iterating over a plain object, \n\nsince the value of the value reference will remain "undefined"\nPreferable over a non plain object`, self);
@@ -610,11 +620,23 @@ const Pixel=(function(global){
       ref, src:obj,
       args:{ type:args.type, props:assign({}, args.props), children:args.children, is_hyperscript:false, px__VNode, alias:{valRef, keyName}} 
     }
+    function destructWarn(ref, object){
+      if(ref && destructureRegex.test(ref) && !isObject(object)){
+        $Debug(`cannot destructure from a none object value\n\nillegal destructuring found at "${ref}" on $$for directive definition`, self, true);
+        return false;
+      }
+      return true;
+    }
+    
     if(isNumber(obj)){
+      let count=0
       for(let i=0 ; i < obj ; i++){
+        count++
         let ctx= {}
+        if(isFalse(destructWarn(valRef, obj))) return;
         if(valRef) ctx[valRef]=i+1;
         if(keyName) ctx[keyName]=valRef ? i : i+1;
+        if(index) ctx[index]=count
         if(px__VNode.LabContext) ctx=assign(px__VNode.LabContext, ctx);
         const props=assign({}, args.props);
         const Node=(type, props, children, self, is_hyperscript, ctx, NodeList)=>createVElement(type, props, children, self, is_hyperscript, ctx, NodeList);
@@ -624,17 +646,33 @@ const Pixel=(function(global){
         if(loopNode) NodeList.push(loopNode);
       }
     }else if(loopType &&  _mapValue("of,in", loopType) || isIterable(obj)){
-      let index=0;
+      
+      let count=0;
       for(const [ky, vl] of  _validateType(obj, [Set, Map ]) ? obj.entries() : entries(obj)){
-        index++;
+        count++;
+        if(isFalse(destructWarn(valRef, vl))) return;
         let ctx ={ }
-        if(keyName) ctx[keyName]=valRef ? ky : vl;
-        if(valRef) ctx[valRef]=vl;
+        if(valRef && destructureRegex.test(valRef) ){
+          let items=valRef.match(destructureRegex);
+          items= items[1].split(',');
+          if(len(items)){
+            items.forEach((item)=>{
+              item=item.trim();
+              if(!hasProp(vl, item)){
+                $Debug(`loop object value has no such key as "${item}"\n\nInvalid key destructure at at..."${valRef}"`, self, true);
+              }else ctx[item]=vl[item];
+            });
+          }
+        }else{
+          if(keyName) ctx[keyName]=valRef ? ky : vl;
+          if(valRef) ctx[valRef]=vl;
+          if(index) ctx[index]=count;
+        }
         if(px__VNode.LabContext) ctx=assign(px__VNode.LabContext, ctx, NodeList);
         const props=assign({}, args.props);
         const Node=(type, props, children, self, is_hyperscript, ctx, NodeList)=>createVElement(type, props, children, self, is_hyperscript, ctx, NodeList);
         const loopNode=Node(args.type, props, args.children, args.self, false, ctx,  NodeList);
-        loopNode.compiler_options=assign(loopNode.compiler_options, assign({  index, value:vl, }, options));
+        loopNode.compiler_options=assign(loopNode.compiler_options, assign({  count, value:vl, }, options));
         options.Node=Node
         if(loopNode) NodeList.push(loopNode);
       }
@@ -897,7 +935,7 @@ const Pixel=(function(global){
       } else element= _initiateChildNodes(self, children, px__VNode, element );
     }
     if(attributes) element=AttributeManager(attributes, element, self, px__VNode)
-    slotScopingFallThrough(self, element, px__VNode);
+    // slotScopingFallThrough(self, element, px__VNode);
     if(self && self.ownProperties.px_hash_) element.setAttribute("data-px_hash_", self.ownProperties.px_hash_);
     return element;
   }
@@ -905,11 +943,8 @@ const Pixel=(function(global){
     const is_hyperscript=px__VNode?.is_hyperscript;
     if(isString(type) && !is_hyperscript){
       children=children(self, px__VNode)
-      // log(children)
-      const childrenPrefix=(inst, VN, SC)=>isString(children) ? _HTMLParser(children,  inst, true, VN, SC) : isRender(children, SC)  ? children(inst, VN, SC) : children;
-      children=childrenPrefix(self, px__VNode);
-      if(children && !isArray(children)) children=[children]
-      const widget=ResolveWidget(self, px__VNode, {type, props, children })//reso;ving a widget data object
+      const slotRender=(inst, VNode, fall)=>isString(children) ? _HTMLParser(children, inst, true, VNode, fall ) : isRender(children)  ? children(inst, VNode) : children
+      const widget=ResolveWidget(self, px__VNode, {type, props, children:slotRender })//reso;ving a widget data object
       px__VNode.is_mount_root=true;
       px__VNode.px_hash_=self.ownProperties.px_hash_;
       px__VNode.widget_instance=widget;
@@ -1562,13 +1597,17 @@ const Pixel=(function(global){
     return node;
   }
   function $$dir_FALL(self, item, node, px__VNode, modifiers){
-    const isSlotEl=isNativeElement(node) && isEQ(node.localName, 'slot');
-    if(!isSlotEl) {
-      $Debug(`"$$fall" directive is only scoped to document <slot> elements only`, self, true);
+    const isWidget=!isNativeElement(node) && validPixelWidget(node);
+    if(!isWidget) {
+      $Debug(`"$$fall" directive is only scoped to widget instances vnode only\n\n found on "${isNativeElement(node) ? node.outerHTML+" element" : ""}"`, self, true);
       return node;
+    }else if(!item || !isString(item)) {
+      $Debug(`Unrecognized reference prop passrd to the "$$fall" directive`, self, true);
+      return ;
     }
-    let value=_$runModelBind(self, item, px__VNode, true);
-    px__VNode.compiler_options.fallThrough[len(modifiers) ? modifiers.shift() : '__'+_generateUUID(3) ]=()=>value;
+    node.$attributes['$$@fallThrough']=createObj('fallThrough', { prop:item});
+    // let value=_$runModelBind(self, item, px__VNode, true);
+    // px__VNode.compiler_options.fallThrough[len(modifiers) ? modifiers.shift() : '__'+_generateUUID(3) ]=()=>value;
     return node;
   }
   function $$dir_MODEL(self, item, node, px__VNode){
@@ -1670,9 +1709,7 @@ const Pixel=(function(global){
       else if(isPObject(options)) {
         for(const [key, value] of entries(options)){
           this[key]=value;
-          // log(key)
         }
-        // log(this, keys(options))
       }else if(isPFunction(options)){
         this.build=options;
         if(opts && isPObject(opts)) {
@@ -1920,23 +1957,12 @@ const Pixel=(function(global){
   function sanitizedOptions(self, options){
     const argcount=len(options);
     for(const [ key, opt] of entries(options)){
-      if(!isValidWidgetOption(key)){
-        $Debug(`${key} option is not a  valid  pixel widget\n\n if this is a legalized widget, make sure  it'a  dufined through the "legalize.optionsRegistry"`, self, true);
-        return;
-      }
-      if(!_validateType(opt, widgetOptionType[key])){
-        $Debug(`${key} option is of an invalid type, expects a ${widgetOptionType[key].name.toLowerCase()}`, self, true);
+      if(!isValidWidgetOption(key)) self.operands._OPTIONS[key]=opt
+      else if(!_validateType(opt, widgetOptionType[key])){
+        $Debug(`${key} option is of an invalid type, \n\n "${key}" option cannot be a ${getType(opt) type}`, self, true);
         return;
       }
     }
-    if(!options){ 
-      $Debug('error loading widget\n\ntype for Vnode  function is not defined', self, true ); 
-      return; 
-    }else if(isGT(argcount,3)){
-      $Debug(`_Pixel_Build function cannot accept more than 3 arguments,  "${ argcount }" received`, self, true);
-      return;
-    }
-    return widget;
   }
   function _hydrateHashToSelector(selector, $Data_Hash){
     const trimmed = selector.trim();
@@ -1983,22 +2009,22 @@ const Pixel=(function(global){
     }
     return returnRender(()=>vnode);
   }
+  function assignSlot(self, slot, content, name, assynedSlots){
+    if(content && isPixelVNode(content)){
+      slot.replaceWith(content.$element);
+      assynedSlots.add(name);
+    }
+  }
   function _$slotHydrationRenderer(self, opts, vnode){
     const slots=self.core.slots;
     if(!len(slots))  return vnode;
     vnode=isRender(vnode) ? vnode() : vnode;
-    // log(vnode)
     const slot_elements=vnode.$element.querySelectorAll('slot');
     const assynedSlots=new Set()
     for(let slot_el of slot_elements.values()){
       let slotN=slot_el.getAttribute('name');
-      if(hasOwn(slots, slotN) && !isNull(slots[slotN]()) && !assynedSlots.has(slotN)){
-        if(len(slot_el.px__VNode.compiler_options.fallThrough)) {
-          // log(self)
-        }
-        slot_el.replaceWith(slots[slotN]().$element);
-        assynedSlots.add(slotN);
-      }else if((!slotN || isEmptyStr(slotN)) && !assynedSlots.has('default') && hasProp(slots, 'default')) slot_el.replaceWith(slots.default(self)?.$element);
+      if(slotN && hasProp(slots, slotN) && !isNull(slots[slotN]()) && !assynedSlots.has(slotN)) assignSlot(self, slot_el, slots[slotN](), slotN, assynedSlots);
+      else if((!slotN || isEmptyStr(slotN)) && !assynedSlots.has('default') && hasProp(slots, 'default')) assignSlot(self, slot_el, slots.default(), 'default', assynedSlots );
     }
     if(!len(slot_elements) && isNativeElement(vnode.$element) && IS_ELEMENT_NODE(vnode.$element) && isEmptyStr(vnode.$element.innerHTML) && hasOwn(slots, 'default')){
       const inheritSlot=self.core.settings.inheritSlot;
@@ -2298,9 +2324,9 @@ const Pixel=(function(global){
     self.ownProperties=createObj('ownProperties',{ name:opts.name || 'UnknownWidget', slot_name:hasProp(opts, '$attributes')  ? opts.$attributes['@@slotName'] : undefined });
     if(has_Object_Prop(opts, '$attributes.@@slotName')) delete opts.$attributes['@@slotName'];
     self.register=createObj( 'register',{ directives:createObj('directives'), blocks:createObj('blocks'), widgets:createObj('widgets'), handlers:createObj('handlers'), agents:createObj('agents'), properties:createObj('properties')});
-    self.operands=createObj('operands',{ _OBSERVERS:new Set(), _LIFECIRCLEHOOKS:createObj('_LIFECIRCLEHOOKS') });
+    self.operands=createObj('operands',{ _OBSERVERS:new Set(), _LIFECIRCLEHOOKS:createObj('_LIFECIRCLEHOOKS'), _OPTIONS:createObj('_OPTIONS') });
     self.core=createObj('core',{utils:createObj('utils'), settings:createObj('settings', Global_Settings), slots:createObj('slots'), map:createObj('map',{ is_hyperscript:false }), activeObserver:null});
-    self.$globals=createObj('$globals',{register:createObj('register', self.register), setupOptions:createObj('setupOptions'), $hanger:createObj('$hanger')});
+    self.$globals=createObj('$globals',{register:createObj('register', self.register), setupOptions:createObj('setupOptions'), $hanger:createObj('$hanger'), legalOptions:createObj('legalOptions')});
   }
   function smartSlotMapping(self, slotContent, slotName, slottErr, defaultSlotsRecord){
     if(!isEQ(slotName, 'default') && !hasProp(self.core.slots, slotName) ){
@@ -2339,7 +2365,6 @@ const Pixel=(function(global){
       }else if(isPixelVNode(slotContent) || isRender(slotContent)){
         const slotName=slotContent.slot_name || 'default';
         if(isRender(slotContent)) slotContent = slotContent(self);
-        
         if(isEQ(slotContent.$element.localName,'template')){
           slotContent=_getNodeListResponse(slotContent.NodeList, self);
         }
@@ -2363,11 +2388,13 @@ const Pixel=(function(global){
   }
   function defineFallbackSlotsRef(self, options){
     function slotRender(def){
-      if(!isPFunction(def)){
+      // if(isPixelBuild(def)) return null
+      if(def && !isPFunction(def)){
         $Debug(`Render functions default slot content requires to be a render function also`, self, true);
         return null;
-      }
-      return _getNodeListResponse(def(), self)
+      }else if(!def) return null;
+      def=def();
+      return _getNodeListResponse(isPFunction(def) ? def() : def, self)
     }
     if(options.slots && len(options.slots)){
       for(const sn of options.slots.values()){
@@ -2427,11 +2454,64 @@ const Pixel=(function(global){
     if(!hasRef) return;
     self.ownProperties['dir--ref']=options.$attributes['$$$$dir--ref$$$$'];
   }
+  function provideWidgetChildren(self, options){
+    if(!options.$children) return;
+    const px__VNode= options.$children?.px__VNode;
+    const patchFlags = options.$children?.patchFlags;
+    const childrenRender=options.$children?.NodeList;
+    const fallThrough=self.core.fallThrough
+    let children=options.$children.NodeList(patchFlags, px__VNode, fallThrough);
+    options.$children.NodeList= children && !isArray(children) ? [children] : children;
+    if(!children) delete options.$children;
+  }
+  function $fallThroughEngine(self, options){
+    if(!options.fallThrough) return;
+    let data;
+    try{
+      data=options.fallThrough.call(self.model);
+    }catch(err){
+      $Debug(`Encountered an error when trying to run the fallThrough option method`, self, true);
+      $Debug(err, self);
+      return;
+    }
+    if(isNull(data)){
+      $Debug(`The fallThrough option returns a nullish value \n\n `, self, true);
+      return;
+    }
+    self.core.map.$$fallThrough=data;
+  }
+  function runtimeSlotsFallThrough(self, options){
+    $fallThroughEngine(self, options)
+    if(!options.$attributes || isTrue(options.$attributes && !options.$attributes['$$@fallThrough'])) return;
+    const fallThrough=options.$attributes['$$@fallThrough'];
+    delete options.$attributes['$$@fallThrough'];
+    const prop=fallThrough.prop;
+    if(!hasProp(self.core.map, '$$fallThrough')) return;
+    const value=self.core.map.$$fallThrough;
+    delete self.core.map.$$fallThrough;
+    if(destructureRegex.test(prop) ){
+      if(!isPObject(value)){
+        $Debug(`Cannot destructure on a none object fallThrough data value`, self, true);
+        return;
+      }
+      let items=prop.match(destructureRegex);
+      items= items[1].split(',');
+      if(len(items)){
+        const fallThroughProps={};
+        items.forEach((item)=>{
+          item=item.trim();
+          if(!hasOwn(value, item)){
+            $Debug(`fallThrough object value has no such key as "${item}"\n\nInvalid key destructure`, self, true);
+          }else fallThroughProps[item]=value[item];
+        })
+        self.core.fallThrough=createObj('fallThrough', fallThroughProps);
+      }
+    }else self.core.fallThrough=createObj('fallThrough', {[prop]:value});
+  }
   function _Pixel_Build(options){
-    //options=sanitizedOptions(arguments, this);//sanitize received options
+    sanitizedOptions(this, options);//sanitize received options
     createCordinateProps(this, options)//create useful properties for the widget
     $ensureLifeCircleHooks(this, options)
-    _induceSlotContents(this, options);
     options=BasedWidgets(options, this);
     setConfig(options, this); 
     $construct_With_Signals(this, options)
@@ -2444,10 +2524,10 @@ const Pixel=(function(global){
       callbackHookWithCatch(self, self.operands._LIFECIRCLEHOOKS.postBuild, 'postBuild');
       return build();
     }
-
     _Data_Hydrations(this, options)
     if(isNull(options.build) && isNull(options.template))options.build=null;
     define(this.core, 'build', {value:options.build || options.template || options.markdown , writable, enumerable});
+    this.core.opts=options;
     resolve_Proto_Call(this, options);
   }
   function isRender(build){
@@ -2476,6 +2556,7 @@ const Pixel=(function(global){
       }
       self.core.map.is_hyperscript=true;
       render= ()=> _getNodeListResponse(res(), self);
+      self.core.render=render;
     }else if(isString(self.core.build)){
       render = (inst)=> returnRender(()=> _HTMLParser(self.core.build, inst, false));
       self.core.render=render;
@@ -2532,13 +2613,26 @@ const Pixel=(function(global){
     })
     dataModel.call(self, assign({},self.register.properties))
   }
+  function validateRegistryProvider(self){
+    const registered=self.$globals.register.legalOptions;
+    const _opts=self.operands._OPTIONS
+  }
+  function prefixManagement(self){
+    const options=self.core.opts;
+    validateRegistryProvider(self);
+    runtimeSlotsFallThrough(self, options);
+    provideWidgetChildren(self, options);
+    _induceSlotContents(self, options);
+    delete self.core.opts;
+    mergeRegisteries(self);
+    _$instanciateModelProps(self);
+  }
   function mount(nodeSelector){
     this.hasMountProto=true;
     let domRoot=_GenerateRoot(nodeSelector);
     if(!bool(domRoot.isPixel_Fragment)) define(domRoot, 'NodeList',{value:[], configurable:true, writable:true});
     if(!domRoot.PATCH_FLAGS) define(domRoot, 'PATCH_FLAGS',{value:new Set(), configurable:true, writable:true});
-    mergeRegisteries(this);
-    _$instanciateModelProps(this)
+    prefixManagement(this)
     let initialBuild=get_Init_Build(this, nodeSelector);
     if(!initialBuild) return
     this.build=Render_Template(this, initialBuild);
@@ -2662,12 +2756,15 @@ const Pixel=(function(global){
   }
   function mountedWarning(self, name){
     if(isTrue(self.hasMountProto)){
-      $Debug(`This "mount" method has been called and calling of methods after the widget is mounted is prohibited\n\n call to the ('.${name}') method is considered illegal`, self, true);
+      if(!self.core.map.mountWarn) {
+        $Debug(`This "mount" method has been called and calling of methods after the widget is mounted is prohibited\n\n call to the ('.${name}') method is considered illegal`, self, true);
+        self.core.map.mountWarn=true;
+      }
       return false;
     }
     return true;
   }
-  const buildMethods={ mount, widget, install, handler, directive, property, block, configDelimeters, configIsAsync, configIsCustomElement, configInheritSlot, configSubAttrBinding, configInAttrDelimiters, legalize};
+  const buildMethods={ mount, widget, install, handler, directive, property, block, configDelimeters, configIsAsync, configIsCustomElement, configInheritSlot, configSubAttrBinding, configInAttrDelimiters, legalize };
   for(let [ key, fn ] of entries(buildMethods)){
     fn=new Proxy(fn, {
       apply(target, thisArg, args){
@@ -2911,6 +3008,7 @@ const Pixel=(function(global){
     else if(isEQ(name, 'model')) pass;
     else if(isEQ(name, 'html') || isEQ(name, 'text')) $$dir_HTML(self, param, widget, px__VNode, isEQ(name, 'text'));
     else if(isEQ(name, 'raw')) pass;
+    else if(isEQ(name, 'fall')) $$dir_FALL(self, param, widget, px__VNode);
     else if(isPixelDirective(name)) pass;
   }
   function ResolveWidget(self, px__VNode, value, ){
@@ -2921,7 +3019,6 @@ const Pixel=(function(global){
     let instance;
     if (instance_Has_Widget(self, value.type) ){
       let widget=normalize_Widget(self, value.type);
-      widget= isPObject(widget) ? Object.create(widget) : widget;//binding or creating a new object model
       if(!widget.name) widget.name=value.type
       let patches=[];
       const Ref_Rag={};
@@ -2954,7 +3051,7 @@ const Pixel=(function(global){
           else if(isEQ(key, 'directives')) child=child.directive(name, data);//in the root, uses the build.widget prototype to define global directive
           else if(isEQ(key, 'handlers')) child=child.handler(name, data);//in the root8, uses the build.widget prototype to define global handlers
           else if(isEQ(key, 'hangers')) child=child.hang(name, data);//in the root8, uses the build.widget prototype to define global hangers
-          else if(isEQ(key, 'property')) child=child.property(name, data);//in the root8, uses the buil/d.widget prototype to define global propertiess
+          else if(isEQ(key, 'properties')) child=child.property(name, data);//in the root8, uses the buil/d.widget prototype to define global propertiess
         })
       }
     }
@@ -2962,9 +3059,8 @@ const Pixel=(function(global){
     return child;
   }
   function set_Widget_Flag(self, widget, val, px__VNode){
-    if(val.children && isGT(len(val.children), 0) ){
-      widget.$children=createObj('$children',{ NodeList:val.children||[], patchFlags:self, px__VNode });
-      }
+    if(!val.children) return;
+    widget.$children={ NodeList:val.children, patchFlags:self, px__VNode };
     return widget;
   }
   function consume_Widget_Props(self, widget, value , px__VNode, isRerender=false){
@@ -3091,7 +3187,7 @@ const Pixel=(function(global){
       return `<${tag} ${props || ''} ${ match.match(selfClosedTagRegex) ? '/>' : '>'}`;
     })
   }
-  function _HTMLParser(html, self, parent, px__VNode){
+  function _HTMLParser(html, self, parent, px__VNode, fall){
     if(!html) return null;
     html=openingTagsHydration(html).replace(selfClosedTagsRegex, (match, tag)=>{
       match=match.slice(0, match.lastIndexOf('/'));
@@ -3134,7 +3230,7 @@ const Pixel=(function(global){
               return IS_VALID_TAGNAME(tagName) ? _HTMLParser(node.innerHTML, self, true, px__VNode) : node.innerHTML;
             }
             let props=()=>len(attributes) ? attributes : null;
-            const Node=(ssc)=> createVElement(tagName, props(), children, self, false, px__VNode?.LabContext, NodeList, ssc);
+            const Node=()=> createVElement(tagName, props(), children, self, false, px__VNode?.LabContext, NodeList, fall);
             Vnode=Node()
             Vnode.compiler_options=assign(Vnode.compiler_options, {
               props, children, type:tagName, px__VNode, Node
@@ -3249,23 +3345,32 @@ const Pixel=(function(global){
     }
     return render;
   }
+  class Anchor extends Widget{
+    constructor(){
+      super()
+    }
+    build(){
+      
+      return ()=>el('slot');
+    }
+  }
   makeNativeElement=makeNativeElement.bind({});
+  const validStoreOptions="model,actions";
+  const isValidStoreOption=opt=>_mapValue(validStoreOptions, opt);
   class modelStorePlugin{
     constructor(data){
       
     }
     plugin=function plugin(build, options){
-      
+      const reactive={}
+      build.property('$store', reactive);
     }
   }
+  
   function modelStore(data){
     return new modelStorePlugin(data);
   }
-  const Anchor ={
-    build(){
-      return ()=>el('slot');
-    }
-  }
+  
   
   class buildRouterPlugin{
     constructor(routes){
@@ -3273,6 +3378,8 @@ const Pixel=(function(global){
     }
     plugin=function plugin(build, options){
       build.widget('px-anchor', defineWidget(Anchor))
+      const routers={}
+      build.property('$router', routers)
     }
     
   }
