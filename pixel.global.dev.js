@@ -1956,10 +1956,12 @@ const Pixel=(function(global){
   }
   function sanitizedOptions(self, options){
     const argcount=len(options);
+    const pixelProps="$attributes,$children";
+    const isPixelProp=prop=>_mapValue(pixelProps, prop);
     for(const [ key, opt] of entries(options)){
-      if(!isValidWidgetOption(key)) self.operands._OPTIONS[key]=opt
-      else if(!_validateType(opt, widgetOptionType[key])){
-        $Debug(`${key} option is of an invalid type, \n\n "${key}" option cannot be a ${getType(opt) type}`, self, true);
+      if(!isValidWidgetOption(key) && !isPixelProp(key)) self.operands._OPTIONS[key]=opt
+      else if(isValidWidgetOption(key) && !_validateType(opt, widgetOptionType[key])){
+        $Debug(`${key} option is of an invalid type, \n\n "${key}" option cannot be a ${getType(opt)} type`, self, true);
         return;
       }
     }
@@ -2509,8 +2511,8 @@ const Pixel=(function(global){
     }else self.core.fallThrough=createObj('fallThrough', {[prop]:value});
   }
   function _Pixel_Build(options){
+    createCordinateProps(this, options);//create useful properties for the widget
     sanitizedOptions(this, options);//sanitize received options
-    createCordinateProps(this, options)//create useful properties for the widget
     $ensureLifeCircleHooks(this, options)
     options=BasedWidgets(options, this);
     setConfig(options, this); 
