@@ -1,168 +1,170 @@
-## PixelJs
-### Pixel : Empowering web development Creativity, Building with Speed
+## HexaxJs
+### Hexax : Empowering web development Creativity, Beyond Rendering
 
-### Welcome to pixel documentation
+### Welcome to hexax documentation
 
 
 
-Pixel empowers creativity, speedy development while Building web apps.
+Hexax empowers creativity, speedy development while Building web apps.
 
 
 ### 1. Introduction
 
-Pixel is a JavaScript framework designed with the target to enhancing creativity, speedy prototyping and efficient workflow while building web applications.  
+Hexax is a JavaScript framework designed with the target to enhancing creativity, speedy prototyping and efficient workflow while building web applications.  
 It provides you with a flexible and intuitive API for creating an interactive user interfaces using a declarative syntax. 
 
-Pixel is a framework where creativity meets efficiency.
+Hexax is a framework where creativity meets efficiency.
 
 This guide isn't just about syntax and functions; it's a journey into a mindset that unleashes your creative potential and accelerates your web development skills.
 
-Pixel leverages reactive data and efficient rendering to delivering high-performance applications.
+Hexax leverages reactive data and efficient rendering to delivering high-performance applications.
 
 This guide will take you through a detailed journey, covering installation, basic concepts, advanced features, and practical examples.
 
-Whether you're a newcomer to web development or seeking to expand your skills, Pixel serves as your guide to a higher level of web UI development.
+Whether you're a newcomer to web development or seeking to expand your skills, Hexax serves as your guide to a higher level of web UI development.
 
 Let's dive in!
 
-### 2. **Getting Started : installation and setting up your Pixel playground**
+### 2. **Getting Started : installation and setting up your Hexax playground**
 
-Before delving into the intricacies, let's establish our pixel playground.  
+Before delving into the intricacies, let's establish our hexax playground.  
 A basic understanding of HTML, CSS, and JavaScript is essential. If you're new to programming, take a moment to acquaint yourself with these fundamentals.
 
 #### **Installation Proccess:**
 
-Pixel is a dependency-free, browser-oriented javascript library. This means that using it is as simple as adding a `<script>` tag to your document head. No need for complicated build steps.
+Hexax is a dependency-free, browser-oriented javascript library. This means that using it is as simple as adding a `<script>` tag to your document head. No need for complicated build steps.
 
-You can simply load Pixel by just including the following script tag in your main HTML file head tag and get going:
+You can simply load Hexax by just including the following script tag in your main HTML file head tag and get going:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/prince9216/PixelJs@main/pixel.global.dev.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/hexaxsoftwares/hexax-js@main/hexax.global.dev.js"></script>
 ```
-You might also prefer the esm browser module. Here is the cdn link to a pixel exported components module.
+You might also prefer the esm browser module. Here is the cdn link to a hexax exported components module.
 ```html
-<script src="https://cdn.jsdelivr.net/gh/prince9216/PixelJs@main/pixel.esm-browser.dev.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/hexaxsoftwares/hexax-js@main/hexax.esm-browser.dev.js"></script>
 ```
-Some discreet developers might prefer loading and hosting pixel locally in production.
+Some discreet developers might prefer loading and hosting hexax locally in production.
 
-Then you can simply download the file from this jsdelivr Link . `https://cdn.jsdelivr.net/gh/prince9216/PixelJs@main/pixel.global.dev.js` and copy the file to your project directory, then link to it from your html head file .
+Then you can simply download the file from this jsdelivr Link . `https://cdn.jsdelivr.net/gh/prince9216/HexaxJs@main/hexax.global.dev.js` and copy the file to your project directory, then link to it from your html head file .
 
 ```html 
-<script src='path/to/pixel.global.dev.js'></script>
+<script src='path/to/hexax.global.dev.js'></script>
 ```
-You can aswell use pixel in the cli  by installing it via npm/yarn  
+You can aswell use hexax in the cli  by installing it via npm/yarn  
 Make sure you have nodejs installed.  
 ###### Using npm.
 ```bash
-npm install pixeljs-framework
+npm install hexaxjs-framework
 ```
 ###### Using yarn
 ```bash
-yarn add --save pixeljs-framework
+yarn add --save hexaxjs-framework
 ```
-Once installed, pixel becomes your creative companion.
+Once installed, hexax becomes your creative companion.
 
-## **Understanding pixel**
+## **Understanding hexax**
 
-Once pixel is included in your project, the global namespace `Pixel` will be exposed and available within your script scope if you are using the self/cdn hosting.  
-Regular imports of pixel modules from 'pixel' will be available if using the cli version
+Once hexax is included in your project, the global namespace `Hexax` will be exposed and available within your script scope if you are using the self/cdn hosting.  
+Regular imports of hexax modules from 'hexax' will be available if using the cli version
 
 Destructuring while using the self/cdn hosting
 ```javascript
-  const { initBuild, Template, data, el, ref } = Pixel;
+  const { initBuild, Template, data, el, ref } = Hexax;
   ```
 Regular imports while using the cli installation guide
 ```javascript
-import { initBuild, Template, data,  el, ref } from 'pixel'
+import { initBuild, Template, data,  el, ref } from 'hexax'
 ```
   
 ### **Widgets and model instances**
   
-Pixel widgets are independent entities encapsulating UI components.  
+Hexax widgets are independent entities encapsulating UI components.  
 A widget can be a full page, or a simple component block of your application.  
 Every widget has its own state, structure, and behavior and takes care of how it's model reactivity system is managed.  
 
 This can be confusing at the moment , but don't bother, this documentation is designed for both beginners and experienced developers alike.
 
-A Pixel widget can be defined using an object type, a class or a regular javascript function .   
-Pixel supports the use of both dataTypes as valid widgets for  simplicity and completeness.  
+A Hexax widget can be defined using an object type, a class or a regular javascript function .   
+Hexax supports the use of both dataTypes as valid widgets for  simplicity and completeness.  
 
-Let's create your inaugural pixel widget.    Envision a widget as the fundamental building block of your web application.  
-We are working with an object based widget in this  example since it's the most simple and recommended way of writing widgets in pixel.  
+Let's create your inaugural hexax widget.   
+Envision a widget as the fundamental building block of your web application.  
+We are working with an object based widget in this  example since it's the most simple and recommended way of writing widgets in hexax.  
 You can learn about using class and functions as widgets in their specific documentation.
 
 Consider the example below
 ```javascript
 let app={
   model(){
-    return { greeting: "Hello Pixel" }
+    this.greeting="Hello Hexax" 
   },
   template:`<h1> {{ greeting }} </h1>`
-})
-//this is a valid simple pixel widget
+}
+//this is a valid simple hexax widget
 ```
 
-In the example code above, we passed in an object containing widget options that makes up our widget build.
+In the example code above, we created an object containing widget options that makes up our widget build.
 
 lets go through the options above.
 
-1. The ***model*** option: Requires to be a method/function. and must return an Object 
+1. The ***model*** option: Requires to be a method/function.
 
 The model option is used to define statefull properties that are to be exposed to the public instances.   
 The model returned object values  are esposed to the widget instance and can be used in bulding and encapsulating the widget model and reactive datas.
 
-This simply means that the widget UI gets updated whenever any of the properties of the widget model returned object values are mutated or  change.
+This simply means that the widget UI gets updated whenever any of the properties of the widget model difined properties  are mutated or  change.
 
 2. The ***template*** option: A string based option that is used to define your widget markup texts.  
 Its recommended to use backticks while parsing this option to allow the use of multline system.
 
 In the previous example, we've crafted a simple widget that conveys a greeting message.  
 The `model` function establishes the widget's initial data store, and the `template` option defines the UI structure using the string based markup texts.  
-Note how the model returned property was to be accessed within the template tags directly. 
+Note how the model defined property via the inScope this keyword was to be accessed within the template tags directly. 
 This widget UI build gots updated whenever the model returned properties changes or got mutated.
 
-Meanwhile , if you prefer a more programmatic way to build your UI, pixel provides you with the `build` method which must return a render function.  The build method gets the `template` option ignored once is presented ,even if it does not return a valid UI instance.  
+Meanwhile , if you prefer a more programmatic way to build your UI, hexax provides you with the `build` method which must return a render function.  The build method gets the `template` option ignored once is presented ,even if it does not return a valid UI instance.  
 A render function is a function returned by the build function which in return also returns an instance of the `el` hyperscript function.   
 A render function is required when building your UI using the `el` hyperscript function like in the example below
 
 ```javascript
-import { el } from 'pixel'
+import { el } from 'hexax'
 export default{
   
   build(){
-    return ()=>el('h1',{ class:'myheading' }, 'Hello World! from Pixel');
+    return ()=>el('h1',{ class:'myheading' }, 'Hello World! from Hexax');
   }
 }
 ```
 MeanWhile, while returning a render function, an  arrow function is recommended.
 
-Another optional native and simple way of encapsulating your ui from the build method if you prefer using the string based markup text is by using the `Template` utility function.  e.g
+Another optional native and simple way of encapsulating your ui from the build method if you prefer using the string based markup text is by using the `html` passed to `ctx.utils.scarfold` utility function.  e.g
 
 ```javascript
-import { Template } from 'pixel'
+import { html } from 'hexax'
 let app={
-  build(){
-    return  Template`
+  build(params, ctx){
+    const { scarfold }= ctx.utils;
+    return scarfold(html`
         <!--your html template strings -->
-    `
+    `)
   }
 }
 ```
 Notice in  the widget that a render function is not required but us a fundamental concept while returning UI instance from the build method.  
-You can directly return an instance of `Template` component without a render function with a Parameter of javascript multline string literal, if you prefer the native way of building your ui from the build method.
+You can directly return an instance of `scarfold` component without a render function with a Parameter of `html` javascript multline string literal, if you prefer the native way of building your ui from the build method.
 
-The build function runs only once throughout the life of a widget, and uses its returned value to build the widget UI in pixel.
+The build function runs only once throughout the life of a widget, and uses its returned value to build the widget UI in hexax.
 
 if the build method/render function directly returns a string,it will be passed and compiled as a textNode.  
-The build function must return a render function in form of an arrow function or an instance of the `Template` function.
+The build function must return a render function in form of an arrow function or an instance of the `scarfold` function.
 
 We will continue this documentation using the template option throughout our examples.
 
 ### **Widgets as Art, Initial Entry point.**
 
-In pixel, you're not just building widgets; you're crafting art. Each widget is like a brushstroke, contributing to the canvas of your application. Think about the composition, the flow, and the visual poetry you create through your widgets.
+In hexax, you're not just building widgets; you're crafting art. Each widget is like a brushstroke, contributing to the canvas of your application. Think about the composition, the flow, and the visual poetry you create through your widgets.
 
-When building with pixel, there must be an entry point for your app build. This is a fundamental concept.
+When building with hexax, there must be an entry point for your app build. This is a fundamental concept.
 
 The `initBuild` component is used to create an initial entry point widget, other child widgets can be passed here as components, pages or building blocks to the `initBuild` widget.
 
@@ -171,12 +173,10 @@ This is an initial entrypoint of the app, we will learn how to use other widgets
 
 Study the code below.
 ```javascript
-const { initBuild } = Pixel;
+const { initBuild } = Hexax;
 let build = initBuild({
   model() {
-    return {
-      count: 0
-    };
+    this.count= 0;
   },
   template:`<button>The count is {{ count }}</button>` // Craft your visual poetry!
 });
@@ -189,9 +189,10 @@ There should be a root dom node in the html dom, where an initBuild instance wou
 
 The innerHtml of the mount Node target will be used as a fallback widget template if the build and the template options are both not provided or both returns no valid dom instance.
 
-***Note:*** The in Dom template parsing caveat will be implemented since pixel won't be able to take the responsibility of processing the innerHtml content before resolving.
+***Note:*** The in Dom template parsing caveat will be implemented since hexax won't be able to take the responsibility of processing the innerHtml content before resolving.
 
 ```javascript
+//syntax
   build.mount(/*selector*/)
 ```
 Your widget template will be injected into the selected dom element, clearing all inner content of the selected element
@@ -200,7 +201,7 @@ Your widget template will be injected into the selected dom element, clearing al
 
 ### **Template Syntax**
 
-Pixel provides you an efficient way of encapsulating templates logic into your Pixel template without using the default javascript multline string interpolation system.
+Hexax provides you an efficient way of encapsulating templates logic into your Hexax template without using the default javascript multline string interpolation system.
 
 You can iterpolate model instances into the template by using the double curly braces, `{{ count }}`. 
 
@@ -210,9 +211,7 @@ e.g.
 ```javascript
 let app={
   model(){
-    return {
-      message:"Pixel Explorer"
-    }
+    this.message="Hexax Explorer"
   },
   template:`<h1>This is the {{ message }} message</h1>`
 }
@@ -221,7 +220,7 @@ let app={
 `{{` and `}}` is the opening and closing tag.
 This are the default settings. Any text within this tags will be parsed as javascript expression with the model instances in scope.
 
-This mustache tags can only accepts single expressions,parsing of statements will raise a Pixel template Error.
+This mustache tags can only accepts single expressions,parsing of statements will raise a Hexax template Error.
 Expressions are syntaxs that can return a value, like a function call `value()` or using a variable `count`.
 Statements are like declaring a function/variable/class  or iterating using the `for` loop Statement, or conditional Statement using `if/else-if/else` or deleting an object property using the `delete` keyword.
 
@@ -253,19 +252,17 @@ The values will be used in interpolating template strings instead of the default
 
 ### **Building Blocks: Components Based Architecture**
 
-pixel encourages a component-based architecture, allowing you to create modular and reusable UI elements. 
+hexax encourages a component-based architecture, allowing you to create modular and reusable UI elements. 
 
 Let's create a simple header widget and compose it into a larger application structure:
 
 ```javascript
-const { initBuild } = Pixel;
+const { initBuild } = Hexax;
 
 // Component
 let header = {
   model() {
-    return {
-      title: 'Pixel World',
-    };
+    this.title= 'Hexax World';
   },
   template:`<h1>{{ title }}</h1>`
 };
@@ -293,22 +290,23 @@ This means widgets can be nexted down the thread as much as you wish, by composi
 
 Before a widget can be used in another widget as a tag , it must be registered in the `widgets` object option.
 Many widgets  as possible can be used within the `Header`  widget provided it's registered.
-***Note:*** During widget registration, be sure it followed the pixel widget naming rules. 
-Must not conflict with any built in pixel widgets, must contain atleast one of these characters .
+***Note:*** During widget registration, be sure it followed the hexax widget naming rules. 
+Must not conflict with any built in hexax widgets, must pass atleast one of these tests .
 
- 1. Should contain a hyphen (-),
+contains :
+ 1. A hyphen (-),
  2. An underscore (_), 
  3. A number or
  4. An uppercase letter.
  
 ###### **Usuported Widget naming construct**
- 1. Must not contain  html own tag  characters ( < , > )
+ 1. Must not contain  html own tag  characters ( < , > , =, " , ')
  2. Must not start with a number or a hyphen
 
-If it posseses none of this requirments, pixel will raise a `Widget registration Warn`.
+If it posseses none of this requirments, hexax will raise a `Widget registration Warn`.
 
 ### **Handlers**
-Pixel provide an intuitive way of defining stateful method Handlers.
+Hexax provide an intuitive way of defining stateful method Handlers.
 
 Handlers helps you perfornm stateful logic or functions  on model datas.
 
@@ -319,9 +317,7 @@ for example...
 ```javascript
 let app={
   model(){
-    return {
-      count:0
-    }
+    this.count=0
   },
   handlers:{
     increment(){
@@ -329,17 +325,15 @@ let app={
     }
   },
   template:`
-<button dir-on:click='increment'>Clicked me {{ count }} times</button>`
+<button $$on:click='increment'>Clicked me {{ count }} times</button>`
 }
 ```
 Example using hyperscript.
 ```javascript
-const { el ) = Pixel
+const { el ) = Hexax
 let app={
   model(){
-    return {
-      count:0
-    }
+    this.count=0
   },
   handlers:{
     increment(){
@@ -354,9 +348,9 @@ let app={
 
 Handlers defined here are automatically exposed to the template instances directly and can be accessed within both the template and attribute scope like in the examples above.
 
-For calling a handler, pixel provides you with the `$$on:handler` event caller, or the `@handler` shortcut pattern.
+For calling a handler, hexax provides you with the `$$on:handler` event caller, or the `@handler` shortcut pattern.
 
-Pixel supports all non deprecated event calls through the `$$on:xxx` or `@xxx` event  triggering directives.
+Hexax supports all non deprecated event calls through the `$$on:xxx` or `@xxx` event  triggering directives.
 
 You can also parse modifiers to your handlers when been called. They are to be separated using pipes character after the eventName
 
@@ -369,12 +363,10 @@ Modifiers can be chained
 
 For passing modifiers to handlers when using a hyperscript powered UI, you needs the `withModifiers` macro .
 ```javascript
-const { el, withModifiers }=Pixel
+const { el, withModifiers }=Hexax
 let app={
   model(){
-    return {
-      count:0
-    }
+    this.count=0;
   },
   handlers:{
     increment(){
@@ -387,7 +379,7 @@ let app={
 ```
 Accepts a first argument of the handler, and an array of modifiers strings names.
 
-Here are Pixel supported event modifiers
+Here are Hexax supported event modifiers
 
 1. **once:** Prevents the handler from being called more than once.
 2. **capture:** Sets the capture modifier to true.
@@ -400,30 +392,27 @@ Here are Pixel supported event modifiers
 
 Explore their usage to perform logic on model data:
 
-Events can be chained too, like when you wish to incorparate the same handler to more than one event, pixel provides you a stress saving  semantics that stops you from writing different attributes and directives for each of the events when they have to use the same handler and maybe share same modifiers.
+Events can be chained too, like when you wish to incorparate the same handler to more than one event, hexax provides you a stress saving  semantics that stops you from writing different attributes and directives for each of the events when they have to use the same handler and maybe share same modifiers.
 `<button $$on:click.hover.keydown='increment' />`  Using the dot sepaeator, you can chain as many events as possible.   
 `<button $$on:click.hover|present|trusted|capture='increment' />`  They all share from the modifiers being passed.
 
 ### **Reacting to Changes: Crafting Dynamic Reactive mentality**
 
-In the world of Pixel, think of your application as a living, breathing entity. The reactive nature of Pixel means your UI responds dynamically to changes in data.
+In the world of Hexax, think of your application as a living, breathing entity. The reactive nature of Hexax means your UI responds dynamically to changes in data.
 
 Embrace this reactivity – it's not just a feature; it's a mindset. Your UI evolves as your data revolves.
 
-Pixel excels at reactivity making it easier in building dynamic widgets.
+Hexax excels at reactivity making it easier in building dynamic widgets.
 
 Let's create a button that increments a counter each time it's clicked:
 Notice how the button counter displays responds to the user interaction
 
 ```javascript
-const { Template } = Pixel;
+const { initBuild } = Hexax;
 
-let app= {
+let app= initBuild({
   model() {
-    
-    return {
-      count: 0,
-    };
+    this.count: 0;
   },
   template:`
       <button $$on:click='increment'>
@@ -435,7 +424,7 @@ let app= {
       this.count++;
     },
   },
-});
+}).mount('#root');
 
 ```
 
@@ -449,50 +438,44 @@ Its returned datas are exposed to the template instances directly as `<propName>
 here is a minimal example
 
 ```javascript
-const { data }=Pixel
+const { data }=Hexax
 let widget={
-    model(){
+  model(){
     //initialized widget instances
-        let obj=data({
-          message:"Exploring Pixel",
-          count:0
-        })
-        //expose it to the template
-        return { 
-          obj ,
-          num:data(34)
-        }
-    },
-    build(){
+    this.obj=data({
+      message:"Exploring Hexax",
+      count:0
+    })
+    this.num=data(34)
+  },
+  build(){
     //accessed in the widget through the ***this*** keyword
-        this.obj.$data.count+=70
+    this.obj.$data.count+=70
     //to access them in template, it ll be esposed as $data.count, this datas object are reactive data
-      return Template`
+    return Template`
       <h1>{{ obj.$data.message}}</h1>
       <p >{{ obj.$data.count }}</p>
       <h5> {{ num.$data}}</h5>
       `
-    }
+  }
 }
 ```
 By utilizing the `data` macro, this helps us handle dependency tracking for nexted and deep data properties;
 
-### **Pixel UI Symphony: Templating as Expressions**
+### **Hexax UI Symphony: Templating as Expressions**
 
-Pixel templates are more than just HTML with placeholders. They are expressions of intent, a language to communicate with your UI.
+Hexax templates are more than just HTML with placeholders. They are expressions of intent, a language to communicate with your UI.
 
 View your templates as a dialogue with your application – a conversation that shapes the user experience using an efficient and dynamic implemention.
 
-Pixel introduces a powerful templating language for expressing your UI elements using simple html markup syntax.  
+Hexax introduces a powerful templating language for expressing your UI elements using simple html markup syntax.  
 Let's explore the templating features with an example:
 
 ```javascript
 
 let app ={
   model() {
-    return {
-      name: 'Pixel Explorer',
-    };
+    this.name='Hexax Explorer',
   },
   template:`
       <div>
@@ -504,54 +487,52 @@ let app ={
 
 ```
 
-Example using the hyperscript powered UI  , you will need the `withDirectives` macro to use the `$$model` directive.
+Example using the hyperscript powered UI  , you will need the `withDirectives` and the `buffer` macros to use the `$$model` directive.
 ```javascript
-import { el, withDirectives } from 'pixel'
+import { el, withDirectives, buffer } from 'hexax'
 let app={
   model(){
-    return {
-      name:"Pixel Explorer"
-    }
+    this.name="Hexax Explorer"
   },
   build(){
     return ()=> el('div', 
       [
         el('h1', 'Welcome, '+ this.name ),
         el("input", withDirectives({ placeholder : "Type your name"},
-          [{ name:"model", value:"name", modifiers:[] } , ]),   )
+          [buffer("model","name",[]) , ]),   )
       ]
       )
   }
 ```
-The `withDirectives` macro takes the elements normal attributes as its first argument, then an array containing objects of directives options.
-Which are the directive name, model based propertyName as value and an array of modifiers if any. 
+The `withDirectives` macro takes the elements normal attributes as its first argument, then an array containing buffer instances of directives .
+Which are passed the directive name if registered down the thread/builtin or the actual directive instance if in scope, model based propertyName as value inthe case of the $$model directive and an array of modifiers if any. 
 
 Can accept as many directives as possible.
 
 In this example, an input field dynamically updates the `name` text based on user input. The `$$model` directive establishes a two-way binding between the input and the data.
 
-Pixel templates provide a concise and expressive way to define UI logic.
+Hexax templates provide a concise and expressive way to define UI logic.
 
 Confused of what directives are , we ll learn of that soon.
 
-##### **Pixel Template parsing caveat**
+##### **Hexax Template parsing caveat**
 
-In pixel, dom templates is made to be an essential made easy for all , especially for people who comes from native html background.
+In hexax, dom templates is made to be an essential made easy for all , especially for people who comes from native html background.
 
-Tags can be immediately closed if they expects no children nodes , this helps you omit a closing tag for html elements that Requires a closing tag and saving you the stress of writing a closing tag since there are no children elements to wrap inbetween.
+Tags can be immediately closed if they expects no children nodes , this helps you omit a closing tag for non void tags and saving you the stress of writing a closing tag since there are no children elements to wrap inbetween.
 ```html
 <element attr='value' />
 <p/>
 ```
-If this is an element that Requires a closing tag, if you omit the immediately closing Syntax like , `<element attr-value >` or not including a closing tag, pixel will include all nodes following it as its children.
+If this is an element that Requires a closing tag,  omiting the immediately closing Syntax like , `<element attr-value >` or not including a closing tag, will include all nodes following it as its children.
 
 for example...
 ```html
 <p > 
-Hello Pixel
+Hello Hexax
 <input>
 ```
-In the above code, Both the `Hello Pixel` text and the input element are all child nodes of th p element since the `p` element Requires a closing tag and none  was provided.
+In the above code, Both the `Hello Hexax` text and the input element are all child nodes of th p element since the `p` element Requires a closing tag and none  was provided.
 
 The immediate closing syntax, `<p />` helps close  the element without a closing tag.
 
@@ -559,17 +540,25 @@ In terms of void elements, like  the ` input, br, img ` elements , they can be r
 
 When parsing attributes, attributes names and value cases sensitivity are maintained.
 
-If an attribute value does not contain a space or special characters that may conflict with html tags like the `<, >`,or confuse the pixel attribute passing caveat,  you can pass them without quoting them.
+If an attribute value does not contain a space or special characters that may conflict with html tags like the `<, >, = , ", '`,or confuse the hexax attribute passing caveat,  you can pass them without quoting them.
 
 e.g.
 `<element attr=my Value />` ×Bad
 `<element attr='my Value' />` √great
-`<element innerHtml=<div/> />` ×Bad
-`<element innerHtml='<div/>' />` √great
 
 the `Value` text path in the first example above will be compiled as a different attribute. It should be quoted if they belong to a single attribute property.
 
-For example `<element attr=myValue />` works perfectly fine, Pixel accepts non cased attributes values once they follow the pixel attributes passing caveats.
+`<element innerHtml=<div/> />` ×Bad
+`<element innerHtml="<div/>" />` √great
+
+
+`<element onclick=()=>count++ />` ×bad   
+In the ablove examples, the arrow **>** in the attribute will be misinterpreted as the end of the opening tag
+`<element onclick="()=>count++" />` √great
+
+
+
+For example `<element attr=myValue />` works perfectly fine, Hexax accepts non quoted attributes values once they follow the hexax attributes passing caveats.
 
 Also when your attribute name matches your attribute value text, you can just pass the attribute while omiting the value part. 
 This works like the native javascript objects option mapping.
@@ -581,9 +570,7 @@ e.g.
 ```javascript
 let app={
   model(){
-    return {
-      text:'Pixel Explorer'
-    }
+    this.text='Hexax Explorer'
   },
   template:` <h1 $$text /> `
 }
@@ -591,7 +578,7 @@ let app={
 In the above example code, `text` will be mapped as the value of the `$$text` directive. 
 The above widget will  result in the following dom node
 ```html
-<h1 innerTEXT="Pixel Explorer" ></h1>
+<h1 innerText="Hexax Explorer" ></h1>
 ```
 
 ### **Attributes Data binding : Connecting your UI system**
@@ -606,7 +593,7 @@ For example, `*class='color'` will bind the class attribute to the value of `col
 
 Same rules implies as in template mustache tags  except that here, values may also return none primitive values like `Sets,Object,Arrays,RegRxp,class,function`  instances. Once an attribute name is preceded with an asterisks, its value will be treated as a javascript expression.
 
-Data binding in Pixel is not just connecting reactive variables with the template attribute; it's orchestrating a symphony of interactions. 
+Data binding in Hexax is not just connecting reactive variables with the template attribute; it's orchestrating a symphony of interactions. 
 
 Envision your UI elements harmonizing with the underlying data. Your application is a symphony where each note resonates with a data point.
 
@@ -614,14 +601,12 @@ e.g
 ```javascript
 let app={
   model(){
-    return { 
-      color:data('bg-info'),
-      name: ' myParagraph'
-    }
+    this.color=data('bg-info'),
+    this.name= ' myParagraph'
   },
   // ...
   template:`
-    <p *class='color.$data + name'>Hello, Pixel!</p>
+    <p *class='color.$data + name'>Hello, Hexax!</p>
     <input $$model=color >
     `;
     
@@ -631,7 +616,7 @@ let app={
 
 This example binds the `class` attribute to the value of `color` concentenated with the name property resulting in the dom node as follows
 ```html
-<p class="bg-info myParagraph">Hello, Pixel!</p>
+<p class="bg-info myParagraph">Hello, Hexax!</p>
 ```
 And an input element that is bound to the color model property.
 Changes to the input value updates the `class` content of the paragraph element.
@@ -645,13 +630,11 @@ Same rules applies as with the mustache interpolation and must return a primitiv
 Watch the example...
 
  ```javascript
- const { data }=Pixel
+ const { data }=Hexax
 let app={
   model(){
-    return {
-      name:'class',
-      value:data('bg-dark')
-    }
+    this.name='class',
+    this.value=data('bg-dark')
   },
   // ...
   template:`<p [name]='value.$data'>Dynamic Attribute</p>`;//<p class="value.$data">Dynamic  Attribute</p>
@@ -659,15 +642,15 @@ let app={
   ,
 };
 ```
-Appending the asterisks binds the contents Attribute value not Attribute name.
+Using the `$$bind` directive binds the contents Attribute value not Attribute name.
 
-### **Pixel directives**
+### **Hexax directives**
 
-Pixel provides directives that allow you to conditionally display elements, bind reactive datas to an input element during compilation, reference an element or skip the compilation of an element's children.
+Hexax provides directives that allow you to conditionally display elements, bind reactive datas to an input element during compilation, reference an element or skip the compilation of an element's children.
 
 Directive is a special attribute used in manipulating a node or widget before, during or after compilation.
 
-Pixel directives are not just instructions; they are artistic attributes guiding the flow of your application or widget build. See `$$if` as a creative decision, `$$for` as a rhythmic pattern, and `$$data` as a dynamic palette.
+Hexax directives are not just instructions; they are artistic attributes guiding the flow of your application or widget build. See `$$if` as a creative decision, `$$for` as a rhythmic pattern, and `$$ref` as a dynamic palette.
 
 Here are some commonly used directives:
 
@@ -682,7 +665,7 @@ Scopes to html elements nodes only and will be consumed by a root element when p
 
 #### **Conditional rendering Directives**
 
-To render elements/widget based on some evaluated result of an expression or value, Pixel provides you with some useful condition based directives.
+To render elements/widget based on some evaluated result of an expression or value, Hexax provides you with some useful condition based directives.
 
 ##### $$if
 
@@ -697,12 +680,12 @@ this element will not render since the condition render result is falsy
 
 ##### $$else-if
 
-Checks if the previous element/widget  has a `$$if`/`$$else-if` directive, if not found, will raise an `Pixel Error`.
+Checks if the previous element/widget  has a `$$if`/`$$else-if` directive, if not found, will raise an `Hexax Error`.
 
 The `$$else-if` directive ,if available on the next element or widget following a `$$if` or other `$$else-if` element/widget , will be processed if, the `$$if`,ir `$$else-if ` on the previous element/widget, evaluates to false
 Inoder to make it effective, should be passed to the next element or widget after the previous relative conditioned element/widget 
 
-If unable  to find a relative conditional directive on the previous element/widget, will raise a pixel conditional Directive Error.
+If unable  to find a relative conditional directive on the previous element/widget, will raise a hexax conditional Directive Error.
 
 ##### $$else
 The `$$else` directive , displays its element if the previous `$$if` or `$$else-if` , if any, statements are falsy
@@ -714,20 +697,18 @@ Its always a gotcha to pass a $$if alongsode the $$for directive, if possible, a
 ##### $$for
 list rendering helps you render a widget or an element, from an iterable value , the resulting value will be available on the element, or widget rendering scope.
 
-To achieve this , pixel provides you with the `$$for` directive.
+To achieve this , hexax provides you with the `$$for` directive.
 
 here is a minimal example on using '$$for' directive.
 ```javascript
-import { data  }  from 'pixel
+import { data  }  from 'hexax
 let app={
   model(){
-    return {
-      fruits:data({
-        orange:{id:223, color:'yellow',shape:'circle',count:56},
-        mango: {id:3570,color:'green',shape:'rect',count:911},
-        pearl:{id:67,color:'navy-blue',shape:'rectangle',count:2},
-      })
-    }
+    this.fruits:data({
+      orange:{id:223, color:'yellow',shape:'circle',count:56},
+      mango: {id:3570,color:'green',shape:'rect',count:911},
+      pearl:{id:67,color:'navy-blue',shape:'rectangle',count:2},
+    })
   },
   template:`
   <div $$for="[ name, value ] of fruits.$data">
@@ -781,7 +762,7 @@ From the JavaScript official documentation, it's quoted
 
 Both the `for...of` and `for...in` can be used interchangeably.
 
-It's included in Pixel's support for completeness.`
+It's included in Hexax's support for completeness.`
 
 If a single reference is passed, it references the value data. If the iterated data is a Number, it will reference the number count.  
 Can be enclosed within bracked or standalone.
@@ -811,14 +792,11 @@ template:`<input $$for="iterable" >`
 Data instances defined and exposed from the model method option can be two way binded efficiently using the '$$model' directive.
     e.g.
 ```javascript
-const { data } = Pixel
+const { data } = Hexax
 
 let app={
   model(){
-    
-    return {
-      value:data("Pixel Explorer")
-    }
+    this.value=data("Hexax Explorer")
   }
   template:`
     
@@ -831,23 +809,20 @@ By using the `$$model` directive, the input element is now bound to and from the
 
 Scoped to Input, Textarea and select elements only.
 
-##### $$data
+##### $$ref
 
-Accessing a node object from inside a widget and side effect manipulation on dom objects can be achieved using the '$$data' directive.
+Accessing a node object from inside a widget and side effect manipulation on dom objects can be achieved using the '$$ref' directive.
 
-`$$data` is used to reference in template variables.
+`$$ref` is used to reference in template variables.
 ```javascript
 
 let app={
   model(){
-    
-    return {
-      value:""
-    }
+    this.value:""
   }
   template:`
     
-    <input $$data=value >
+    <input $$ref=value >
     `,
   handlers:{
     doSomething(){
@@ -869,14 +844,11 @@ This directive uses the `element.innerText` method to populate an element's inne
 This is how to...
 
 ```javascript
-const { Template } = Pixel
+const { Template } = Hexax
 
 let app={
   model(){
-    
-    return {
-      text:"Pixel Explorer"
-    }
+    this.text:"Hexax Explorer"
   }
   template:`
     
@@ -895,43 +867,40 @@ Used in binding attributes to the reactive data instance.
 ```javascript
 let app={
   model(){
-    return {
-      value:'m-5 primary btn'
-    }
+    this.value='m-5 primary btn'
   },
-  template:`<button $$bind:class='value' > Hello Pixel</button>`
+  template:`<button $$bind:class='value' > Hello Hexax</button>`
 }
 ```
-The `$$bind` directive can be chained  with  another directive with  the exception of the `$$model`,`$$data` and the `$$on`  directives since they are autoBinded by default.  
-Other directives  can be chained to the `$$bind`.
-`<button $$bind:$$text='value' > Hello Pixel</button>`   
-Cannot chain more  than one directive to `$$bind`.   
-Since `$$bind` is been used too frequently, pixel provides  a shortform of invorking  the binding directive using the  asterisks (`*`).  
+The `$$bind` directive can be chained  with other attributes exception of directives 
+
+Cannot chain more  than one attribute to `$$bind`.   
+Since `$$bind` is been used too frequently, hexax provides  a shortform of invorking  the binding directive using the  asterisks (`*`).  
 ```html
-<button $$bind:class='value' > Hello Pixel</button>
+<button $$bind:class='value' > Hello Hexax</button>
 <!--can just  be written as  -->
-<button *class='value' > Hello Pixel</button>
+<button *class='value' > Hello Hexax</button>
 ```
 `$$bind` can also be used to parse an object of elements  attributes and values.
 ```html
-`<button $$bind="{ class:stateInstance+' btn', innerText:'click me'}" />
+`<button $$bind="{ class:value+' btn', innerText:'click me'}" />
 ```
-This  works  as like the pixel spread syntax, you  can however declare  the object within the model  instance  and reference it  from the  binding attribute value. 
+This  works  as like the hexax spread syntax, you  can however declare  the object within the model  instance  and reference it  from the  binding attribute value. 
 ```html
 <button $$bind=buttonProps />
 ```
-Or more preferably, you can use the pixel attribute spread syntax binding.  
+Or more preferably, you can use the hexax attribute spread syntax binding.  
 ```html
 <button ...buttonProps />
 ```
 The spread syntax cannot be used on a none plain javascript object.  
-Pixel also provide way more useful directives and an API on how to build Custom directives on both widget and html elements
-Contact  the Pixel builtin directives API for more about Pixel directives.
+Hexax also provide way more useful directives and an API on how to build Custom directives on both widget and html elements
+Contact  the Hexax builtin directives API for more about Hexax directives.
 
 ##### **Custom Directive**
 
-Pixel provides a declarative interface for building customized directives.
-This is useful when you want to incorparate useful and self defined functionality into a PixelDomInstance .
+Hexax provides a declarative interface for building customized directives.
+This is useful when you want to incorparate useful and self defined functionality into a HexaxDomInstance .
 
 You can create a fully functional directive using a function or an object consisting of hooks callback.   
 directives must be registered using the directives option.
@@ -952,7 +921,7 @@ export default{
       mounted(el, value, modifiers){
         
       },
-      preCreate(nodeObjectValue, value, modifiers){
+      init(build, value, modifiers){
         //Reaceives thw nodeObjectValue as passed to the defineVNodeElement module
       }
     }
@@ -962,13 +931,13 @@ export default{
   `
 }
 ```
-Custom widget can also be used the same way as built in directives.  Beware of pixel builtin directives name while registering your custom in order not to conflict
+Custom directives can also be used the same way as built in directives.  Beware of hexax builtin directives name while registering your custom in order not to conflict
 
 Read the directives API Docs for more Details on using directives.
 
 ### **Display rendering**
 
-pixel offers flexibility in rendering your UI widgets.
+hexax offers flexibility in rendering your UI widgets.
 
 You have two options for rendering your UI widgets: using template strings or the `el` Hyperscript function.
 
@@ -977,7 +946,7 @@ Choose the rendering option that best suits your coding style and project requir
 #### **Native html templating system**
 
 Define your UI structure directly using template strings. Widgets has to be Registered through the `widgets` option for accessibility:  
-Consider it as a way pixel enables you create your own tag elements .
+Consider it as a way hexax enables you create your own tag elements .
 
 ```javascript
 let app= {
@@ -1028,7 +997,7 @@ let app={
 For multiple root Nodes, you can wrap them in square bracket
 `return ()=>[el('p', 'Header'), el('input')]`
 
-the first argument is required and  must be a string value of a valid html/svg/resolved Custom NodeMake tag name, an unresolved NodeMake instance or an instance of a widget, other two arguments  can be dynamicaly passed as children `el` nodes or attributes. 
+the first argument is required and  must be a string value of a valid html/svg/resolved Custom makeNativeElement tag name, an unresolved makeNativeElement instance or an instance of a widget, other two arguments  can be dynamicaly passed as children `el` nodes or attributes. 
 
 The el function accepts only three arguments, whereas 2nd and 3rd arguments can be passed dynamicaly,  if there are no need for any, it absence does not matter as there is no contextual defined position for any of the both, unlike other frameworks where you have to pass a positional arguments or null  to the hyperscript function.
 
@@ -1043,7 +1012,7 @@ let app= {
         el('input', { type: 'text' }),
         el(MyWidget),
         el('p',['A child text node',el('br')],{ class:'m-5 text-primary'}),
-        el('NodeMakeElement')
+        el('makeNativeElement')
       ]
     );
   },
@@ -1054,7 +1023,7 @@ Widgets do not need to be registered before been used, they only need to be in s
 
 ### **Advanced Usage**
 
-In addition to the basics, Pixel offers some advanced features that can enhance your development experience.
+In addition to the basics, Hexax offers some advanced features that can enhance your development experience.
 
 ### **Params**
 You can pass Parameters  to your widgets to make them more dynamic and reusable. 
@@ -1100,7 +1069,7 @@ In cases where some kind of complex expression might be involved, its recommende
 
 Params will be exposed to the template instance as `$params.xxx` within the child widget
 
-Validations will raise a Pixel Error or warn , if failed or when a validator function returns false.
+Validations will raise a Hexax Error or warn , if failed or when a validator function returns false.
 
 Params can aswell be passed an array of params names strings, this is useful when there is no use case of validations e.g
 
@@ -1126,7 +1095,7 @@ Type: `Function`
 
 ##### ***Custom dataTypes prototyping***
 
-Pixel supports the production of custom dataType using class Object.
+Hexax supports the production of custom dataType using class Object.
 For example...
 ```javascript
 class PersonType{
@@ -1150,28 +1119,28 @@ Can be used same way as other normal dataType.
 
 ### ***Custom Nodes: Element free Styling***
 
-Pixel allows you to create custom elements by using the NodeMake module. You can register your custom elements by calling node.resolve(). This is useful when you want to encapsulate complex functionality into reusable components.
-for a custom element, use the `NodeMake` macro, then pass in the name '<required>', props, templates '<required>', style and plugins  as an object options.
+Hexax allows you to create custom elements by using the makeNativeElement module. You can register your custom elements by calling node.resolve(). This is useful when you want to encapsulate complex functionality into reusable components.
+for a custom element, use the `makeNativeElement` macro, then pass on normal widget options
 
-here is a minimal example on creating a pixel custom element
+here is a minimal example on creating a hexax custom element
 ```javascript
-let node=NodeMake({
+let node=makeNativeElement({
     /* accepts props, template, style and plugins options */
 })
 
 ```
-To register the custome node  if you are using the string template, ` node.resolve()`
+To register the custome node  if you are using the string template, ` node.define()`
 
+or `customElements.define('my-element', node())`
 It will be available to use in your widget Template, globally, does not require registration.
 
 If you tend to use it through the render Function, `el` macro, it's resolve instance tag name can be used as `el`'s first Parameter , or import an unresolved instance into the namespace and passed as the first argument.
 
-NodeMake also accepts all the native custom elements LifeCycleHooks
+makeNativeElement also accepts all the native custom elements LifeCycleHooks
 e.g.
 
 ***`onConnected, onDisconnected, onAdopted and onAttrsChanged`***
 
-NodeMake props same as a widget params, with validations and inheritance for none props defined attributes, just differently named as props instead of params.
 
 ### **Slots: UI maintainability**
 
@@ -1195,7 +1164,7 @@ e.g
 <slot *name='dataProp'/><!-- dynamic slot naming -->
 ```
 
-To parse slots contents for slots elements, Pixel provides you with the `$$slot` directive on elements/widgets.
+To parse slots contents for slots elements, Hexax provides you with the `$$slot` directive on elements/widgets.
 e.g
 ```html
         <Widget>
@@ -1212,15 +1181,15 @@ Slot elements can be passed default contents by providing inner cointent to it. 
 <slot name=header > <h2>A default slot content</h2></slot>
 ```
 
-#### **Pixel slots passing caveat**
+#### **Hexax slots passing caveat**
 
-Slots works same as in other frameworks that uses the slot system, with slight differences in pixel.   
-If a child widget has only a single root element, Pixel will try to parse all default slots to its innerHtml if, there is no default slot provided, and it has no innerHtml content.
+Slots works same as in other frameworks that uses the slot system, with slight differences in hexax.   
+If a child widget has only a single root element, Hexax will try to parse all default slots to its innerHtml if, there is no default slot provided, and it has no innerHtml content.
 
 To disable this action, you can set the `inheritSlots` settings to false in your buildConfig settings option  as it defaults to true.
 
 All widget instances of the parent, are available, within the child widget scope, but not the other way round.  
-but if need be to access a child widget's data within the scope it's defined in the parent, pixel provides you with the `fallThrogh` setting option in the child widget's buildConfig.
+but if need be to access a child widget's data within the scope it's defined in the parent, hexax provides you with the `fallThrogh` setting option in the child widget's buildConfig.
 
 An Onject of string values bound to the  model public instance.  
 Access to model instances are to be exposed directly, the `this` keyword would not be available in the scope,and so,  should be passed as a string format  e.g
@@ -1271,7 +1240,7 @@ This properties can be accessed from the use of the `this` keyword but are provi
 They can be accessed by Appending  the ***$*** character to the `styles, events, slots and attrs` data instances. 
 for example...
 ```javascript
-const { log } = Pixel
+const { log } = Hexax
 let app={ 
   onMounted(){
     log(this.$styles)
@@ -1282,35 +1251,36 @@ let app={
 ```
 ### **Widget type system**
 
-Pixel also accepts the use of functions and class objects as valid widgets, but with slight edge  case.
+Hexax also accepts the use of functions and class objects as valid widgets, but with slight edge  case.
 
 Function widget works as the scope of the build function, with no data state of it's own.
-The `Template` macro  is provided to help the functional widget  access  the pixel rich templating syntax.
-Here is a simple pixel functional widget using the Template component system.
+The `Template` macro  is provided to help the functional widget  access  the hexax rich templating syntax.
+Here is a simple hexax functional widget using the Template component system.
 ```javascript
-const { Template }=Pixel
+const { Template }=Hexax
 function FW(){
   
-  return Template`<p> Hello Pixel</p>`
+  return Template`<p> Hello Hexax</p>`
 }
 
 ```
 Can be registered and used as other normal widgets.
 
-The Pixel style guides recommends against the use of arrow function widgets as an initBuild widget, nevertheless, function widget is a perfect pixel widget provided with pixel utilities. .
+The Hexax style guides recommends against the use of arrow function widgets as an initBuild widget, nevertheless, function widget is a perfect hexax widget provided with hexax utilities. .
 
-Class widgets are perfect and statefull widget encapsulation, in short, it was used in building the pixel builtin widgets.
+Class widgets are perfect and statefull widget encapsulation, in short, it was used in building the hexax builtin widgets.
 
-Pixel does not utilize the constructor function, like React  did, instead, pixel takes its defined method options as pixel options.
+Hexax does not utilize the constructor function, like React  did, instead, hexax takes its defined method options as hexax options.
 
-A pixel class widget must extend the base `Widget` class. 
+A hexax class widget must extend the base `Widget` class. 
 e.g.
 ```javascript
-const { Widget }= Pixel
+const { Widget }= Hexax
 
 class myCW extends Widget{
   constructor(){
-    super()
+    super();
+    this.model.count=56
   }
   model(){
     
@@ -1322,11 +1292,11 @@ class myCW extends Widget{
 }
 ```
 
-Pixel recommends the use of object widget for declarative syntax
+Hexax recommends the use of object widget for declarative syntax
 
 #### **LifeCycleHooks**
 
-Pixel provides you with some usefull callback functions that run at some specific stage of the life of a widget.
+Hexax provides you with some usefull callback functions that run at some specific stage of the life of a widget.
     
 ##### preBuild: 
 Called Synchronously except in the case of an asynchronous widget, before the widget instances are instanciated or any build process  is even started.
@@ -1357,17 +1327,17 @@ LifeCycleHooks has there `this` keyword bound to the widget model instances with
 Contact the LifeCycleHooks API for more detailed information.
     
 ### **Dynamic Widget**
-Widgets can be dynamicaly rendered, expecially, when resorting to in dom templates, this can be achieved using the px-build built in widget.
+Widgets can be dynamicaly rendered, expecially, when resorting to in dom templates, this can be achieved using the hx-build built in widget.
     
 It accepts one required property, **self** which can be any registered widget instance or a valid  html/svg tag name.
     
 Attributes or params for the widget pased to self, can be passed alongside the self params with `self` as first params.  
-Children are passed as children to px-build
+Children are passed as children to hx-build
     
 ### **Data Observation**
 To perfom a data Observation within the widget instance datas, the 'observers' option can be used.
   
-Within the observe object option, pixel accepts only  object, with names that references the widget defined model instances datas
+Within the observe object option, hexax accepts only  object, with names that references the widget defined model instances datas
   
 Does not  accept the use of nested property accessor as metthod name e.g
   
@@ -1380,7 +1350,7 @@ Does not  accept the use of nested property accessor as metthod name e.g
     }
   }
 ```
-Pixel will raise an observer error on access to a nexted property while naming an `observes` property.
+Hexax will raise an observer error on access to a nexted property while naming an `observes` property.
   
 To set up an observer method for the property of `$data.value` inasmuch as the target  data is a primitive data, or would not require nexted property accessing.
   
@@ -1389,10 +1359,8 @@ You can specifically set the method name to 'value'.
 ```javascript
   let app={
     model(){
-      return {
-        count:2,
-        value:data(77)
-      }
+      this.count=2
+      this.value=data(77)
     },
     observer:{
       count(newV, oldV){
@@ -1411,14 +1379,11 @@ For Observation of nexted object props, you can acomplish such tax within the on
 
 ```javascript
 
-const { data, observe } = Pixel
+const { data, observe } = Hexax
 
 let app= {
   model(){
-    
-    return {
-      obj:data( { num:56 , info : { name: 'Pixel Explorer', age :43 } } )//An object data
-    }
+    thus.obj=data( { num:56 , info : { name: 'Hexax Explorer', age :43 } } )//An object data
   },
   onMounted(){
     
@@ -1437,15 +1402,12 @@ let app= {
 Precisely, you can watch more than one property using the `observe` component , by passing an arrow function that returns the value of the live properties you wish to observe.
 
 ```javascript
-const { data , observe} = Pixel
+const { data , observe} = Hexax
 
 let app= {
   model(){
-    
-    return {
-      obj:data( { num:56 , info : { name: 'Pixel Explorer', age :43 } } ) ,//An object data
-      count:45
-    }
+    this.obj=data( { num:56 , info : { name: 'Hexax Explorer', age :43 } } ) ,//An object data
+    this.count=45
   },
   onMounted(){
     
@@ -1461,11 +1423,11 @@ let app= {
   }
 }
 ```
-Pixel watches the value of this properties and reacts when there values changes when reavaluated, instead of the data properties directly.
+Hexax watches the value of this properties and reacts when there values changes when reavaluated, instead of the data properties directly.
 
 ## **Global instanciciation**
 
-Pixel provides an effective way of injecting a global datas through out the scope of an initBuild and all it's child widget
+Hexax provides an effective way of injecting a global datas through out the scope of an initBuild and all it's child widget
 
 1. `build.property`: Used to define a global property  to all child widgets of this parent widget;
 
@@ -1473,11 +1435,11 @@ Can be accessed as `$base.xxx`;
 global widget properties are encapsulated into a single data object, $base.
 Example usage
 ```javascript
-const { initBuild }=Pixel
+const { initBuild }=Hexax
 let build=initBuild({
   //widget options
   template:`<p>{{ $base.text }}</p>`
-}).property('text','Hello Pixel')
+}).property('text','Hello Hexax')
 //build.property('text','cursor-pointer');
 accepts two parameters, a property name and the property data ref.
 ```
@@ -1487,11 +1449,11 @@ accepts two parameters, a property name and the property data ref.
 ### **Style and class guide**
 
 Styling and class management is such a complex task that changes on daily basis. 
-Pixel provides you with easy and reusable semantics that helps you create your widget with ease, no matter your project requirements or size.
+Hexax provides you with easy and reusable semantics that helps you create your widget with ease, no matter your project requirements or size.
 
 ##### **styleSheet: Scoping css**
 
-Pixel provides you with a styleSheet option for defining styles for a widget.
+Hexax provides you with a styleSheet option for defining styles for a widget.
 
 Styles defined here are scoped to the widget template only by default.
 The styleSheet option is passed the String multline literal as template option.
@@ -1504,12 +1466,12 @@ let app={
 `,
   styleSheet:`
   .btn{
-    height:40px;
+    height:40hx;
     color:blue;
     width:70%;
   }
   button{
-    font-size:20px;
+    font-size:20hx;
   }
 `
 }
@@ -1534,20 +1496,20 @@ While the second sheet is scoped only to the widget template only.
 
 #### **Inline style binding**
 
-Pixel provides you with a helpful semantics that can help you pass styles within the template using the style Inline attribute.
+Hexax provides you with a helpful semantics that can help you pass styles within the template using the style Inline attribute.
 
 A plain object can be psssed to the style attribute using the data binding syntax.
 
 Here is a minimal example ...
 ```html
-<h1 *style="{ color:red , 'font-size':'18px', borderRadius:'10px'}" >My heading</h1>
+<h1 *style="{ color:red , 'font-size':'18hx', borderRadius:'10hx'}" >My heading</h1>
 ```
-Notice how we single quoted the `font-size` propName for containing a special character,a hyphen(-) and the propValue `18px` for containing a mix of a number and an aphabet.  
+Notice how we single quoted the `font-size` propName for containing a special character,a hyphen(-) and the propValue `18hx` for containing a mix of a number and an aphabet.  
 The single quote was used since the outer value was quoted using the double quote. It may be preferable to define this data objects in the model and bind them from the style attribute
 
 MeanWhile, you can use the javascript provided css style property semantics, by Capitalizing a letter whenever there occured a hyphen replaced space like in the last property of the style attribute value in the previous example, the `borderRadius`.
 
-It's pixel recommendation to define the styling data properties in a `styleClass` option.
+It's hexax recommendation to define the styling data properties in a `styleClass` option.
 ```javascript
 let app={
   styleClass:{
@@ -1564,20 +1526,20 @@ Whatever way you choose , both the reactivity and responsiveness are maintained.
 MeanWhile it's also provided to the context variable of the  build function as `context.styles`.  
 Also an array of style objects can be parsed to the style binding.
 ```html
-<element *style="[styleObj,{ margin:'10px', background:'#0a3039' }, elementStyles ]" />
+<element *style="[styleObj,{ margin:'10hx', background:'#0a3039' }, elementStyles ]" />
 ```
-Pixel will iterate through the array values and parse the resulting objects as styles  
+Hexax will iterate through the array values and parse the resulting objects as styles  
 
 #### **Class binding**
 
-Class is a special attribute to an html element, so pixel provides useful semantics for encapsulating class names.
+Class is a special attribute to an html element, so hexax provides useful semantics for encapsulating class names.
 
 A class can be passed an array or a plain object.
 for example...
 ```html
 <button *class="[ btn, m-5 , w-70 ]"> Click me </button>
 ```
-When a class binding receives an object, pixel evaluates the property values as a condition on passing the property keys as the class names.
+When a class binding receives an object, hexax evaluates the property values as a condition on passing the property keys as the class names.
 e.g.
 ```html
 <button *class="{ largeBtn:true, 'bg-dark':false, btn: true,  }">Click me</button>
@@ -1592,14 +1554,14 @@ Since the `bg-dark` property has a falsy value, it was omitted.
 
 ### **Mustache Block Helpers***
 
-Pixel provides in  mustache tags configuration setup  while compiling mustache tag expressions.  
+Hexax provides in  mustache tags configuration setup  while compiling mustache tag expressions.  
 Below is a simple example of using the block helpers.
-`{{ @foo >> model_based_expressions }}`
+`{{ %foo >> model_based_expressions  }}`
 A template block helper is recognized by appending the `@` character before the block name and separating the block name from the actual expression using double greaterthan character `>>`  
 Block helpers can be aswell passed modifiers just  like passing modifiers to directives.  
-`{{ @safe|mod|once >> stringValues }}`. Modifiers are separated using pipe `|`  just  like it's directive counterpart and can be chained aswell.  
+`{{ %safe|mod|once >> stringValues }}`. Modifiers are separated using pipe `|`  just  like it's directive counterpart and can be chained aswell.  
 Blocks helpers can however be chained, separating each block with the  dot `.` character.  
-`{{ @safe.@html|mod|once >> stringValues }}`
+`{{ %safe.html|mod|once >> stringValues }}`
 
 #### Custom blocks
 
@@ -1609,9 +1571,7 @@ See below
 ```javascript
 export default{
   model(){
-    return {
-      name:'pixel
-    }
+    this.name='hexax
   }
   blocks:{
     capitalize(value, modifiers){
@@ -1630,9 +1590,9 @@ In this case, since the `safe` block comes before the `html`  block, the later w
 All modifiers provided are passed to each chained block.
 
 You can also typecheck the values been expected  by using conditional statements on the resolved value.  
-Reference the Pixel blocks helpers API for more information.
+Reference the Hexax blocks helpers API for more information.
 
-###  **Pixel Plugin  mechanism**
+###  **Hexax Plugin  mechanism**
 
 Plugin is an interface  that reduces repeating of some global implemention on a build and helps create codes that improves reusability.  
 There  are some use cases of plugins which we will explore in this document.   
@@ -1644,7 +1604,7 @@ A plugin is installed calling the install method on the `initBuild` instance.
 `initBuild(app).install(plungin)` method and can be chained.
 Watch the  example code below
 ```javascript
-import  { initBuild } from 'pixel'
+import  { initBuild } from 'hexax'
 import buttonCounter from './widgets/buttonCounter.js
 const my_plugin={
   plugin(build, options){
@@ -1667,7 +1627,7 @@ initBuild(app).install(my_plugin,{/*config options*/})//plugin installation  can
 
 
 
-### ***Pixel Agents***
+### ***Hexax Agents***
 
 
 
@@ -1676,7 +1636,7 @@ initBuild(app).install(my_plugin,{/*config options*/})//plugin installation  can
 
 #### **Built in Widgets API**
 
-1. ***`<px-build />`:***
+1. ***`<hx-build />`:***
 
 Global NameSpace: `Build`
 
@@ -1684,48 +1644,48 @@ params:
   self:<required>
 **Description:** A built in widget useful for rendering widgets dynamicaly.
 Accepts one required params ,  The `self` params, which describes a native/resolved custom element tag name or an internally registered widget name.
-If binded to a model property from the template or accessed using tge hyperscript `this`, will raise a pixel warn since the pixel model instances are proxied objects/data. Except the data was to be parsed using the `rawData` function. 
+If binded to a model property from the template or accessed using tge hyperscript `this`, will raise a hexax warn since the hexax model instances are proxied objects/data. Except the data was to be parsed using the `rawData` function. 
 Watch the example below
 ```javascript
-import { rawData } from 'pixel'
+import { rawData } from 'hexax'
 export default{
   model(){
     return {
       inModelWidget:rawData({
-        template:`<h1>Hello Pixel!</h1>`
+        template:`<h1>Hello Hexax!</h1>`
       })
     }
   },
   template:`
-    <px-build *self=inModelWidget />
+    <hx-build *self=inModelWidget />
   `
 }
 ```
 > **Note**: Does not require binding if the name be  passed is not an in model instance property.
 
-The widget can be accessed from the template as `px-build` but can be imported from pixel itself as `Build` while using the hyperscript building system.  
-Other properties/attributes passed to the `px-build`  widget ,except the self params, will be resolved as attributes/properties of the returned elememt .  
-Children passed to `px-build` will be passed to the resolved elememt/widget, including the defined slots within the defined widget template.
+The widget can be accessed from the template as `hx-build` but can be imported from hexax itself as `Build` while using the hyperscript building system.  
+Other properties/attributes passed to the `hx-build`  widget ,except the self params, will be resolved as attributes/properties of the returned elememt .  
+Children passed to `hx-build` will be passed to the resolved elememt/widget, including the defined slots within the defined widget template.
 
-2. ***`<px-fragment />`:***
+2. ***`<hx-fragment />`:***
 
 Global NameSpace: `Fragment`
 
-**Description:** `px-fragment` is a built in widget that is used to  render a set of elements without having to wrap them within an enclasing tag.  
+**Description:** `hx-fragment` is a built in widget that is used to  render a set of elements without having to wrap them within an enclasing tag.  
 This is technically useful, expecially when rendering a slot content and don't want to get them wrapped within an enclosing wrapper element.
 ```html
 <ButtonCounter >
-  <px-fragment $$slot='content'>
+  <hx-fragment $$slot='content'>
     <h1>This is a counter button</h1>
     <p>Click on me</p>
     Thanks
-  </px-fragment>
+  </hx-fragment>
 </ButtonCounter>
 ```
-The `px-fragment` expects/requires no params .  
-Available from the global pixel as `Build` if need be of compiling it using the `el` render and hyperscript functions
+The `hx-fragment` expects/requires no params .  
+Available from the global hexax as `Build` if need be of compiling it using the `el` render and hyperscript functions
 
-3. ***`<px-for />`:***
+3. ***`<hx-for />`:***
 
 Global NameSpace: `For`
 
@@ -1736,72 +1696,70 @@ params:
 Description: This is built on top the `for` directive and simplifies the use of the `for` loop rendering.
 For example  
 ```javascript
-import { data  }  from 'pixel
+import { data  }  from 'hexax
 export default{
   model(){
-    return {
-      fruits:data({
-        orange:{id:223, color:'yellow',shape:'circle',count:56},
-        mango: {id:3570,color:'green',shape:'rect',count:911},
-        pearl:{id:67,color:'navy-blue',shape:'rectangle',count:2},
-      })
-    }
+    this.fruits=data({
+      orange:{id:223, color:'yellow',shape:'circle',count:56},
+      mango: {id:3570,color:'green',shape:'rect',count:911},
+      pearl:{id:67,color:'navy-blue',shape:'rectangle',count:2},
+    })
   },
   template:`
-  <px-for *iterable=fruits.$data context=[ name, value ]>
+  <hx-for *iterable=fruits.$data context=[ name, value ]>
     <h1 >{{name}} </h1>
     <h3 >COLOR: {{value.color}}</h3>
     <h3 >SHAPE: {{value.shape}}</h3>
     <p>it's over {{ value.count }} pieces</p>
-  </px-for>
+  </hx-for>
 `
 }
 ```
-Passed all children of the `px-for` widget and ports it to a default slot which works with the `$$for` as a fundamental building block.
+Passed all children of the `hx-for` widget and ports it to a default slot which works with the `$$for` as a fundamental building block.
 The iterable is required an must  be parsed an iterable or Object data type.  
 Context expects an array of names to ve passed as context variables within the loop body.  
 
-Pixel namespaces harbours the `px-for` widget as `For`.
+Hexax namespaces harbours the `hx-for` widget as `For`.
   
-4. ***`<px-if />`:***
+4. ***`<hx-if />`:***
 
 Global NameSpace: `If`
 
 
 
-5. ***`<px-else-if />`:***
+5. ***`<hx-else-if />`:***
 
 Global NameSpace: `ElseIf`
 
-6. ***`<px-else />`:***
+6. ***`<hx-else />`:***
 
 Global NameSpace: `Else`
 
-7. ***`<px-animation />`:***
+7. ***`<hx-animation />`:***
 
 Global NameSpace: `Animation`
 
-8. ***`<px-transition />`:***
+8. ***`<hx-transition />`:***
 
 Global NameSpace: `Transition`
 
-9. ***`<px-stay-awake />`:***
+9. ***`<hx-stay-awake />`:***
 
 Global NameSpace: `LiveWidget`
 
-10. ***`<px-markup />`:***
+10. ***`<hx-markup />`:***
 
 Global NameSpace: `Markup`
 
-11. ***`<px-await />`:***
+11. ***`<hx-await />`:***
 
 Global NameSpace: `Await`
 
-12. ***`<px-send-frame />`:***
+12. ***`<hx-send-frame />`:***
 
 Global NameSpace: `SendFrame`
 
-13. ***`<px-extend />`:***
+13. ***`<hx-extend />`:***
 
 Global NameSpace: `Extend`
 
@@ -1861,10 +1819,10 @@ Details:
 nextTick waits for the dom to rerender after mutating a model property before being called.  
 For  example
 ```javascript
-let { nextTick }=Pixel
+let { nextTick }=Hexax
 let app={
   model(){
-    return { count:34 }
+    this.count=34 
   }
   onMounted(){
     this.count+=34;
@@ -1881,7 +1839,7 @@ Arguments:
   
 Interface:
 ```javascript
-function Template<String> : <PixelDomInstance>
+function Template<BacktickString> : <HexaxDomInstance>
 ```
 * `AsyncWidget()`:
 
@@ -1896,7 +1854,7 @@ function AsyncWidget( Widget:<Object>|<Class>|<Function> ) : <AsynchronousWidget
 * `defineWidget()`:
 
 Arguments:  
-  - Widget: `<Object>|<Class>|<Function>` A valid pixel widget instance  
+  - Widget: `<Object>|<Class>|<Function>` A valid hexax widget instance  
   
 Interface:
 ```javascript
@@ -1906,14 +1864,14 @@ function defineWidget(Widget:<Object>|<Class>|<Function> ) : <WidgetInstance>
 Details:  
 Used in resolving and  officialy defining a wodget
 
-* `NodeMake()`:
+* `makeNativeElement()`:
 
 Arguments:
   - Options: `<Object>` Valid widget options also used in building custom elements.
   
 Interface:
 ```javascript
-function NodeMake(Options:<Object>) : <CustomElementInstance>
+function makeNativeElement(Options:<Object>) : <CustomElementInstance>
 ```
 
 Details:  
@@ -1929,7 +1887,7 @@ Contact the custom element guide for deeper guide.
 * `el()`:
 
 Arguments: 
-  1. `<String>|<PixelDomInstance>` >>required
+  1. `<String>|<HexaxDomInstance>` >>required
   2. `<Object>|<Array>`
   3. `<Object>|<Array>`
   
@@ -1950,33 +1908,19 @@ Arguments :
 
 * `initAsyncBuild()`
 
-* `defineVNodeElement()`:
+* `defineElement()`:
+* 
+* `markup()`
 
-* `buffer()`
-
-* `defineParams()`
-
-* `resolve()`
-
-* `createMarkup()`
-
-* `createStyleSheet()`
-
-* `observe()`
-
-* `defineStyleClass()`
-
+* `$observe()`
+* 
 * `extend()`
 
-* `injectDataModel()`
+* `$scarfold()`
 
-* `defineSlots()`
+* `renderSlots()`
 
-* `expose()`
-
-* `hang()`
-
-* `fork()`
+* `$expose()`
 
 * `data()`
 
@@ -2020,7 +1964,7 @@ function exposeDirectives(Directives:<Object>) <Null>
 ```
 Details:  
 Can only be used effectively within the build function and the preBuild LifeCycleHook.  
-This macro is usefull expecially when writing a Function widget.
+This macro is usefull expecially when writing  widgets using  the Function widget.
 
 It prototypes widget custom directives by registering provided options into the state custom directives stack .
 
@@ -2114,7 +2058,7 @@ Accepts only a single parameter,a Callback method to be stalled as the onUpdated
 
 #### **Directives API**
 
-1. `$$data`
+1. `$$ref`
 
 Used to assign an in dom element or a widget instance to a model property.
 
@@ -2124,7 +2068,6 @@ iterable rendering dirextive.
 
 3. `$$if`
 
-
 4. `$$else-if`
 
 5. `$$else`
@@ -2133,20 +2076,19 @@ iterable rendering dirextive.
 
 7. `$$bind`
 
-8. `on:<eventName>`
+8. `$$on:<eventName>`
 
-10. `$$text`
+9. `$$text`
 
-11. `$$slot`
+10. `$$slot`
 
-12. `$$raw`
+11. `$$raw`
 
-13. `$$html`
+12. `$$html`
 
-14. `$$<dataVariable>`
+13. `$$scoped`
 
-
-16. `$$scoped`
+14. `$$hx`
 
 
 #### **Widget options API**
@@ -2204,9 +2146,9 @@ Accepts string value of css style blocks, using the multiline string literal. e.
 let app={
   styleSheet:`
     #btn{
-      height:40px;
+      height:40hx;
       width:70%;
-      border-radius:10px;
+      border-radius:10hx;
     }
     .beautify{
       border-color:#179d97;
@@ -2214,7 +2156,7 @@ let app={
       background-color:#0a3039
     }
   `,//Usage
-  template:`<button id='btn' class='beautify' > Pixel button styleSheet Example</button>`
+  template:`<button id='btn' class='beautify' > Hexax button styleSheet Example</button>`
 }
 ```
 Using the styleSheet option activates style scoping to the widget markup by default, MeanWhile you can disable scope by prepending the  `@g` global style directive to an individual block.
@@ -2240,9 +2182,7 @@ Usage Example
 ```javascript
 let app ={
   model(){
-    return {
-      count:0
-    }//Reactive instances defines
+    this.count=0//Reactive instances defines
   },
   handlers:{
     increment(){
@@ -2260,7 +2200,7 @@ Details:
 
 A naming option used to define a name for the widget, to be used  for  the widget when  no optional naming argument  is provided.
 
-Useful expecially, during the resolving process of the widget and helps Pixel in being more specific during debuging and error handlin.
+Useful expecially, during the resolving process of the widget and helps Hexax in being more specific during debuging and error handlin.
 
 6. ##### `styleClass`
 
@@ -2276,12 +2216,12 @@ e.g.
 let app={
   styleClass:{
     headStyle:{
-      borderWeight:'15px',
+      borderWeight:'15hx',
       backgroundColor:'#0a3039'
     }
   },//Usage
   template:`
-  <h1 *style=$styles.headStyle > Pixel Explorer</h1>
+  <h1 *style=$styles.headStyle > Hexax Explorer</h1>
   `
 }
 ```
@@ -2300,11 +2240,8 @@ Here is how to...
 ```javascript
 let app={
   model(){
-    
-    return {
-      count:data(0),
-      message: "Welcome to Pixel JS"
-    }
+    this.count=data(0),
+    this.message="Welcome to Hexax JS"
   },
   observers:{
     count(){
@@ -2355,7 +2292,7 @@ An object used in registering widgets that are to be used within the local widge
 let app={
   widgets:{
     headerWidget:{
-      template:`<h1> Pixel Explorer</h1>`
+      template:`<h1> Hexax Explorer</h1>`
     }
   },
   template:`
@@ -2485,13 +2422,13 @@ Do not use an arrow function for this option.
 
 17. ##### `build`
 
-Type: `Function` | `<PixelDomInstance>`
+Type: `Function` | `<HexaxDomInstance>`
 
 Details:
 
 An function/method, that us used to encapsulate  the widget UI system.
 
-Should return a `PixelDomInstance`  either  through the  hyperscript method,  or using the `pixel.Template` util.
+Should return a `HexaxDomInstance`  either  through the  hyperscript method,  or using the `hexax.Template` util.
 
 Specialy provided for users coming from hyperscript background.
 e.g
@@ -2499,7 +2436,7 @@ e.g
 let app={
   build(params, { slots, events, attrs, styles }){
     //The this scope exposed here
-    return el('h1', "Pixel Explorer")
+    return el('h1', "Hexax Explorer")
   }
 }
 ```
@@ -2525,7 +2462,7 @@ let app={
     }
   }, //Usage  of custom directives in templates
   template:`
-  <p  px-MyDir='true' > Pixel Explorer</p>
+  <p  hx-MyDir='true' > Hexax Explorer</p>
   `
 }
 ```
@@ -2558,7 +2495,7 @@ Type: `Boolean` | default: `false`
 
 Details:  
 Used to silence all error and debug warns within an individual widget.  
-Every Pixel generated error will fall silently if set to a falsy value.
+Every Hexax generated error will fall silently if set to a falsy value.
 
 - `inheritAttrs`
 
@@ -2566,7 +2503,7 @@ Type: `Boolean` | default: `true`
 
 Details:  
 This option is used to disable attribute inheritance when a widget has only a single root element.  
-When an element has only one  root  html element, pixel will try parsing down the attributes received from the consumer that does not match with params to the element by default.  
+When an element has only one  root  html element, hexax will try parsing down the attributes received from the consumer that does not match with params to the element by default.  
 
 This functionality can be disabled by setting the `inheritAttrs` option to `false`
 
@@ -2575,7 +2512,7 @@ This functionality can be disabled by setting the `inheritAttrs` option to `fals
 Type: `Boolean` | default: `true`
 
 Details:  
-When a widget has a single root element with no `innerHtml` content, pixel will try parsing any children elememt received from the consumer as it's `innerHtml` content by default.  
+When a widget has a single root element with no `innerHtml` content, hexax will try parsing any children elememt received from the consumer as it's `innerHtml` content by default.  
 
 This behavior can be stoped by setting the `inheritSlots` option to `false`.
 
@@ -2586,7 +2523,7 @@ This behavior can be stoped by setting the `inheritSlots` option to `false`.
 Type: `Object` | `<String>`
 
 Details:  
-Pixel allows passing of model data props in a reversed manner , from a child widget to it's scope within the consumer parent's widget using the `fallThrogh` option.  
+Hexax allows passing of model data props in a reversed manner , from a child widget to it's scope within the consumer parent's widget using the `fallThrogh` option.  
 
 Contact the slot guide for more Details.
 
@@ -2604,19 +2541,17 @@ Type: `Array` | `<String>`
 default: `["{{", "}}"]`
 
 Details:  
-Pixel allows the recomfiguration and customization  of the tempalate mustache tag using the delimiters options .  
+Hexax allows the recomfiguration and customization  of the tempalate mustache tag using the delimiters options .  
 Accepts an array of two characters values string. e.g.
 ```javascript
 let app={
   model(){
-    return  {
-      text:"Pixel Explorer"
-    }
+    this.text="Hexax Explorer"
   },
   buildConfig:{
     delimiters:['[[', ']]'],//Usage
   },
-  tempalate:`<h2> This is [[ @safe>>text ]]</h2>`
+  tempalate:`<h2> This is [[ %safe >> text ]]</h2>`
 }
 ```
 
@@ -2632,7 +2567,7 @@ This functionality can be achieved by utilizing the `AsyncWidget` macro.
 
 ### **Best Practices**
 
-As you dive deeper into pixel, consider adopting best practices to ensure clean and maintainable code. Here are some recommendations:
+As you dive deeper into hexax, consider adopting best practices to ensure clean and maintainable code. Here are some recommendations:
 
 - **Modular Components:** Break down your UI into small, reusable components.
 - **Effective Naming:** Use clear and meaningful names for model properties, widgets, block helpers, directives, plugins, agents, and handlers.
@@ -2640,16 +2575,16 @@ As you dive deeper into pixel, consider adopting best practices to ensure clean 
 - **Observer Methods:** Use observer methods for data changes that require specific customized reactions.
 
 ### **Conclusion**
-Congratulations! You've learned the basics of using Pixel to empower your creativity and build of web apps with speed. You now know how to define widgets, use template strings, handle methods and reactive data, bind attributes, apply directives, and render your UI widgets.
+Congratulations! You've learned the basics of using Hexax to empower your creativity and build of web apps with speed. You now know how to define widgets, use template strings, handle methods and reactive data, bind attributes, apply directives, and render your UI widgets.
 
 Additionally, you've explored advanced features like params, custom elements, observers, template blocks helpers, plugins, slots, agents and some useful configuration options.
 
-Pixel offers a powerful and flexible framework for developing dynamic and interactive web applications. Remember to consult the official Pixel documentation and explore the additional resources for more in-depth information and examples.
+Hexax offers a powerful and flexible framework for developing dynamic and interactive web applications. Remember to consult the official Hexax documentation and explore the additional resources for more in-depth information and examples.
 
 ## **Additional Resources**
-To further expand your knowledge and explore more advanced features of Pixel, check out the following resources:
+To further expand your knowledge and explore more advanced features of Hexax, check out the following resources:
 
-Official Pixel Documentation: https://pixel-docs.com
-Pixel GitHub Repository: https://github.com/prince9216/pixeljs
-Pixel Community Forum: https://community.pixel.com
-These resources provide comprehensive documentation, examples, and a supportive community to help you make the most of Pixel in your projects. Happy coding!.
+Official Hexax Documentation: https://hexax-docs.com
+Hexax GitHub Repository: https://github.com/prince9216/hexaxjs
+Hexax Community Forum: https://community.hexax.com
+These resources provide comprehensive documentation, examples, and a supportive community to help you make the most of Hexax in your projects. Happy coding!.
