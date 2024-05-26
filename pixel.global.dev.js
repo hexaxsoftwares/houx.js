@@ -1,14 +1,14 @@
   /**
   *@param This project, 'PIXEL', is been sponsored by the VORTEX TECHNOLOGY FOUNDATION.
-  *@param Visit 'www.pixel.com/guide' for for more information on the pixel project and documentation of pixel and its development process guide.
-  *@param This is a web JIT development version of Pixel
+  *@param Visit 'www.hexax.com/guide' for for more information on the hexax project and documentation of hexax and its development process guide.
+  *@param This is a web JIT development version of Hexax
   *@param We focus hard on developing and improving our features and perfomance issues, we only need your support to help and encourage us on maintaing this template engine.
-  *@param Thanks for choosing Pixel
+  *@param Thanks for choosing Hexax
   */
-const Pixel=(function(global){
+const Hexax=(function(global){
   "use strict"
   const log=console.log
-  const get_version=()=>'pixel-0.1.12';//pixel at it's earliest version
+  const get_version=()=>'hexax-0.1.12';//hexax at it's earliest version
   const isEQ=(arg1, arg2)=>arg1===arg2;//checks if arg1 is equal to arg2
   const isArray=Array.isArray;
   const toString=Object.prototype.toString;
@@ -49,19 +49,19 @@ const Pixel=(function(global){
   const isTrue=compute=>isEQ(compute, true);
   const isFalse=compute=>isEQ(compute, false);
   const isLTE=(val, arg)=>val<=arg;
-  const $warner=`<<** Pixel $Debug **>>.....>>>>>>>`;
+  const $warner=`<<** Hexax $Debug **>>.....>>>>>>>`;
   function $Debug(msg,self, dictateW=false, txt=''){
     let shouldlog=true
     if(self) shouldlog=self.core.settings.debug && !self.operands.initialized
     if(shouldlog ) {
-      if(dictateW) console.warn(`${$warner}\n\nEncountered a problem ${txt} \n\n at  at  \n <${self ? self.ownProperties.name : 'UnknownWidget' }> widget`);//pixel warming debugger
-      console.error(`${$warner}\n\n${msg}`);//pixel warming debugger
+      if(dictateW) console.warn(`${$warner}\n\nEncountered a problem ${txt} \n\n at  at  \n <${self ? self.ownProperties.name : 'UnknownWidget' }> widget`);//hexax warming debugger
+      console.error(`${$warner}\n\n${msg}`);//hexax warming debugger
     }
   }
   function $warn(msg, self){
     let shouldlog=true
     if(self) shouldlog=self.core.settings.debug;
-    if(shouldlog) console.warn(`${$warner}\n\n${msg}`);//pixel warming debugger
+    if(shouldlog) console.warn(`${$warner}\n\n${msg}`);//hexax warming debugger
   }
   const isIterator=iterator=>iterator && !isArray(iterator) && isPFunction(iterator[Symbol.iterator]);
   const isIterable=iterable=>_validateType(iterable, [Object,Array,Set,Map] || isIterator(iterable));
@@ -70,7 +70,7 @@ const Pixel=(function(global){
   const $Error=(msg,self)=>{
     let shouldlog=true
     if(self) shouldlog=self.compiler.config.debug
-    if(isTrue(shouldlog)) console.error(`${$warner}\n\n ${msg}`);//pixel warming debugger
+    if(isTrue(shouldlog)) console.error(`${$warner}\n\n ${msg}`);//hexax warming debugger
   }
   const hasHyphen_bind=key=>/^\-\-[a-zA-Z0-9\-_|[\]]+/.test(key);
   const hasAt_bind=key=>/^@[a-zA-Z0-9\-_|[\]]+/.test(key);
@@ -83,17 +83,17 @@ const Pixel=(function(global){
   }
   const isArgument=arg=>isEQ(_toStringCall(arg), "[object Arguments]");
   const len=obj=>isPObject(obj) ? Object.keys(obj).length : isArray(obj) || isArgument(obj) ? obj.length : isSet(obj) ? obj.size : isString(obj) ? obj.length : isNumber(obj) ? obj : NaN ;
-  const isValidWidgetOption=opts=>_mapValue(validWidgetOptions, opts);//checks if an option is a vslid Pixel widget option
-  const HTML_TAGS="html,head,style,title,body,address,article,aside,footer,header,h1,h2,h3,h4,h5,h6,main,nav,section,blockquote,dd,div,dl,dt,figcaption,figure,li,menu,ol,p,pre,ul,a,abbr,b,bdi,bdo,cite,code,data,dfn,em,i,kbd,mark,q,rp,rt,ruby,s,samp,small,span,strong,sub,sup,time,u,var,audio,map,video,iframe,object,picture,portal,svg,math,canvas,noscript,script,del,ins,caption,col,colgroup,table,tbody,td,tfoot,th,thead,tr,datalist,fieldset,form,label,legend,meter,optgroup,option,output,progress,select,textarea,details,dialog,summary,button,template,slot,base,link,meta,hr,br,wbr,area,img,track,embed,source,input,template,slot" ;//All html valid tags supported by the Pixel framework
+  const isValidWidgetOption=opts=>_mapValue(validWidgetOptions, opts);//checks if an option is a vslid Hexax widget option
+  const HTML_TAGS="html,head,style,title,body,address,article,aside,footer,header,h1,h2,h3,h4,h5,h6,main,nav,section,blockquote,dd,div,dl,dt,figcaption,figure,li,menu,ol,p,pre,ul,a,abbr,b,bdi,bdo,cite,code,data,dfn,em,i,kbd,mark,q,rp,rt,ruby,s,samp,small,span,strong,sub,sup,time,u,var,audio,map,video,iframe,object,picture,portal,svg,math,canvas,noscript,script,del,ins,caption,col,colgroup,table,tbody,td,tfoot,th,thead,tr,datalist,fieldset,form,label,legend,meter,optgroup,option,output,progress,select,textarea,details,dialog,summary,button,template,slot,base,link,meta,hr,br,wbr,area,img,track,embed,source,input,template,slot" ;//All html valid tags supported by the Hexax framework
   const IS_HTML_TAG=txt=>_mapValue(HTML_TAGS, txt);
-  const WEB_COMPONENTS="template,slot";//Web components tags , also supported by the Pixel framework
+  const WEB_COMPONENTS="template,slot";//Web components tags , also supported by the Hexax framework
   const HTML_FORM_ELEMENTS="select,textarea,input,form,progress,meter,option";
   const Is_Form_Element=element=>_mapValue(HTML_FORM_ELEMENTS, element.localName);
   const IS_WEB_COMPONENT=txt=>_mapValue(WEB_COMPONENTS, txt);
-  const HTML_VOID_TAGS="base,link,meta,hr,br,wbr,area,img,track,embed,source,input";//HTML void tags, also supported by the Pixel framework
+  const HTML_VOID_TAGS="base,link,meta,hr,br,wbr,area,img,track,embed,source,input";//HTML void tags, also supported by the Hexax framework
   const IS_HTML_VOID_TAG=txt=>_mapValue(HTML_VOID_TAGS, txt);
   const HTML_DEPRECATED_TAGS="acronym,noembed,applet,noframes,bgsound,param,big,blink,plaintext,center,rb,content,rtc,dir,shadow,font,spacer,frame,strike,frameset,image,tt,keygen,xmp,marquee,nobr,menuitem";//HTML obselete and deprecated element. 
-  //The above tags are no more been supported by the pixel framework
+  //The above tags are no more been supported by the hexax framework
   const IS_HTML_DEPRECATED_TAG=txt=>_mapValue(HTML_DEPRECATED_TAGS, txt);
   const HTMLIDLAttributes="accesskey,contenteditable,dir,draggable,enterkeyhint,hidden,inert,innerText,inputmode,popover,lang,noModule,nonce,outerText,spellcheck,style,tabindex,title,translate,className,value,innerHTML,outerHTML";
   const isHTMLIDLAttributes=txt=>_mapValue(HTMLIDLAttributes, txt)
@@ -110,7 +110,7 @@ const Pixel=(function(global){
   const IS_VALID_TAGNAME=(txt)=>{
     if(IS_HTML_TAG(txt)||IS_WEB_COMPONENT(txt)||IS_HTML_VOID_TAG(txt) || IS_SVG_TAG(txt) || IS_MATHML_TAG(txt)) return true;
     else if(IS_HTML_DEPRECATED_TAG(txt) || IS_SVG_DEPRRCATED_TAG(txt)){
-      $Debug(`"${txt}" is an html/svg deprecated tag, and should not be used in new projects\n\npixel    does not offer the compilation of obselete elements`);
+      $Debug(`"${txt}" is an html/svg deprecated tag, and should not be used in new projects\n\nhexax    does not offer the compilation of obselete elements`);
     return false;
     }
     return false;
@@ -139,25 +139,25 @@ const Pixel=(function(global){
   const IS_ENTITY_REFERENCE_NODE=node=>node && isEQ(node.nodeType, NodeTypeMap.ENTITY_REFERENCE_NODE);
   const IS_COMMENT_NODE=node=>node && isEQ(node.nodeType, NodeTypeMap.COMMENT_NODE);
   const TypeMethods={isString, isFunction, isPObject, isArray, isBoolean, isNumber, isDate, isSymbol, isSet, isMap}
-  class pixelCustomNativeElement extends HTMLElement{
+  class hexaxCustomNativeElement extends HTMLElement{
     constructor(){
       super();
     }
   }
   const isCustomElement=node=>  node instanceof  HTMLElement && !IS_VALID_TAGNAME(node.localName);
   const isChildrenNode=val=> {
-    let res = isPrimitive(val) || isArray(val) || isPixelVNode(val) || isPixelBuild(val) || isCustomElement(val)  || isSlotInstance(val);
+    let res = isPrimitive(val) || isArray(val) || isHexaxVNode(val) || isHexaxBuild(val) || isCustomElement(val)  || isSlotInstance(val);
     if(!res && isFunction(val)) return isRender(val);
     return res;
   }
   const isBaseWidget=widget=> isPObject(widget) && widget instanceof Widget;
   const isProxy=value=>_validateType(value, Proxy);
-  const validPixelWidget=(w)=>(isPObject(w) || isPFunction(w) || isClass(w)) && !isProxy(w);
+  const validHexaxWidget=(w)=>(isPObject(w) || isPFunction(w) || isClass(w)) && !isProxy(w);
   function parseScript(script){
     return new Function(`"use strict"; return ${script}`)();
   }//helps compile string values to javascript statement
   const isInDom=element=> isEQ(element.getRootNode(),document);
-  const GLOBAL_EVENTS="abort,animationcancel,animationend,animationiteration,animationstart,auxclick,blur,error,focus,canplay,canplaythrough,cancel,change,click,close,contextmenu,dblclick,drag,dragend,dragenter,dragleave,dragover,dragstart,drop,durationchange,emptied,ended,formdata,gotpointercapture,input,invalid,keydown,keypress,load,keyup,loadeddata,loadedmetadata,loadend,loadstart,lostpointercapture,mousedown,mouseenter,mouseleave,mousemove,mouseout,mouseover,mouseup,mousewheel,wheel,pause,play,playing,pointerdown,pointermove,pointerup,pointercancel,pointerover,pointerout,pointerleave,pointerenter,pointerlockchange,pointerlockerror,progress,ratechange,reset,resize,scroll,securitypolicyviolation,seeked,seeking,select,selectstart,selectionchange,slotchange,stalled,submit,suspend,timeupdate,touchcancel,touchend,touchstart,touchmove,transitioncancel,transitionrun,transitioned,transitionstart,waiting,volumechange,autocompleteerror,autocomplete,hover";//Html event names managed by pixel on elements
+  const GLOBAL_EVENTS="abort,animationcancel,animationend,animationiteration,animationstart,auxclick,blur,error,focus,canplay,canplaythrough,cancel,change,click,close,contextmenu,dblclick,drag,dragend,dragenter,dragleave,dragover,dragstart,drop,durationchange,emptied,ended,formdata,gotpointercapture,input,invalid,keydown,keypress,load,keyup,loadeddata,loadedmetadata,loadend,loadstart,lostpointercapture,mousedown,mouseenter,mouseleave,mousemove,mouseout,mouseover,mouseup,mousewheel,wheel,pause,play,playing,pointerdown,pointermove,pointerup,pointercancel,pointerover,pointerout,pointerleave,pointerenter,pointerlockchange,pointerlockerror,progress,ratechange,reset,resize,scroll,securitypolicyviolation,seeked,seeking,select,selectstart,selectionchange,slotchange,stalled,submit,suspend,timeupdate,touchcancel,touchend,touchstart,touchmove,transitioncancel,transitionrun,transitioned,transitionstart,waiting,volumechange,autocompleteerror,autocomplete,hover";//Html event names managed by hexax on elements
   const IS_VALID_EVENT_HANDLER=eventName=>_mapValue(GLOBAL_EVENTS, eventName);
   const isClass = val=> isFunction(val) && val.toString().startsWith('class');
   const LCH="created,mounted,updated,init";
@@ -172,11 +172,11 @@ const Pixel=(function(global){
   const isSlotInstance=val=> _validateType(val, slotInstanceMap);
   const requestMethods="POST,GET,PATCH,HEAD,DELETE,PUT,CONNECT,OPTIONS,TRACE";
   const isRequestMethod=method=>_mapValue(requestMethods, method);
-  const isPixelVNode=vnode=>vnode instanceof PixelVNode;
-  const isPixelBuild=widget=>widget instanceof _Pixel_Build;
-  const isPixelTextVNode=vnode=>vnode instanceof PixelTextVNode;
-  const isPixelElementVNode=vnode=> vnode instanceof PixelElementVNode;
-  const isPixelFragmentVnode=vnode => vnode instanceof PixelFragmentVNode;
+  const isHexaxVNode=vnode=>vnode instanceof HexaxVNode;
+  const isHexaxBuild=widget=>widget instanceof _Hexax_Build;
+  const isHexaxTextVNode=vnode=>vnode instanceof HexaxTextVNode;
+  const isHexaxElementVNode=vnode=> vnode instanceof HexaxElementVNode;
+  const isHexaxFragmentVnode=vnode => vnode instanceof HexaxFragmentVNode;
   const isWidgetResolver=data=>_validateType(data, _WidgetResolver);
   const isDirectiveResolver=data=>_validateType(data, _DirectiveResolver);
   const readOnlyModelProps="$element,$params,$attrs,$signals,$slots,$parent,$root";
@@ -214,7 +214,7 @@ const Pixel=(function(global){
     }
   }
   const isFallThrough = fall => fall instanceof fallThrough;
-  const widgetSpecialAttrProps = "$$rawChildrenData$$,$$$$dir--ref$$$$,dir$$--render,$$@fallThrough,@@slotName,@@Events";
+  const widgetSpecialAttrProps = "[[[$$rawChildrenData$$]]],[[[$$$$dir--ref$$$$]]],[[[$$@@dir$$--render]]],[[[$$@fallThrough]]],[[[~~slotName~~]]],[[[@@Events]]]";
   const isSpecProp = prop => _mapValue(widgetSpecialAttrProps, prop);
   class renderClass{
     constructor(self, fn){
@@ -234,7 +234,7 @@ const Pixel=(function(global){
     return new renderClass(self, callback);
   }
   function pass(){}
-  const isContextMethodString = ( self , px__VNode , str ) => has_Object_Prop(self.model, str) || isTrue(px__VNode && has_Object_Prop(px__VNode.LabContext||{}, str) || isFNString(str));
+  const isContextMethodString = ( self , hx__VNode , str ) => has_Object_Prop(self.model, str) || isTrue(hx__VNode && has_Object_Prop(hx__VNode.LabContext||{}, str) || isFNString(str));
   const isIfKey=key=>/^\$\$if[\w|$]*$/.test(key);
   const isElseIfKey=key=>/^\$\$else-if[\w$|]*$/.test(key);
   const isElseKey=key=>/^\$\$else[\w$|]*$/.test(key);
@@ -250,6 +250,10 @@ const Pixel=(function(global){
       }
     })
   }
+  function useAgent(){
+    
+  }
+  const getIterator=obj=>_validateType(obj, [Set, Map, Array ]) ? obj.entries() : isPObject(obj) ? entries(obj) : isIterator(obj) ? obj : [] ;
   function isReactiveValue(value){
     
   }
@@ -300,9 +304,9 @@ const Pixel=(function(global){
     return false;
   }
   function _$compiler_engine_hydrator(){
-    global=createObj('Pixel');
+    global=createObj('Hexax');
   }
-  class PixelGlobalSettings{
+  class HexaxGlobalSettings{
     debug=true
     forwardSlot=true
     forwardAttrs=true
@@ -312,9 +316,9 @@ const Pixel=(function(global){
     isAsync=false
     isCustomElement=false
   }
-  const isGlobalConfig=config=>config instanceof PixelGlobalSettings;
-  const Global_Settings= new PixelGlobalSettings()
-  class pixelCompilerConfig{
+  const isGlobalConfig=config=>config instanceof HexaxGlobalSettings;
+  const Global_Settings= new HexaxGlobalSettings()
+  class hexaxCompilerConfig{
     debug(debug){
       Global_Settings.debug=debug
     }
@@ -337,7 +341,7 @@ const Pixel=(function(global){
       Global_Settings.isAsync=isAsync
     }
     isCustomElement(isCustomElement){
-      PixelGlobalSettings.isCustomElement=isCustomElement;
+      HexaxGlobalSettings.isCustomElement=isCustomElement;
     }
   }
   function isXtruct(func) {
@@ -422,12 +426,12 @@ const Pixel=(function(global){
     this.depend( ...params)
   }
   const isSignal=val=>_validateType(val, Signal);
-  function _createTextElement(self, text, px__VNode){
+  function _createTextElement(self, text, hx__VNode){
     text=String(text);
     let hasSkip;
     let node;
-    let is_hyperscript=px__VNode.is_hyperscript;
-    if(px__VNode)  define(px__VNode, '_vnode_key',{value:_generateUUID(7), enumerable})
+    let is_hyperscript=hx__VNode.is_hyperscript;
+    if(hx__VNode)  define(hx__VNode, '_vnode_key',{value:_generateUUID(7), enumerable})
     if(parent && !is_hyperscript){
       let hasSkip=hasOwn(parent, '$$raw');
       const Skip=parent['$$raw'];
@@ -435,16 +439,16 @@ const Pixel=(function(global){
     }
     if(text) node=document.createTextNode(text);
     if(hasSpecialCharacters(node.textContent) &&  !hasSkip && !is_hyperscript) {
-      node.textContent=resolveAccessor(self, parent, node, px__VNode);
-      px__VNode.PATCH_FLAGS.add('ELEMENT_CHILDREN');
-      px__VNode.render_tracked=true;
+      node.textContent=resolveAccessor(self, parent, node, hx__VNode);
+      hx__VNode.PATCH_FLAGS.add('ELEMENT_CHILDREN');
+      hx__VNode.render_tracked=true;
     }
-    px__VNode.is_text_node=true
+    hx__VNode.is_text_node=true
     return node;
   }
-  class PixelVNode{
+  class HexaxVNode{
     constructor(){
-      if (isNativeElement(this.$element)) define(this.$element, 'pixelVNode',{value:this, enumerable, configurable})
+      if (isNativeElement(this.$element)) define(this.$element, 'hexaxVNode',{value:this, enumerable, configurable})
       
       createVNodeSignalNotifier(this.VNodeManager, 'onDestroyEnd', ()=>{
         
@@ -452,7 +456,7 @@ const Pixel=(function(global){
     }
     base_element=undefined
     get_parent_element(){
-      return this.$element.parentElement.pixelVNode
+      return this.$element.parentElement.hexaxVNode
     }
     render_tracked=false
     $element=undefined
@@ -468,7 +472,7 @@ const Pixel=(function(global){
     conditional_record={ src:undefined, res:false, passed:false}
     compiler_options=createObj('compiler_options', { fallThrough:createObj('fallThrough')});
     VNodeManager=createObj('VNodeManager', { updateFlags:{ active:false}})
-    px_hash_=undefined
+    hx_hash_=undefined
     children_nodes_list=new Set()
     is_hyperscript=false
     called_render=false
@@ -484,7 +488,7 @@ const Pixel=(function(global){
     NodeList=new Set()
     PATCH_FLAGS=new Set()
     insert(node){
-      if(isPixelVNode(node)){
+      if(isHexaxVNode(node)){
          this.$element.append(node.$element)
          this.NodeList.add(node)
       }else pass
@@ -511,6 +515,13 @@ const Pixel=(function(global){
     }
     return res;
   }
+  function tagMachErr(self, metrics){
+    let [ op, cl, p1 ] = metrics;
+    if(!isTagMatch(op, cl) ) {
+      $Debug(`Unmaching tags for "for" directive loop data keys mapping\n opening tag does not match a closing tag\n\n found ${p1}`, self, true);
+      return false;
+    }
+  }
   function get_Loop_Data(self, str){
     const keyValueRegex=/((\(|\<)(.*?)?(\)|\>))[ ]+([of|in]+)[ ]+([.\w\$\[\]\(\)]+)/;
     const DestructuredRegex=/((\{|\[)(.*?[ ]*)*?(\}|\]))[ ]+([of|in]+)[ ]+([\w.\$\[\]\(\)]+)/;
@@ -519,11 +530,24 @@ const Pixel=(function(global){
     const Loop_Data={}
     if(keyValueRegex.test(str)){
       str=str.replace(keyValueRegex,(match, p1, op, value, cl, type, obj)=>{
-        if(!isTagMatch(op, cl) ) {
-          $Debug(`Unmaching tags for "for" directive loop data keys mapping\n opening tag does not match a closing tag\n\n found ${p1}`, self, true);
-          return;
+        if(isFalse(tagMachErr(self, [ op, cl, p1]))) return ;
+        const interRegex=/[ ]*(\{|\[)(.*?)(\}|\])[ ]*/;
+        let item , index , key ;
+        if(interRegex.test(value)){
+          let destrV=value.replace(interRegex, (match, opn, vvv, cls )=>{
+            if(isFalse(tagMachErr(self, [ opn, cls, vvv]))) return ''
+            item = match
+            return ''
+          })
+          let [ em, keyX, indexX ] = destrV.split(' ').join('').split(',');
+          key=keyX;
+          index=indexX;
+        }else{
+          let [ itemX, keyX, indexX ] = value.split(' ').join('').split(',');
+          key=keyX;
+          item=itemX;
+          index=indexX;
         }
-        const [ item, key, index ] = value.split(' ').join('').split(',');
         if( value ) Loop_Data.value=item;
         if( key ) Loop_Data.key=key;
         if( index ) Loop_Data.index=index;
@@ -559,12 +583,12 @@ const Pixel=(function(global){
     }
     return Loop_Data
   }
-  function For_Loop(self, attr, px__VNode){
+  function For_Loop(self, attr, hx__VNode){
     const data=get_Loop_Data(self, attr);
     if(!data) return ;
     let dataObject;
     try{
-      dataObject=_$runModelBind(self, data.obj, px__VNode);
+      dataObject=_$runModelBind(self, data.obj, hx__VNode);
     }catch(error){
       $Debug(`Trouble accessing '${data.obj}' object for $$for loop\n\nnot found on instance or is undefined\n\n${error}`, self, true);
       return;
@@ -575,7 +599,7 @@ const Pixel=(function(global){
     }
     const Valid_LoopType="of,in";
     if(data.type && !_mapValue(Valid_LoopType, data.type)){
-      $Debug(`Iteration issue\n\n"${data.type}" is not an iterator\n "of" or "in" only supported by Pixel`, self, true);
+      $Debug(`Iteration issue\n\n"${data.type}" is not an iterator\n "of" or "in" only supported by Hexax`, self, true);
       return;
     }
     return { obj:dataObject, keyName:data.key, valRef:data.value, loopType:data.type, ref:data.obj, index:data.index }
@@ -622,73 +646,72 @@ const Pixel=(function(global){
     source=''
     value=undefined
     compiler_options=undefined
-    px__VNode=undefined
+    hx__VNode=undefined
     $element=undefined
     siblings=undefined
-    constructor(value, compiler_options, source, px__VNode, siblings){
-      const fragment=new PixelFragmentVNode(self);
-      fragment.IS_RENDERLESS=true;
-      this.$element=fragment.$element;
+    constructor(value, compiler_options, source, hx__VNode, siblings){
+      this.$element=_createFragment();
       this.value=value;
       this.compiler_options=assign(this.compiler_options||{},compiler_options);
       this.source=source;
-      this.px__VNode=px__VNode;
+      this.hx__VNode=hx__VNode;
       this.siblings=siblings;
-      this.px__VNode.IS_RENDERLESS=true
+      this.hx__VNode.IS_RENDERLESS=true
     }
   }
-  const isRenderlessVNode=vnode=> vnode instanceof renderlessVNode || isTrue(isPixelVNode(vnode) && isTrue(vnode.IS_RENDERLESS));
-  function _$Conditional_Dir_Resolver(self, props, args, px__VNode, siblings, recordPatch){
+  const isRenderlessVNode=vnode=> vnode instanceof renderlessVNode || isTrue(isHexaxVNode(vnode) && isTrue(vnode.IS_RENDERLESS));
+  function _$Conditional_Dir_Resolver(self, props, args, hx__VNode, siblings, recordPatch){
     const [ hasIf, hasElseIf , hasElse ] = recordPatch[3];
-    const GIC=new _$Directive_$Conditional$_Renderer(self, props, args, px__VNode, siblings, recordPatch);
+    const GIC=new _$Directive_$Conditional$_Renderer(self, props, args, hx__VNode, siblings, recordPatch);
     if(hasIf) return GIC.Panel_If_Block();
     else if(hasElseIf) return GIC.Panel_elseif_Block();
     else if(hasElse) return GIC.Panel_else_Block();
   }
-  const isConditionalVnode=(vnode, cond)=> isPixelVNode(vnode) ? isEQ(vnode.conditional_record.src, cond ) : false;
+  const isConditionalVnode=(vnode, cond)=> isHexaxVNode(vnode) ? isEQ(vnode.conditional_record.src, cond ) : false;
   class _$Directive_$Conditional$_Renderer{
     options=undefined
-    constructor(self, props, args, px__VNode, siblings, recordPatch){
+    constructor(self, props, args, hx__VNode, siblings, recordPatch){
       const [ hasEx , propValue , srcKey ]=recordPatch
       this.propValue=propValue;
       this.srcKey=srcKey
       this.self=self
       this.props=props;
       this.args=args;
-      this.px__VNode=px__VNode;
+      this.hx__VNode=hx__VNode;
       this.siblings=siblings;
+      this.parameters=()=>[...this.args, false, this.hx__VNode.LabContext]
+      hx__VNode.compiler_options.parameters=this.parameters;
       // this.modifiers=modifiers
     };
     Panel_If_Block(){
-      let data=_$runModelBind(this.self, this.propValue, this.px__VNode);
+      let data=_$runModelBind(this.self, this.propValue, this.hx__VNode);
       delete this.args[1][this.srcKey];
       if(data) {
-        const node = createVElement(...this.args, false, this.px__VNode.LabContext);
-        this.px__VNode.conditional_record.src='if';
-        this.px__VNode.conditional_record.res=true;
-        this.px__VNode.conditional_record.passed=true;
-        this.px__VNode.NodeList.add(node);
+        const node = createVElement(...this.parameters()/*...this.args, false, this.hx__VNode.LabContext*/);
+        this.hx__VNode.conditional_record.src='if';
+        this.hx__VNode.conditional_record.res=true;
+        this.hx__VNode.conditional_record.passed=true;
+        this.hx__VNode.NodeList.add(node);
         return node.$element;
       }else return $IfElseDirRenderLess.call(this, data, 'if').$element;
     } 
     Panel_elseif_Block(isElse=false){
       const block=isElse ? 'else' : 'else-if' ;
-      let data=_$runModelBind(this.self, this.propValue, this.px__VNode);
+      let data=_$runModelBind(this.self, this.propValue, this.hx__VNode);
       const previous=this.siblings[len(this.siblings)-1];
-      if(previous) this.px__VNode.conditional_record.passed=previous.conditional_record.passed;
+      if(previous) this.hx__VNode.conditional_record.passed=previous.conditional_record.passed;
       delete this.args[1][this.srcKey];
       if(!len(this.siblings) || !previous || (!isConditionalVnode(previous, 'if') && !isConditionalVnode(previous, 'else-if'))){
         $Debug(`"The ${block}" conditional rendering directive block ecpects a preceding "if" or "else-if" directive element\n\nMay return unexpected result\ndid you mean "if" directive instead?\n\n at>>>>>>>>""`, this.self, true);
-        const node = createVElement(...this.args, false, this.px__VNode.LabContext);
+        const node = createVElement(...this.args, false, this.hx__VNode.LabContext);
         return node.$element;
       }else if(isFalse(previous.conditional_record.passed) && isRenderlessVNode(previous) && isFalse(previous.conditional_record.res)){
-        
         if(isElse || data){
-          const node = createVElement(...this.args, false, this.px__VNode.LabContext);
-          this.px__VNode.conditional_record.src=block;
-          this.px__VNode.conditional_record.res=true;
-          if(!isElse) this.px__VNode.conditional_record.passed=true
-          this.px__VNode.NodeList.add(node);
+          const node = createVElement(...this.parameters()/*...this.args, false, this.hx__VNode.LabContext*/);
+          this.hx__VNode.conditional_record.src=block;
+          this.hx__VNode.conditional_record.res=true;
+          if(!isElse) this.hx__VNode.conditional_record.passed=true
+          this.hx__VNode.NodeList.add(node);
           return node.$element;
         }else return $IfElseDirRenderLess.call(this, data, block, previous ).$element;
       }else return $IfElseDirRenderLess.call(this, data, block, previous).$element;
@@ -698,12 +721,12 @@ const Pixel=(function(global){
     }
   }
   function $IfElseDirRenderLess( data, block, previous){
-    const renderless= new renderlessVNode(data, this.args, block, this.px__VNode);
-    this.px__VNode.conditional_record.src=block;
-    this.px__VNode.IS_RENDERLESS=true;
-    this.px__VNode.conditional_record.res=false;
-    this.px__VNode.conditional_record.passed=previous ? previous.conditional_record.passed : false ;
-    this.px__VNode.NodeList.add(renderless);
+    const renderless= new renderlessVNode(data, this.args, block, this.hx__VNode);
+    this.hx__VNode.conditional_record.src=block;
+    this.hx__VNode.IS_RENDERLESS=true;
+    this.hx__VNode.conditional_record.res=false;
+    this.hx__VNode.conditional_record.passed=previous ? previous.conditional_record.passed : false ;
+    this.hx__VNode.NodeList.add(renderless);
     return renderless;
   }
   function has_Intersect_Prop(obj1, obj2 ){
@@ -725,9 +748,10 @@ const Pixel=(function(global){
     }
     return true;
   }
-  function _destructure_wizard_compiler( self , value , valRef , ctx ) {
+  function _destructure_wizard_compiler( self , value , valRef , ctx , hx__VNode) {
     const itemsRef = valRef.match( objectDestructureRegex ) || valRef.match( arrayDestructureRegex ) ;
     const isobj = !isArray( value ) ;
+    const objDex=objectDestructureRegex.test(valRef)
     let items = itemsRef[ 1 ].split( ',' ) ;
     if( len( items ) ) {
       let key = 0 ;
@@ -739,28 +763,45 @@ const Pixel=(function(global){
         }
         const link = isobj ? item[ 1 ] : null ;
         item = isobj ? item[ 0 ] : item ;
+        
         if( isTrue( isArray( value ) && isGT( key + 1 , len( value ) ) ) || isTrue( isObject( value ) && !hasProp( value , item ) ) ) {
           if( isArray( value) ) $Debug( `${ item } array destructure key exceeds array length` , self , true );
           else $Debug( `destructure object value has no such key as "${ item }"\n\nInvalid key destructure at at..."${ valRef }"`, self , true ) ;
-        }else ctx[ link || item ] = value[ isArray( value ) ? key : item ] ;
+        }else{
+          // log(link, item)
+          if(objDex && link ? link.includes('=') : !objDex ? item.includes('=') : false){
+            let assign=(objDex ? link : item).split(' ').join('').split('=');
+            let [ keyX, valX ]=assign;
+            valX = self && hx__VNode ? _$runModelBind(self, valX, hx__VNode, true ) : null;
+            const realV=value[ !objDex && isArray(value) ? key : item ];
+            ctx[keyX]=!realV ? valX : realV;
+          }else if(objDex && !link && item.startsWith('...') ){
+            if(!isEQ(len(items), key+1)){
+              $Debug(`rest property destructuring can only be used as the last value on destructure mapping`, self, true);
+              return;
+            }
+            item=item.slice(3);
+          
+          }else ctx[ link || item ] = value[ isArray( value ) ? key : item ] ;
+        }
         key ++;
       } );
     }
   }
-  function _$Directive_$For_Loop$_Renderer(self, args, px__VNode, siblings, renderPatch){
+  function _$Directive_$For_Loop$_Renderer(self, args, hx__VNode, siblings, renderPatch){
     const [ check, propValue , srcKey ] = renderPatch;
     let wrapper;
-    const { obj, keyName, valRef, loopType, ref, index }=For_Loop(self, propValue, px__VNode) || {};
+    let { obj, keyName, valRef, loopType, ref, index }=For_Loop(self, propValue, hx__VNode) || {};
       delete args.props[srcKey];
     if(loopType && isEQ(loopType, 'in') && valRef && !isNumber(obj) && isObject(obj)){
       $warn(`((Warning))\n\nWe do not recommend the use of key value paires in 'for...in' loops while iterating over a plain object, \n\nsince the value of the value reference will remain "undefined"\nPreferable over a non plain object`, self);
-      $warn(`Many JavaScript style guides and linters recommend against the use of 'for...in', because it iterates over the entire prototype chain which is rarely what one wants, and may be a confusion with the more widely-used "for...of" loop\n\nIt's included in Pixel's support for completeness.`, self);
+      $warn(`Many JavaScript style guides and linters recommend against the use of 'for...in', because it iterates over the entire prototype chain which is rarely what one wants, and may be a confusion with the more widely-used "for...of" loop\n\nIt's included in Hexax's support for completeness.`, self);
     }
     const NodeList=[];
     const options={
       orgType:getType(obj),
       ref, src:obj,
-      args:{ type:args.type, props:assign({}, args.props), children:args.children, is_hyperscript:false, px__VNode, alias:{valRef, keyName}} 
+      args:{ type:args.type, props:assign({}, args.props), children:args.children, is_hyperscript:false, hx__VNode, alias:{valRef, keyName}} 
     }
     let league;
     if(isNumber(obj)){
@@ -772,37 +813,38 @@ const Pixel=(function(global){
         if(valRef) ctx[valRef]=i+1;
         if(keyName) ctx[keyName]=valRef ? i : i+1;
         if(index) ctx[index]=count
-        league=renderForConditional(self,  args, ctx, NodeList, i, i+1, options, px__VNode )
+        league=renderForConditional(self,  args, ctx, NodeList, i, i+1, options, hx__VNode )
       }
     }else if(loopType &&  _mapValue("of,in", loopType) && isIterable(obj)){
       let count=0;
-      for(const [ky, vl] of  _validateType(obj, [Set, Map, Array ]) ? obj.entries() : isPObject(obj) ? entries(obj) : isIterator(obj) ? obj : [] ){
+      valRef=valRef.trim(), keyName=keyName.trim() , index=index.trim();
+      for(const [ky, vl] of getIterator(obj)){
         count++;
         if(isFalse(destructWarn(valRef, vl, self))) return wrapper;
         let ctx ={ }
-        if(valRef && isTrue(objectDestructureRegex.test(valRef) || arrayDestructureRegex.test(valRef))) _destructure_wizard_compiler(self, vl, valRef, ctx);
+        if(valRef && isTrue(objectDestructureRegex.test(valRef) || arrayDestructureRegex.test(valRef))) _destructure_wizard_compiler(self, vl, valRef, ctx, hx__VNode);
         else{
-          if(keyName) ctx[keyName]=valRef ? ky : vl;
           if(valRef) ctx[valRef]=vl;
-          if(index) ctx[index]=count;
         }
-        league=renderForConditional(self, args, ctx, NodeList, count, vl, options, px__VNode, {  count, value:vl, })
+        if(keyName) ctx[keyName]=valRef ? ky : vl;
+        if(index) ctx[index]=count;
+        league=renderForConditional(self, args, ctx, NodeList, count, vl, options, hx__VNode, {  count, value:vl, })
       }
     }
     wrapper= _getNodeListResponse(NodeList, self);
     wrapper.isWidgetWrapper=true;
     wrapper.compiler_options=assign(wrapper.compiler_options,options);
-    if(league && isPixelFragmentVnode(wrapper)){
+    if(league && isHexaxFragmentVnode(wrapper)){
       for ( let [ key, val ] of entries(league)){
-        if(!isEQ(key, 'IS_RENDERLESS')) px__VNode.conditional_record[key]=val;
-        px__VNode.IS_RENDERLESS=val;
+        if(!isEQ(key, 'IS_RENDERLESS')) hx__VNode.conditional_record[key]=val;
+        hx__VNode.IS_RENDERLESS=val;
       }
     }
-    px__VNode.NodeList.add(wrapper)
+    hx__VNode.NodeList.add(wrapper)
     return wrapper.$element
   }
-  function renderForConditional(self, args, ctx, NodeList, count, vl, options, px__VNode, co){
-    if(px__VNode.LabContext) ctx=assign(px__VNode.LabContext, ctx, NodeList);
+  function renderForConditional(self, args, ctx, NodeList, count, vl, options, hx__VNode, co){
+    if(hx__VNode.LabContext) ctx=assign(hx__VNode.LabContext, ctx, NodeList);
       const props=assign({}, args.props);
       const Node=(type, props, children, self, is_hyperscript, ctx, NodeList)=>createVElement(type, props, children, self, is_hyperscript, ctx, NodeList);
       const loopNode=Node(args.type, props, args.children, args.self, false, ctx,  NodeList);
@@ -821,7 +863,7 @@ const Pixel=(function(global){
   function keyIndex(obj, key){
     return isObject(obj) ? Object.keys(obj).indexOf(key) : _validateType(obj, [Array, Set, Number]) ? Number(key) : isMap(obj) ? obj.keys().indexOf(key) : NaN;
   }
-  function VNodeManager(self, options, element, px__VNode, siblings, saveGarbageContent){
+  function VNodeManager(self, options, element, hx__VNode, siblings, saveGarbageContent){
     const { type, props, children }=options;
     const { hasIFWithFor , ifIndex , elseIndex, elseIfIndex, forIndex}=saveGarbageContent
     const {getIf, hasIf, hasElse, getElse, hasElseIf, getElseIf, hasFor, getFor } = saveGarbageContent;
@@ -830,10 +872,10 @@ const Pixel=(function(global){
     const getEx=hasIf || hasElse || hasElseIf;
     const getKey= hasIf ? ifKey : hasElse ? elseKey : hasElseIf ? elseIfKey : hasFor ? forKey : null ;
     const conditionalArgs= [getEx, getValue, getKey, [ hasIf, hasElseIf, hasElse ]]
-    if(hasIFWithFor && isLT(hasIf ? ifIndex : hasElse ? elseIndex : hasElseIf ? elseIfIndex : -1, forIndex)) return _$Conditional_Dir_Resolver(self, props, [type, props,  children, self], px__VNode, siblings, conditionalArgs );
-    else if(hasFor) return _$Directive_$For_Loop$_Renderer(self, {type, props, children, self}, px__VNode, siblings,  [getEx, getFor, forKey ] );
-    else if( getEx ) return _$Conditional_Dir_Resolver(self, props, [type, props,  children, self], px__VNode, siblings, conditionalArgs );
-    else return createPixelElement(type, children, props, self,px__VNode);
+    if(hasIFWithFor && isLT(hasIf ? ifIndex : hasElse ? elseIndex : hasElseIf ? elseIfIndex : -1, forIndex)) return _$Conditional_Dir_Resolver(self, props, [type, props,  children, self], hx__VNode, siblings, conditionalArgs );
+    else if(hasFor) return _$Directive_$For_Loop$_Renderer(self, {type, props, children, self}, hx__VNode, siblings,  [getEx, getFor, forKey ] );
+    else if( getEx ) return _$Conditional_Dir_Resolver(self, props, [type, props,  children, self], hx__VNode, siblings, conditionalArgs );
+    else return createHexaxElement(type, children, props, self,hx__VNode);
   }
   function arrSet(myset){
     const arr=[];
@@ -857,28 +899,28 @@ const Pixel=(function(global){
     }
     return Callback();
   }
-  function PixelElementLifeCircleHooks(self, element, px__VNode){
-    const args=(hookN)=> [ self, px__VNode[hookN], element, self.model, px__VNode, hookN ];
-    if(len(px__VNode.created_hook)){
+  function HexaxElementLifeCircleHooks(self, element, hx__VNode){
+    const args=(hookN)=> [ self, hx__VNode[hookN], element, self.model, hx__VNode, hookN ];
+    if(len(hx__VNode.created_hook)){
       element=callSetHooks( ...args('created_hook') );
     }
-    if(len(px__VNode.mounted_hook)){
+    if(len(hx__VNode.mounted_hook)){
       whenMounted(self, element, ()=>{
         callSetHooks( ...args('mounted_hook') );
       })
     }
-    if(len(px__VNode.destroyed_hook)) $assignToHookFN( ...args('destroyed_hook') );
+    if(len(hx__VNode.destroyed_hook)) $assignToHookFN( ...args('destroyed_hook') );
     return  element;
   }
-  function $assignToHookFN(self, hookSet, element, model, px__VNode, hookN){
-    if(isEQ(len(hookSet), 1)) px__VNode[hookN] =arrSet(hookSet)[0];
+  function $assignToHookFN(self, hookSet, element, model, hx__VNode, hookN){
+    if(isEQ(len(hookSet), 1)) hx__VNode[hookN] =arrSet(hookSet)[0];
     else{
-      px__VNode.updated_hook=function(){
+      hx__VNode.updated_hook=function(){
         callSetHooks(self, hookSet, element, self.model);
       }
     }
   }
-  function resolveElementRef(self, ref, element, px__VNode){
+  function resolveElementRef(self, ref, element, hx__VNode){
     try{
       set_Object_Value(self.model, ref, element);
     }catch(err){
@@ -887,9 +929,9 @@ const Pixel=(function(global){
     }
   }
   function createVElement(type, props, children, self, is_hyperscript, ctx, siblings, ssc){
-    return new PixelElementVNode(...arguments);
+    return new HexaxElementVNode(...arguments);
   }
-  class PixelElementVNode extends PixelVNode{
+  class HexaxElementVNode extends HexaxVNode{
     constructor(type, props, children, self, is_hyperscript=false, ctx, siblings, ssc){
       super();
       if(is_hyperscript){
@@ -904,14 +946,14 @@ const Pixel=(function(global){
       const saveGarbageContent = NormalizeDirGarbage(props||{});
       const { hasIf, hasElseIf, hasElse, hasFor } = saveGarbageContent
       if(!is_hyperscript && isTrue( hasFor || hasIf || hasElse || hasElseIf ) ) element=VNodeManager(self, {type, props, children}, null, this, siblings, saveGarbageContent);
-      else element=createPixelElement(type, props, children, self, this);
-      element=isNativeElement(element) ? PixelElementLifeCircleHooks(self, element, this) : element;
+      else element=createHexaxElement(type, props, children, self, this);
+      element=isNativeElement(element) ? HexaxElementLifeCircleHooks(self, element, this) : element;
       this.$element=element
       
-      if(hasProp( isPixelWidgetVNode(this) ?  this.widget_instance.ownProperties : this.compiler_options, 'dir--ref')) resolveElementRef(self, isPixelWidgetVNode(this) ? this.widget_instance.ownProperties['dir--ref']  : this.compiler_options['dir--ref'], isPixelWidgetVNode(this) ? this.widget_instance : this.$element, this );
+      if(hasProp( isHexaxWidgetVNode(this) ?  this.widget_instance.ownProperties : this.compiler_options, 'dir--ref')) resolveElementRef(self, isHexaxWidgetVNode(this) ? this.widget_instance.ownProperties['dir--ref']  : this.compiler_options['dir--ref'], isHexaxWidgetVNode(this) ? this.widget_instance : this.$element, this );
     }
   }
-  class PixelFragmentVNode extends PixelVNode{
+  class HexaxFragmentVNode extends HexaxVNode{
     constructor(self, vnodes=[]){
       super();
       this.$element=_createFragment(self)
@@ -919,20 +961,20 @@ const Pixel=(function(global){
       for(let node of vnodes.values()){
         if(isPrimitive(node)){
           if(isNull(node) || isEmptyStr(node)) pass;
-          else node=new PixelTextVNode(self, String(node), this) ;
+          else node=new HexaxTextVNode(self, String(node), this) ;
         }else if(isRender(node)) node=node(self);
-        if(isPixelVNode(node)){
+        if(isHexaxVNode(node)){
           this.NodeList.add(node)
           this.$element.append(isCustomElement(node) ? node : node.$element);
         }
       }
     }
   }
-  class PixelTextVNode extends PixelVNode{
-    constructor(self, text,  px__VNode){
+  class HexaxTextVNode extends HexaxVNode{
+    constructor(self, text,  hx__VNode){
       super();
-      this.is_hyperscript= px__VNode?.is_hyperscript ;
-      if(px__VNode?.LabContext && !this.is_hyperscript) this.LabContext=px__VNode.LabContext
+      this.is_hyperscript= hx__VNode?.is_hyperscript ;
+      if(hx__VNode?.LabContext && !this.is_hyperscript) this.LabContext=hx__VNode.LabContext
       this.$element=_createTextElement(self, text, this);
       
     }
@@ -946,10 +988,10 @@ const Pixel=(function(global){
       }
     }
   }
-  function bufferDirSetups(self, props, px__VNode){
-    if(!props || !props['$$@@dir$$--render'] || !len(props['$$@@dir$$--render'])) return;
-    for(let dir of props['$$@@dir$$--render'].values()){
-      if(isString(dir.name) && !isPixelDirective(dir.name)){
+  function bufferDirSetups(self, props, hx__VNode){
+    if(!props || !props['[[[$$@@dir$$--render]]]'] || !len(props['[[[$$@@dir$$--render]]]'])) return;
+    for(let dir of props['[[[$$@@dir$$--render]]]'].values()){
+      if(isString(dir.name) && !isHexaxDirective(dir.name)){
         if(!hasProp(self.register.directives, dir.name) || !self.register.directives[dir.name]){
           $Debug(`"${dir.name} is not a registered directive\n`, self, true);
           return;
@@ -957,15 +999,15 @@ const Pixel=(function(global){
           $Debug(`directive resolved at "dir.name" is not a valid directive data value`,self, true);
           return;
         }
-        dirMap(self, dir, self.register.directives[dir.name], px__VNode );
-        props['$$@@dir$$--render'].delete(dir);
+        dirMap(self, dir, self.register.directives[dir.name], hx__VNode );
+        props['[[[$$@@dir$$--render]]]'].delete(dir);
       }else if(!isString(dir.name)) {
-        dirMap(self, dir, dir.name, px__VNode);
-        props['$$@@dir$$--render'].delete(dir);
+        dirMap(self, dir, dir.name, hx__VNode);
+        props['[[[$$@@dir$$--render]]]'].delete(dir);
       }
     }
   }
-  function dirMap(self, resolver, dir, px__VNode){
+  function dirMap(self, resolver, dir, hx__VNode){
     if(isPObject(dir)){
       for(let [name, hook] of entries(dir)){
         if(_mapValue(LCH, name)){
@@ -975,13 +1017,13 @@ const Pixel=(function(global){
           }
           hook.value=resolver.value;
           hook.modifiers=resolver.modifiers
-          px__VNode[name+'_hook'].add(hook);
+          hx__VNode[name+'_hook'].add(hook);
         }
       }
     }else if(isPFunction(dir)){
       dir.value=resolver.value;
       dir.modifiers=resolver.modifiers
-      px__VNode.created_hook.add(dir);
+      hx__VNode.created_hook.add(dir);
     }
   }
   function renderSlots(options){
@@ -1016,7 +1058,7 @@ const Pixel=(function(global){
       }
     }
     return function render(self){
-      const fragment= new PixelFragmentVNode(self, NodeList);
+      const fragment= new HexaxFragmentVNode(self, NodeList);
       fragment.isWidgetWrapper=true;
       fragment.compiler_options.src=iterable;
       return fragment
@@ -1028,7 +1070,7 @@ const Pixel=(function(global){
     vnode.$element=_createFragment();
     return vnode
   }
-  const isPixelWidgetVNode=vnode=>isPixelVNode(vnode) && vnode.is_mount_root && isPixelBuild(vnode.widget_instance);
+  const isHexaxWidgetVNode=vnode=>isHexaxVNode(vnode) && vnode.is_mount_root && isHexaxBuild(vnode.widget_instance);
   function getChild(attributes, children){
     let res;
     if(attributes) {
@@ -1038,16 +1080,31 @@ const Pixel=(function(global){
     }else if(!attributes && isChildrenNode(children)) res=children;
     return res;
   }
-  function _resolveCustomNativeElement(self, nativeArgs, px__VNode){
+  const rawDirRegex=/^\$\$raw[\w|$:\-]*$/;
+  const RawDirCheck=(attrs)=>{
+    let RawMap={}
+    for(let [key, val] of entries(attrs)){
+      if(rawDirRegex.test(key)){
+        let getKey=directive_sep(key).shift()
+        getKey=getKey.split('|').shift();
+        if(isEQ(getKey, '$$raw')){
+          RawMap={ hasRaw:true, getRaw:val , getKey:key };
+        } 
+        break;
+      }
+    }
+    return RawMap;
+  }
+  function _resolveCustomNativeElement(self, nativeArgs, hx__VNode){
     let { type, attributes, children }=nativeArgs;
-    const body=createPixelElement('body');
+    const body=createHexaxElement('body');
     let attrsStr="";
     for(const [key, attr]  of entries(attributes||{})){
       attrsStr=`${attrsStr} ${key}="${attr}"`;
     }
     if(isRender(children) ? children(self) : children){
       children=isRender(children) ? children(self) :  children;
-      if(!isString(children)) body.append(isPixelVNode(children)  ? children.$element  : isPixelWidgetVNode(children) ? children.build.$element : children);
+      if(!isString(children)) body.append(isHexaxVNode(children)  ? children.$element  : isHexaxWidgetVNode(children) ? children.build.$element : children);
       else body.innerHTML=children;
       children=body.innerHTML;
     }
@@ -1055,58 +1112,58 @@ const Pixel=(function(global){
     const customEl=new DOMParser().parseFromString(html,'text/html').body.childNodes[0];
     if(isCustomElement(customEl) || isNativeElement(customEl)) return customEl;
   }
-  function createPixelElement(type, props, children, self, px__VNode){
+  function createHexaxElement(type, props, children, self, hx__VNode){
     if(isString(type) && (IS_VALID_TAGNAME(type) && !instance_Has_Widget(self||{}, type))) return _createNativeElement(...arguments);
     else return isTrue(self?.operands?.initialized) ? createRenderlessVNode(self, arguments ) : _createWidgetElement(...arguments);
   }
   
-  function _createNativeElement(type, attributes, children, self, px__VNode){
+  function _createNativeElement(type, attributes, children, self, hx__VNode){
     const argsCount=len(new Set(arguments));
     let element;
-    const is_hyperscript=px__VNode?.is_hyperscript || false;
-    if(px__VNode)  px__VNode._vnode_key=_generateUUID(7)
+    const is_hyperscript=hx__VNode?.is_hyperscript || false;
+    if(hx__VNode)  hx__VNode._vnode_key=_generateUUID(7)
     if(isString(type)){
       if(IS_VALID_TAGNAME(type)){
         element=document.createElement(type);
-        if(px__VNode) px__VNode.is_element_node=true
-        if(self && len(self) && px__VNode) {
-          px__VNode.px_hash_=self.ownProperties.px_hash_
+        if(hx__VNode) hx__VNode.is_element_node=true
+        if(self && len(self) && hx__VNode) {
+          hx__VNode.hx_hash_=self.ownProperties.hx_hash_
         }
-      }else return _resolveCustomNativeElement(self, { type, attributes, children}, px__VNode);
+      }else return _resolveCustomNativeElement(self, { type, attributes, children}, hx__VNode);
     }
-    if(attributes && hasOwn(attributes, '$$raw')  && !is_hyperscript){
-      const name=attributes['$$raw'];
-      let item=_$runModelBind(self, name, px__VNode, true);
-      if(px__VNode) px__VNode.compiler_options['dir--raw']=item;
-      delete attributes['$$raw'];
+    let { hasRaw, getRaw, getKey }=RawDirCheck(attributes||{});
+    if(attributes && hasRaw  && !is_hyperscript){
+      let item=_$runModelBind(self, getRaw, hx__VNode, true);
+      if(hx__VNode) hx__VNode.compiler_options['dir--raw']=item;
+      delete attributes[getKey];
     }
     element.PATCH_FLAGS=new Set()
     if(children && !IS_HTML_VOID_TAG(type)) {
-      if(px__VNode && hasOwn(px__VNode.compiler_options,'dir--raw')){ 
-        if(!isFalse(px__VNode.compiler_options['dir--raw'])){
-          element.innerHTML=attributes.$$rawChildrenData$$
-        }else element= _initiateChildNodes(self, children, px__VNode, element );
-        delete attributes.$$rawChildrenData$$;
-      } else element= _initiateChildNodes(self, children, px__VNode, element );
+      if(hx__VNode && hasOwn(hx__VNode.compiler_options,'dir--raw')){ 
+        if(!isFalse(hx__VNode.compiler_options['dir--raw'])){
+          element.innerHTML=attributes['[[[$$rawChildrenData$$]]]']
+        }else element= _initiateChildNodes(self, children, hx__VNode, element );
+        delete attributes['[[[$$rawChildrenData$$]]]'];
+      } else element= _initiateChildNodes(self, children, hx__VNode, element );
     }
-    if(attributes) element=AttributeManager(attributes, element, self, px__VNode)
-    if(self && self.ownProperties.px_hash_) element.setAttribute("data-px_hash_", self.ownProperties.px_hash_);
+    if(attributes) element=AttributeManager(attributes, element, self, hx__VNode)
+    if(self && self.ownProperties.hx_hash_) element.setAttribute("data-hx_hash_", self.ownProperties.hx_hash_);
     return element;
   }
-  function _createWidgetElement(type, props, children, self, px__VNode){
-    const is_hyperscript=px__VNode?.is_hyperscript;
+  function _createWidgetElement(type, props, children, self, hx__VNode){
+    const is_hyperscript=hx__VNode?.is_hyperscript;
     if(isString(type) && !is_hyperscript){
-      children=children(self, px__VNode);
+      children=children(self, hx__VNode);
       const slotRender=function(inst, VNode, fall){
-        return isString(children) ? _PixelTemplateParser(children, inst, true, VNode, fall ) : isPFunction(children)  ? children(inst, VNode, fall) : children;
+        return isString(children) ? _HexaxTemplateParser(children, inst, true, VNode, fall ) : isPFunction(children)  ? children(inst, VNode, fall) : children;
       }
-      const widget=ResolveWidget(self, px__VNode, {type, props, $children:slotRender })//reso;ving a widget data object
-      px__VNode.is_mount_root=true;
-      px__VNode.px_hash_=self.ownProperties.px_hash_;
-      px__VNode.widget_instance=widget;
-      if(widget.ownProperties.slot_name) px__VNode.slot_name=widget.ownProperties.slot_name;
-      return widget && isPixelBuild(widget) ? widget.build?.$element : '';
-    }else if((validPixelWidget(type) || isWidgetResolver(type)) && is_hyperscript){
+      const widget=ResolveWidget(self, hx__VNode, {type, props, $children:slotRender })//reso;ving a widget data object
+      hx__VNode.is_mount_root=true;
+      hx__VNode.hx_hash_=self.ownProperties.hx_hash_;
+      hx__VNode.widget_instance=widget;
+      if(widget.ownProperties.slot_name) hx__VNode.slot_name=widget.ownProperties.slot_name;
+      return widget && isHexaxBuild(widget) ? widget.build?.$element : '';
+    }else if((validHexaxWidget(type) || isWidgetResolver(type)) && is_hyperscript){
       if(isWidgetResolver(type)){
         if (instance_Has_Widget(self, type.name) ){
           let widget=normalize_Widget(self, type.name);
@@ -1120,13 +1177,13 @@ const Pixel=(function(global){
           return;
         }
       }
-      const widget=$compilerEngine(self, type, type, px__VNode)
-      if(px__VNode) {
-        px__VNode.is_mount_root=true;
-        px__VNode.widget_instance=widget;
+      const widget=$compilerEngine(self, type, type, hx__VNode)
+      if(hx__VNode) {
+        hx__VNode.is_mount_root=true;
+        hx__VNode.widget_instance=widget;
       }
-      if(widget.ownProperties.slot_name) px__VNode.slot_name=widget.ownProperties.slot_name;
-      return widget && isPixelBuild(widget) ? widget.build.$element : '';
+      if(widget.ownProperties.slot_name) hx__VNode.slot_name=widget.ownProperties.slot_name;
+      return widget && isHexaxBuild(widget) ? widget.build.$element : '';
     }
   }
   function formatExpression(objKey, keys, expression){
@@ -1162,7 +1219,7 @@ const Pixel=(function(global){
   function escapeRegExp(string) { 
     return string.replace(/[.!@#%_\,<>:;'"\-=*+?^${}()|[\]\\]/g, '\\$&'); 
   }
-  function _decodeReverse(str){
+  function _escapeReverseDecoder(str){
     str=str.replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
       .replace(/&quot;/g, '"')
@@ -1170,7 +1227,7 @@ const Pixel=(function(global){
       .replace(/&#39;/g, '\\')
     return str;
   }
-  function resolveAccessor(self, vnode, node, px__VNode){
+  function resolveAccessor(self, vnode, node, hx__VNode){
     let [ open, close ] = self.core.settings.delimiters ;
     if( open && close ){
       if( !hasSpecialCharacters( open ) || !hasSpecialCharacters( close ) ) $Debug(`mustache customization error::\n\n delimeters must match value of special characters\n\ne.g !, @, #, $, %, ^, &, *, (, ),  [, ], {, }, ;, :, ?`,  self, true ); 
@@ -1185,34 +1242,34 @@ const Pixel=(function(global){
     let str=node.textContent;
     if(str.match(pattern)) {
       str=str.replace(pattern, (match, text)=>{
-        text=_decodeReverse(text.trim());
+        text=_escapeReverseDecoder(text.trim());
         link=text;
         const prefix=text.split('>>');
         const blocks=isGT(len(prefix), 1) ? prefix.shift() : null;
         if(blocks) {
-          const parameters=retrieveBlocksParams(self, prefix, px__VNode);
-          text=$Block_HelpersService(self, parameters, blocks, px__VNode).shift();
+          const parameters=retrieveBlocksParams(self, prefix, hx__VNode);
+          text=$Block_HelpersService(self, parameters, blocks, hx__VNode).shift();
           
         }else{
-          text=_$runModelBind(self, prefix.shift().trim(), px__VNode);
+          text=_$runModelBind(self, prefix.shift().trim(), hx__VNode);
         }
         return compileToRenderable(text);
       })
     }
     return str;
   }
-  function retrieveBlocksParams(self, params, px__VNode){
+  function retrieveBlocksParams(self, params, hx__VNode){
     const parameters=[];
     params.forEach((text)=>{
-      const value=_$runModelBind(self, text.trim(), px__VNode);
+      const value=_$runModelBind(self, text.trim(), hx__VNode);
       parameters.push(value);
     })
     return parameters;
   }
-  function _$runModelBind(self, ref, px__VNode, returnRef=false){
+  function _$runModelBind(self, ref, hx__VNode, returnRef=false){
     let value;
     try{
-      value=_Evaluate_THIS( self.model , ref, self, px__VNode?.LabContext) ;
+      value=_Evaluate_THIS( self.model , ref, self, hx__VNode?.LabContext) ;
     } catch(err){
         if(!returnRef){
           $Debug(`Accessor Error::\n\n"${ref}" property value was accessed during render, but not initialized on model or is undefined\n\nat at\n ..."${ref}" property \n\n${err}`, self, true);
@@ -1242,7 +1299,7 @@ const Pixel=(function(global){
       return String(args[0]).toLowerCase();
     },
   }
-  function $Block_HelpersService(self, value, blocks,px__VNode){
+  function $Block_HelpersService(self, value, blocks,hx__VNode){
     const modifiers=blocks.split('|');
     blocks=modifiers.shift().split('.');
     if(!len(blocks)) return  value.shift();
@@ -1274,7 +1331,7 @@ const Pixel=(function(global){
       }
       const blockCallback=isPObject(blockInstance) ? blockInstance.block : blockInstance;
       try{
-        value=blockCallback(value, modifiers, px__VNode);
+        value=blockCallback(value, modifiers, hx__VNode);
         value = [ value ]
       }catch(error){
         $Debug(`Encountered an error when running the block callback ${name}`, self, true);
@@ -1284,7 +1341,7 @@ const Pixel=(function(global){
     }
     return value
   }
-  function _Compiler_Call(self, str, vnode, px__VNode){
+  function _Compiler_Call(self, str, vnode, hx__VNode){
     const pattern=/__\$ref\((.*?)\)__/g;
     let link;
     if(str.match(pattern)) {
@@ -1293,7 +1350,7 @@ const Pixel=(function(global){
         link=text;
         try{
           let name=text;
-          text=_$runModelBind(self, text, px__VNode);
+          text=_$runModelBind(self, text, hx__VNode);
         } catch(err){
           $Debug(`accessor Error\n\n "${text}" property was accessed on build, but not defined on build model\n\n ${err}`, self, true);
           ;return ;
@@ -1303,14 +1360,14 @@ const Pixel=(function(global){
     }
     return str;
   }
-  const PixelDirectives="if,else,else-if,html,text,for,raw,ref,slot,model,px,bind,on,scoped,fall";
+  const HexaxDirectives="if,else,else-if,html,text,for,raw,ref,slot,model,hx,bind,on,scoped,fall";
   const widgetPassableDirectives="html,text,scoped,if,else,else-if,for,ref,slot,bind,on"
   const autoBindedDirectives="model,for,ref,bind,on"
   const NodeBasedDirectives="html,text,raw,model,scoped,ref,if,else,else-if,slot,bind,on,fall";
   const hyperscriptDirectives="html,text,ref,slot,on,scoped,model,fall";
   const isHyperscriptDirective=dir=>_mapValue(hyperscriptDirectives, dir);
   const cond_Directives="if,else-if,else";
-  const isPixelDirective=dir=>_mapValue(PixelDirectives, dir);
+  const isHexaxDirective=dir=>_mapValue(HexaxDirectives, dir);
   const isNodeBaseDirective=dir=>_mapValue(NodeBasedDirectives, dir)
   function _Evaluate_THIS(obj, str, self, optional){
     // Check if the expression contains //semicolons
@@ -1350,16 +1407,16 @@ const Pixel=(function(global){
   function withFallThrough(fn){
     return new fallThrough(fn);
   }
-  function __Attr_Name_Resolver(self, attr, px__VNode){
+  function __Attr_Name_Resolver(self, attr, hx__VNode){
     let iniAttr=attr;
     if (hasAsterisks_bind(attr)) attr= attr.slice(1)  ;
     const pattern=/\[(.*?)\]/g;
     const matches=attr.match(/\[(.*?)\]/g);
     if(attr.match(pattern)){
       let name=''
-      attr=matches[0].replace(pattern, (match, text)=>_$runModelBind(self.model, text, px__VNode, true))
+      attr=matches[0].replace(pattern, (match, text)=>_$runModelBind(self.model, text, hx__VNode, true))
     }
-    if(px__VNode) px__VNode.PATCH_FLAGS.add('ELEMENT_ATTRIBUTES');
+    if(hx__VNode) hx__VNode.PATCH_FLAGS.add('ELEMENT_ATTRIBUTES');
     return hasAsterisks_bind(iniAttr) ?  '*'+attr : attr;
   }
   const DebugFlags={
@@ -1496,10 +1553,10 @@ const Pixel=(function(global){
     const observer= new MutationObserver(callback);
     observer.observe(element, { attributes: true, childList: true, subtree: true })
   }
-  function AttributeManager(props, element, self, px__VNode, isRerender=false){
+  function AttributeManager(props, element, self, hx__VNode, isRerender=false){
     if(!isPObject(props))return;
-    const is_hyperscript= px__VNode ? px__VNode.is_hyperscript : false;
-    if(isTrue(isRerender)) specialPropsPrefix(self, props, element, px__VNode);
+    const is_hyperscript= hx__VNode ? hx__VNode.is_hyperscript : false;
+    if(isTrue(isRerender)) specialPropsPrefix(self, props, element, hx__VNode);
     const illegal=prop=>is_hyperscript && isTrue(hasAsterisks_bind(prop) || has$$_bind(prop) || hasAt_bind(prop))
     entries(props).forEach(([key, attr ])=>{
       if(illegal(key)){
@@ -1507,24 +1564,24 @@ const Pixel=(function(global){
         return element;
       }
       if(!is_hyperscript){
-        key=__Attr_Name_Resolver(self, key, px__VNode);
+        key=__Attr_Name_Resolver(self, key, hx__VNode);
         if(hasAsterisks_bind(key)) key='$$bind:'+key.slice(1);
         else if(hasAt_bind(key)) key='$$on:'+key.slice(1);
-        px__VNode.PATCH_FLAGS.add('ELEMENT_ATTRIBUTES')
+        hx__VNode.PATCH_FLAGS.add('ELEMENT_ATTRIBUTES')
       }
       if(has$$_bind(key)){
         let modifiers=key.includes('|') ? key.split('|') : [];
         key=len(modifiers) ? modifiers.shift() : key;
         modifiers = new Set(modifiers);
-        if(isPixelDirective(directive_sep(key)[0].slice(2)) &&  !is_hyperscript) element=_Resolve_Builtin_Directives(self, key, attr, element, px__VNode, modifiers);
-        else if(!is_hyperscript) element=_Resolve_Custom_Directives(self, key, attr, element, px__VNode, modifiers);
-        px__VNode.PATCH_FLAGS.add('ELEMENT_ATTRIBUTES')
+        if(isHexaxDirective(directive_sep(key)[0].slice(2)) &&  !is_hyperscript) element=_Resolve_Builtin_Directives(self, key, attr, element, hx__VNode, modifiers);
+        else if(!is_hyperscript) element=_Resolve_Custom_Directives(self, key, attr, element, hx__VNode, modifiers);
+        hx__VNode.PATCH_FLAGS.add('ELEMENT_ATTRIBUTES')
       }else if(isHTMLIDLAttributes(key) && !isHTMLBooleanAttributes(key)){
         if(isEQ(key,'style')) parse_Style_Binding(self, attr, element);
         else element[key]=attr
       }else if(isHTMLBooleanAttributes(key)) boolAttrsParse(element, key, attr)
       else if(isEQ(key, 'class')) parse_Class_Binding(self, attr, element, isRerender);
-      else if(hasSpread_bind(key) && !is_hyperscript) return Attribute_Spread(self, attr, element,  px__VNode);
+      else if(hasSpread_bind(key) && !is_hyperscript) return Attribute_Spread(self, attr, element,  hx__VNode);
       else if(isOnListener(key)) {
         if(!isPFunction(attr)){
           $Debug(`on<EventName> listener expects a function value\n\nFound "${attr}`, self, !isNull(self));
@@ -1532,10 +1589,10 @@ const Pixel=(function(global){
           const options=attr.options || {};
           const events=_hyphenate(key).split('-');
           events.shift();
-          $$dir_ON(self, attr, element, px__VNode, events, []);
+          $$dir_ON(self, attr, element, hx__VNode, events, []);
         }
-      }else if(isEQ(key,'$$@@dir$$--render')){
-        justifyHyperscriptDirectiveBuffer(self, attr,  element, px__VNode, modifiers);
+      }else if(isEQ(key,'[[[$$@@dir$$--render]]]')){
+        justifyHyperscriptDirectiveBuffer(self, attr,  element, hx__VNode, modifiers);
         delete props[key];
       }else{
         try{ 
@@ -1548,22 +1605,22 @@ const Pixel=(function(global){
      })
      return element;
   }
-  function specialPropsPrefix(self, props, element, px__VNode){
+  function specialPropsPrefix(self, props, element, hx__VNode){
     
   }
-  function justifyHyperscriptDirectiveBuffer(self, directives, element, px__VNode){
+  function justifyHyperscriptDirectiveBuffer(self, directives, element, hx__VNode){
     for(const buff of directives.values()){
       let { name, value, modifiers }=buff;
-      if(isHyperscriptDirective(name)) callHDir(self, buff, element, px__VNode )
+      if(isHyperscriptDirective(name)) callHDir(self, buff, element, hx__VNode )
       else {
         
       }
     }
   }
-  function callHDir(self, direct, element, px__VNode){
+  function callHDir(self, direct, element, hx__VNode){
     let { modifiers, name }= direct;
     modifiers = new Set(modifiers)
-    if(isPixelDirective(name) && !isHyperscriptDirective(name)){
+    if(isHexaxDirective(name) && !isHyperscriptDirective(name)){
       $Debug(`can't commit buffering on the "${name}" directive`, self, true);
       return;
     }else if(!isHyperscriptDirective(name)){
@@ -1571,13 +1628,13 @@ const Pixel=(function(global){
         $Debug(`unresolve directive name passed to buffer\n\n"${name}" is not defined\nMake sure this is registered globally/localy through this widget instance thread`, self, true, "during resolving of the 'buffer' object");
         return;
       }else pass
-    }else if(isEQ('html', name) || isEQ('text', name)) $$dir_HTML(self, direct.value, element, px__VNode, isEQ('text', name), modifiers);
-    else if(isEQ('slot', name)) $$dir_SLOT(self, direct.value, element, px__VNode, modifiers);
-    else if(isEQ('on', name)) $$dir_ON(self, direct.value, element, px__VNode, modifiers);
-    else if(isEQ('scoped', name)) $$dir_SCOPED(self, direct.value, element, px__VNode, modifiers);
-    else if(isEQ('ref', name)) $$dir_REF(self, direct.value, element, px__VNode, modifiers);
-    else if(isEQ('model', name)) $$dir_MODEL(self, direct.value, element, px__VNode, modifiers);
-    // else if(isEQ('fall', name)) $$dir_FALL(self, direct.value, element, px__VNode,modifiers );
+    }else if(isEQ('html', name) || isEQ('text', name)) $$dir_HTML(self, direct.value, element, hx__VNode, isEQ('text', name), modifiers);
+    else if(isEQ('slot', name)) $$dir_SLOT(self, direct.value, element, hx__VNode, modifiers);
+    else if(isEQ('on', name)) $$dir_ON(self, direct.value, element, hx__VNode, modifiers);
+    else if(isEQ('scoped', name)) $$dir_SCOPED(self, direct.value, element, hx__VNode, modifiers);
+    else if(isEQ('ref', name)) $$dir_REF(self, direct.value, element, hx__VNode, modifiers);
+    else if(isEQ('model', name)) $$dir_MODEL(self, direct.value, element, hx__VNode, modifiers);
+    // else if(isEQ('fall', name)) $$dir_FALL(self, direct.value, element, hx__VNode,modifiers );
   }
   function boolAttrsParse(vnode, key, attr){
     if(!isEQ(attr, false)) {
@@ -1588,24 +1645,24 @@ const Pixel=(function(global){
       else if(hasAttribute(key)) vnode.removeAttribute(key);
     }
   }
-  function Attribute_Spread(self, data, vnode, px__VNode){
-    let value= isString(data) ? _$runModelBind(self, data.slice(3), px__VNode) : data;
+  function Attribute_Spread(self, data, vnode, hx__VNode){
+    let value= isString(data) ? _$runModelBind(self, data.slice(3), hx__VNode) : data;
     if(!isPObject(value)){
-      $Debug(`spread syntax on px__VNode can only accept binded values of an object`, self, true);
+      $Debug(`spread syntax on hx__VNode can only accept binded values of an object`, self, true);
       return vnode;
     }
-    vnode = AttributeManager({ ['$$bind']:value }, vnode, self,  px__VNode)
+    vnode = AttributeManager({ ['$$bind']:value }, vnode, self,  hx__VNode)
     return vnode;
   }
-  function _With_Custom_Directives(self, data, vnode, px__VNode, modifiers){
+  function _With_Custom_Directives(self, data, vnode, hx__VNode, modifiers){
     let { key, attr } = data || {};
     attr =bindKeyAsValue(key, attr);
-    let value=_$runModelBind(self, attr, px__VNode, true)
+    let value=_$runModelBind(self, attr, hx__VNode, true)
     let has_modifiers=len(modifiers) ? true : false;
     let Name=directive_sep(key)[0].slice(2);
     if( !hasOwn(self.register.directives, Name )){
       $Debug(
-        `((Undefined Directives Reference))\n\n "${key}" directive is not a registered pixel directive on this widget\n\nat...........at>>>.\n ${vnode.outerHTML}`
+        `((Undefined Directives Reference))\n\n "${key}" directive is not a registered hexax directive on this widget\n\nat...........at>>>.\n ${vnode.outerHTML}`
       , self, true, "during directive resolving"  );
       return vnode;
     }
@@ -1649,8 +1706,8 @@ const Pixel=(function(global){
     for(let hook of LCH.split(',').values()){
 
       if(CustomDir[hook] && !isPass(CustomDir[hook])) {
-        if(isNativeElement(vnode) && !validPixelWidget(vnode)) px__VNode[hook+'_hook'].add(CustomDir[hook]);
-        else if(validPixelWidget(vnode)) vnode.$$$customDirs[hook+'_hook'].add(CustomDir[hook]);
+        if(isNativeElement(vnode) && !validHexaxWidget(vnode)) hx__VNode[hook+'_hook'].add(CustomDir[hook]);
+        else if(validHexaxWidget(vnode)) vnode.$$$customDirs[hook+'_hook'].add(CustomDir[hook]);
       }
     }
     return vnode;
@@ -1658,8 +1715,8 @@ const Pixel=(function(global){
   function isPass(func){
     return isPFunction(func) && isEQ(func.name,'pass');
   }
-  function _Resolve_Custom_Directives(self, key, attr, vnode, px__VNode, modifiers){
-    return _With_Custom_Directives(self, { key, attr}, vnode, px__VNode, modifiers);
+  function _Resolve_Custom_Directives(self, key, attr, vnode, hx__VNode, modifiers){
+    return _With_Custom_Directives(self, { key, attr}, vnode, hx__VNode, modifiers);
   }
   function _Run_With_Modifiers(vnode, modifiers, func, events, runImmediately=true){
     if(!isFunction(func)){
@@ -1699,16 +1756,16 @@ const Pixel=(function(global){
     return func;
   }
   
-  function bind_directive_receiver(self, props, vnode, px__VNode, modifiers){
-    let is_hyperscript=px__VNode.is_hyperscript;
+  function bind_directive_receiver(self, props, vnode, hx__VNode, modifiers){
+    let is_hyperscript=hx__VNode.is_hyperscript;
     let { item, key }=props;
-    item=isOnListener(key) && !is_hyperscript && isString( item) && isContextMethodString(self, px__VNode, item) ? item : `()=>{ ${ item } }` ;
-    let bra=_$runModelBind(self, item||'', px__VNode );
+    item=isOnListener(key) && !is_hyperscript && isString( item) && isContextMethodString(self, hx__VNode, item) ? item : `()=>{ ${ item } }` ;
+    let bra=_$runModelBind(self, item||'', hx__VNode );
     if(isUndefined(bra)) bra='';
     if(!key){
       if (!isPObject(bra)) $Debug(`Directive attributes binding expects an objects value when not chained to any attribute/property argument`, self, true);
-      else vnode=AttributeManager(bra, vnode, self, px__VNode);
-    }else vnode=AttributeManager({ [key]:bra }, vnode, self, px__VNode );
+      else vnode=AttributeManager(bra, vnode, self, hx__VNode);
+    }else vnode=AttributeManager({ [key]:bra }, vnode, self, hx__VNode );
     return vnode;
   }
   function  bindKeyAsValue(keys, value){
@@ -1718,40 +1775,40 @@ const Pixel=(function(global){
       return has$$_bind(lastAttr) ? lastAttr.slice(2) : lastAttr
     }else return value;
   }
-  function $$dir_HTML(self, value, vnode, px__VNode, text, modifiers ){
-    const is_hyperscript=px__VNode.is_hyperscript;
-    if(!is_hyperscript) value=_$runModelBind(self, value, px__VNode, !modifiers.has('bind'))
+  function $$dir_HTML(self, value, vnode, hx__VNode, text, modifiers ){
+    const is_hyperscript=hx__VNode.is_hyperscript;
+    if(!is_hyperscript) value=_$runModelBind(self, value, hx__VNode, !modifiers.has('bind'))
     if( isPrimitive(value)) {
       const innerProp=isTrue(text) ? 'innerText' : 'innerHTML';
       if(!isNativeElement(vnode) && value)  self.model.$attrs[innerProp]=value;
       else if(value) vnode[innerProp]=value;
     }
   }
-  function $$dir_SLOT(self, item, vnode, px__VNode, modifiers){
+  function $$dir_SLOT(self, item, vnode, hx__VNode, modifiers){
     try{
       get_Object_Value(self.model, item, true);
     }catch(err){
       $Debug(err);
     }
     const iswt=!isNativeElement(vnode)
-    let value=_$runModelBind(self, item, px__VNode, !modifiers.has('bind'));
+    let value=_$runModelBind(self, item, hx__VNode, !modifiers.has('bind'));
     if(!isString(value)){
       $Debug(`value Error::\n\n slot name undefined or is not a string\n\n Error resolving slot  directive name reference on "${iswt  ?  self.ownProperties.name : vnode.localName}"`, self, true);
       return;
     }
-    if(!iswt) px__VNode.slot_name=value;
-    else vnode.$attributes['@@slotName']=value;
+    if(!iswt) hx__VNode.slot_name=value;
+    else vnode.$attributes['[[[~~slotName~~]]]']=value;
   }
-  function $$dir_BIND(self, prop, el, px__VNode, modifiers ){
+  function $$dir_BIND(self, prop, el, hx__VNode, modifiers ){
     let { key, item }=prop;
     if(isNativeElement(el)){
       key=directive_sep(key);
       key.shift();
       key= isGT(len(key), 1) ? key.join(':') : key[0];
-      return bind_directive_receiver(self,{ key, item }, el, px__VNode, modifiers)
-    }else widgetBindingReceiver(self, key, item, el, px__VNode, modifiers)
+      return bind_directive_receiver(self,{ key, item }, el, hx__VNode, modifiers)
+    }else widgetBindingReceiver(self, key, item, el, hx__VNode, modifiers)
   }
-  function $$dir_ON(self, attr, node, px__VNode, key, modifiers){
+  function $$dir_ON(self, attr, node, hx__VNode, key, modifiers){
     const isWidget=!isNativeElement(node);
     if(isString(attr)){
       const signalsRegex=/^(@@)/g
@@ -1759,7 +1816,7 @@ const Pixel=(function(global){
       try{
         attr=attr.split(' ').join('').trim();
         const funcRef=attr;
-        attr=_$runModelBind(self, isContextMethodString(self, px__VNode, attr) ? attr : `()=>{${attr}}`, px__VNode);
+        attr=_$runModelBind(self, isContextMethodString(self, hx__VNode, attr) ? attr : `()=>{${attr}}`, hx__VNode);
         attr=has_Object_Prop(self.model, funcRef) && isPFunction(attr) ? attr.bind(self.model) : attr;
       }catch(err){
         $Debug(`${err}`, self, true);
@@ -1779,9 +1836,9 @@ const Pixel=(function(global){
     } else {
       if(isWidget){
         if(len(events)){
-          define(node.$attributes, '@@Events', { value:{}, configurable, enumerable});
+          define(node.$attributes, '[[[@@Events]]]', { value:{}, configurable, enumerable});
           for( let [ ind, ev ] of events.entries()){
-            define(node.$attributes['@@Events'], ev,{ value: new pixelSignal(ev, param, opts) , enumerable, configurable});
+            define(node.$attributes['[[[@@Events]]]'], ev,{ value: new hexaxSignal(ev, param, opts) , enumerable, configurable});
           }
         }
       }else if(len(events)){
@@ -1794,35 +1851,35 @@ const Pixel=(function(global){
     }
     return node;
   }
-  function $$dir_REF(self, item, node, px__VNode, modifiers){
+  function $$dir_REF(self, item, node, hx__VNode, modifiers, metrics){
     const isWidget=!isNativeElement(node);
     if(!has_Object_Prop(self.model, item)){
       $Debug(`value "${item}" property value was accessed during render, but not initialized on model or is undefined\n\nat at\n ..."${name} directive on ${isWidget ? '$$ref' : vnode.localName} `,self, true);
       return;
     }
     try{
-      get_Object_Value(self.model, item, !modifiers.has('bind'));
+      get_Object_Value(self.model, item, modifiers.has('bind'));
     }catch(err){
       $Debug(`value "${item}" property value was accessed during render, but not initialized on model or is undefined\n\nat at\n ..."${name} directive on ${isWidget ? '$$ref' : vnode.localName} `, self, true);
       return;
     }
-    if(isWidget) {
-      node.$attributes['$$$$dir--ref$$$$']=item;
-    }else px__VNode.compiler_options['dir--ref']=item;
+    if(node && isWidget) {
+      node.$attributes['[[[$$$$dir--ref$$$$]]]']=item;
+    }else if(node) hx__VNode.compiler_options['dir--ref']=item;
   }
-  function $$dir_SCOPED(self, item, node, px__VNode, modifiers){
+  function $$dir_SCOPED(self, item, node, hx__VNode, modifiers){
     const isStyleEl=isNativeElement(node) && isEQ(node.localName, 'style');
     if(!isStyleEl) {
       $Debug(`"$$scoped" directive is only scoped to document <style> elements only`, self, true);
       return node;
     }
-    let value=_$runModelBind(self, item, px__VNode, !modifiers.has('bind'));
+    let value=_$runModelBind(self, item, hx__VNode, !modifiers.has('bind'));
     if(isFalse(value)) return node;
     node.innerHTML=_styleSheet_hydration(self, node.innerHTML);
     return node;
   }
-  function $$dir_FALL(self, item, node, px__VNode, modifiers){
-    const isWidget=!isNativeElement(node) && validPixelWidget(node);
+  function $$dir_FALL(self, item, node, hx__VNode, modifiers){
+    const isWidget=!isNativeElement(node) && validHexaxWidget(node);
     if(!isWidget) {
       $Debug(`"$$fall" directive is only scoped to widget instances vnode only\n\n found on "${isNativeElement(node) ? node.outerHTML+" element" : ""}"`, self, true);
       return node;
@@ -1830,10 +1887,10 @@ const Pixel=(function(global){
       $Debug(`Unrecognized reference prop passed to the "$$fall" directive`, self, true);
       return ;
     }
-    node.$attributes['$$@fallThrough']=createObj('fallThrough', { prop:item});
+    node.$attributes['[[[$$@fallThrough]]]']=createObj('fallThrough', { prop:item});
     return node;
   }
-  function $$dir_MODEL(self, item, node, px__VNode, modifiers){
+  function $$dir_MODEL(self, item, node, hx__VNode, modifiers){
     if(!Is_Form_Element(node)){
       $Debug(`Compilation Error::\n\n cannot bind a data model to  a none form element`, self, true);
       return;
@@ -1851,25 +1908,25 @@ const Pixel=(function(global){
       node.addEventListener(eventName, function(){
         try{
           set_Object_Value(self.model, item , node.value );
-          px__VNode.render_tracked=true;
+          hx__VNode.render_tracked=true;
         }catch(err){
           $Debug(`${err}`);
         }
       });
     }
   }
-  function _Resolve_Builtin_Directives(self, key, attr, vnode, px__VNode, modifiers){
+  function _Resolve_Builtin_Directives(self, key, attr, vnode, hx__VNode, modifiers){
     let item =bindKeyAsValue(key, attr);
     let name=directive_sep(key )[0].slice(2);
-    const callArgs=()=>[self, item, vnode, px__VNode, modifiers];
-    if(isEQ(name, 'bind')) vnode=$$dir_BIND(self, {key, item}, vnode, px__VNode, modifiers);
-    else if(isEQ(name, 'html') || isEQ(name, 'text')) $$dir_HTML(self, item, vnode, px__VNode, isEQ(name, 'text'), modifiers);
-    else if(isEQ(name, 'ref')) $$dir_REF(self,  item, vnode, px__VNode, modifiers);
-    else if(isEQ(name, 'slot')) $$dir_SLOT(self, item, vnode, px__VNode, modifiers);
-    else  if(isEQ(name, 'scoped')) vnode=$$dir_SCOPED(self, item, vnode, px__VNode, modifiers);
-    else  if(isEQ(name, 'fall')) vnode=$$dir_FALL(self, item, vnode, px__VNode, modifiers, modifiers);
-    else if(isEQ(name, 'model')) $$dir_MODEL(self, item, vnode, px__VNode, modifiers);
-    else if(isEQ(name, 'on')) vnode=$$dir_ON(self, attr, vnode, px__VNode, key, modifiers);
+    const callArgs=()=>[self, item, vnode, hx__VNode, modifiers];
+    if(isEQ(name, 'bind')) vnode=$$dir_BIND(self, {key, item}, vnode, hx__VNode, modifiers);
+    else if(isEQ(name, 'html') || isEQ(name, 'text')) $$dir_HTML(self, item, vnode, hx__VNode, isEQ(name, 'text'), modifiers);
+    else if(isEQ(name, 'ref')) $$dir_REF(self,  item, vnode, hx__VNode, modifiers);
+    else if(isEQ(name, 'slot')) $$dir_SLOT(self, item, vnode, hx__VNode, modifiers);
+    else  if(isEQ(name, 'scoped')) vnode=$$dir_SCOPED(self, item, vnode, hx__VNode, modifiers);
+    else  if(isEQ(name, 'fall')) vnode=$$dir_FALL(self, item, vnode, hx__VNode, modifiers, modifiers);
+    else if(isEQ(name, 'model')) $$dir_MODEL(self, item, vnode, hx__VNode, modifiers);
+    else if(isEQ(name, 'on')) vnode=$$dir_ON(self, attr, vnode, hx__VNode, key, modifiers);
     return vnode;
   }
   function get_Model_Event(vnode ){
@@ -1880,7 +1937,7 @@ const Pixel=(function(global){
     }
   }
   function _compileToStaticTemplateScarfold(self, render, recursive=false){
-    render=isString(render) ? _PixelTemplateParser(render, null ) : render;
+    render=isString(render) ? _HexaxTemplateParser(render, null ) : render;
     let response;
     if(isArray(render)){
       const NodeList=[];
@@ -1890,7 +1947,7 @@ const Pixel=(function(global){
       }
       response=()=> _getNodeListResponse(NodeList);
     }else if(isString(render)){
-      response=()=> new PixelTextVNode(null, render);
+      response=()=> new HexaxTextVNode(null, render);
     }else if(isPObject(render)){
       const { type, props, children } = render
       response=()=>createVElement(type, props, children);
@@ -1918,7 +1975,7 @@ const Pixel=(function(global){
       lab.add( 'childrenOrProps' ) ;
     }
     if( !lab.has( 'propsOrChildren' ) && isChildrenNode( propsOrChildren ) ) childrenOrProps = propsOrChildren ;
-    if( validPixelWidget( type ) ) {
+    if( validHexaxWidget( type ) ) {
       type = isPObject( type ) ? new Object( type ) : type ;
       if( props ) define( type , '$attributes' , { value : props , enumerable , writable } ) ;
       childrenOrProps = childrenOrProps && !isArray( childrenOrProps ) ? [ childrenOrProps ] : childrenOrProps ;
@@ -2025,7 +2082,7 @@ const Pixel=(function(global){
       return ()=> el('slot')
     }
   }
-  const BUILT_IN_WIDGETS={ 'px-fragment':Fragment, 'px-build':Build, 'px-transition':Transition, 'px-animation':Animation, 'px-await':Await, 'px-portal':Portal };
+  const BUILT_IN_WIDGETS={ 'hx-fragment':Fragment, 'hx-build':Build, 'hx-transition':Transition, 'hx-animation':Animation, 'hx-await':Await, 'hx-portal':Portal };
   function modelManager(opts,self){
     if(isNull(opts.model)) return;
     const modelData=isBaseWidget(opts) && isPObject(opts.model) ? opts.model : {} ;
@@ -2179,7 +2236,7 @@ const Pixel=(function(global){
       paramsSet=self.model.$params;
       entries(params).forEach(([ind, param])=>{
         if(has$$_bind(ind)){
-          $Debug(`Params validation error "${ind}" passed to widget as a pixel directive binding
+          $Debug(`Params validation error "${ind}" passed to widget as a hexax directive binding
             \n\n
             The "$$" may not be appended or used on a params identifier key name`, 
             self, true);
@@ -2216,7 +2273,7 @@ const Pixel=(function(global){
     if(isFalse(paramsSet)) return;
     GarbagePropsPrefix(self, paramsSet, garbage, props);
     entries(props||{}).forEach(([ind, value])=>{
-      if(!hasOwn(paramsSet||{}, ind) && !isEQ(ind, '@@Events')) {
+      if(!hasOwn(paramsSet||{}, ind) && !isEQ(ind, '[[[@@Events]]]')) {
         define(self.model.$attrs, ind, {value, configurable,enumerable, writable});
       }
     })
@@ -2237,8 +2294,8 @@ const Pixel=(function(global){
     // if(opts.$children) widget.$children=opts.$children;
     return widget;
   }
-  const pixelProps="$attributes,$children";
-  const isPixelProp=prop=>_mapValue(pixelProps, prop);
+  const hexaxProps="$attributes,$children";
+  const isHexaxProp=prop=>_mapValue(hexaxProps, prop);
   function sanitizedOptions(self, options){
     const argcount=len(options);
     if(isTrue(options['<<<!@---initBuild---@>>>'])){
@@ -2246,7 +2303,7 @@ const Pixel=(function(global){
       delete options['<<<!@---initBuild---@>>>']
     } 
     for(const [ key, opt] of entries(options)){
-      if(!isValidWidgetOption(key) && !isPixelProp(key)) self.operands._OPTIONS[key]=opt
+      if(!isValidWidgetOption(key) && !isHexaxProp(key)) self.operands._OPTIONS[key]=opt
       else if(isValidWidgetOption(key) && !_validateType(opt, widgetOptionType[key])){
         $Debug(`${key} option is of an invalid type, \n\n "${key}" option cannot be a ${getType(opt)} type`, self, true);
         return;
@@ -2285,13 +2342,13 @@ const Pixel=(function(global){
   function _styleSheet_hydration(self, styles){
     const selectorPattern = /([^\r\n{]+)\s*{/g;
     return styles.replace(selectorPattern, (match, text)=>{
-      return _hydrateHashToSelector(text, `[data-px_hash_=${self.ownProperties.px_hash_}]`)+'{';
+      return _hydrateHashToSelector(text, `[data-hx_hash_=${self.ownProperties.hx_hash_}]`)+'{';
     });
   }
   function _preCompile_StyleSheet(opts, self, vnode){
     let CssStylesheet=opts.styleSheet ? opts.styleSheet : null;
     if(CssStylesheet){
-      const styleEl=createPixelElement('style', { type:'text/css'}, null);
+      const styleEl=createHexaxElement('style', { type:'text/css'}, null);
       const ModifiedCssStylesheet=_styleSheet_hydration(self, CssStylesheet);
       styleEl.textContent=ModifiedCssStylesheet;
       if(vnode  && !IS_TEXT_NODE(vnode.$element)) vnode.$element.append(styleEl);
@@ -2299,7 +2356,7 @@ const Pixel=(function(global){
     return vnode;
   }
   function assignSlot(self, slot, content, name, assynedSlots){
-    if(content && isPixelVNode(content)){
+    if(content && isHexaxVNode(content)){
       slot.replaceWith(content.$element);
       assynedSlots.add(name);
     }
@@ -2415,22 +2472,22 @@ const Pixel=(function(global){
     this.operands._OBSERVERS.add(new _OBS(prop, isPFunction(prop) ? prop() : get_Object_Value(this.model, name), callback));
   }
   function map_Events_Fall(self, options){
-    if(!options.$attributes || !options.$attributes['@@Events']) return;
-    for(let [ name, value ] of entries(options.$attributes['@@Events'])){
+    if(!options.$attributes || !options.$attributes['[[[@@Events]]]']) return;
+    for(let [ name, value ] of entries(options.$attributes['[[[@@Events]]]'])){
       value=value.callback;
       define(self.model.$attrs, "on"+name, { value , enumerable, configurable })
     }
-    delete options.$attributes['@@Events'];
+    delete options.$attributes['[[[@@Events]]]'];
   }
   function $construct_With_Signals(self, options){
     if(!len(options.signals) && !options.$attributes ) return;
     self.model.$signals=createObj('Signals');
     const signals=new Set(options.signals);
-    const $$events=options?.$attributes ? options.$attributes['@@Events'] : {}
+    const $$events=options?.$attributes ? options.$attributes['[[[@@Events]]]'] : {}
     for(const  [ key, event] of entries( $$events || {})){
       if(signals.has(key)){
         self.model.$signals[key]=new Signal(key, event?.callback || pass, event?.options);
-        delete options.$attributes['@@Events'][key]
+        delete options.$attributes['[[[@@Events]]]'][key]
       }
     }
     (options.signals||[]).forEach((signal)=>{
@@ -2503,8 +2560,8 @@ const Pixel=(function(global){
   }
   function __Generate_Widget_Hash(self){
     let id=_generateUUID(10);
-    const hash=`_px_${id}`;
-    define(self.ownProperties, 'px_hash_', {value:hash, configurable, enumerable});
+    const hash=`_hx_${id}`;
+    define(self.ownProperties, 'hx_hash_', {value:hash, configurable, enumerable});
   }
   function _Data_Hydrations(self, options){
     paramsManager(options, self);
@@ -2618,8 +2675,8 @@ const Pixel=(function(global){
   function createCordinateProps(self, opts){
     self.model=new Model();
     opts=opts || {};
-    self.ownProperties=createObj('ownProperties',{ name:opts?.name || 'UnknownWidget', slot_name:hasProp(opts, '$attributes')  ? opts.$attributes['@@slotName'] : undefined , isInitialBuild:false });
-    if(has_Object_Prop(opts, '$attributes.@@slotName')) delete opts.$attributes['@@slotName'];
+    self.ownProperties=createObj('ownProperties',{ name:opts?.name || 'UnknownWidget', slot_name:hasProp(opts, '$attributes')  ? opts.$attributes['[[[~~slotName~~]]]'] : undefined , isInitialBuild:false });
+    if(has_Object_Prop(opts, '$attributes.[[[~~slotName~~]]]')) delete opts.$attributes['[[[~~slotName~~]]]'];
     self.register=createObj( 'register',{ directives:createObj('directives'), blocks:createObj('blocks'), widgets:createObj('widgets'), handlers:createObj('handlers'), agents:createObj('agents'), properties:createObj('properties')});
     self.operands=createObj('operands',{ _OBSERVERS:new Set(), _LIFECIRCLEHOOKS:createObj('_LIFECIRCLEHOOKS'), _OPTIONS:createObj('_OPTIONS'), garbageWatch:false, initialized:false });
     self.core=createObj('core',{utils:createObj('Utils'), settings:createObj('settings', Global_Settings), slots:createObj('Slots'), map:createObj('map',{ is_hyperscript:false }), activeObserver:null});
@@ -2636,12 +2693,12 @@ const Pixel=(function(global){
     }
   }
   function _induceSlotContents(self, options, setData ){
-    const [ children, patchFlags, FlagPx__VNode ] = setData;
+    const [ children, patchFlags, Flaghx__VNode ] = setData;
     if(!children && !isTrue(options.slots && len(options.slots))) {
       defineFallbackSlotsRef(self, { slots:['default']})
       return;
     }
-    const px__VNode=options.$children?.px__VNode;
+    const hx__VNode=options.$children?.hx__VNode;
     const is_hyperscript= options.build ? true : false;
     let slots= children ;
     const slottErr=(slotName, slotContent)=>{
@@ -2658,9 +2715,9 @@ const Pixel=(function(global){
     const defaultSlotsRecord=new Set();
     for(let slotContent of slots.values()){
       if(isPrimitive(slotContent) && !isNull(slotContent)){
-        slotContent=new PixelTextVNode(self, String(slotContent), px__VNode);
+        slotContent=new HexaxTextVNode(self, String(slotContent), hx__VNode);
         defaultSlotsRecord.add(slotContent);
-      }else if(isPixelVNode(slotContent) || isRender(slotContent)){
+      }else if(isHexaxVNode(slotContent) || isRender(slotContent)){
         const slotName=slotContent.slot_name || 'default';
         if(isRender(slotContent)) slotContent = slotContent( slotContent.$$patchFlags$$ );
         if(isEQ(slotContent.$element.localName,'template')){
@@ -2671,11 +2728,11 @@ const Pixel=(function(global){
         for(let [name, slot] of entries(slotContent.slots)){
           slot = isRender(slot) ? slot(patchFlags) : isPFunction(slot) ? slot() : slot
           if(!isChildrenNode(slot)){
-            $Debug(`Unexpected "${getType(slot)}" data type passed to renderSlots  instance\n at   ... ^ "${name}" slot"\n\nexpecting a pixel valid  DOM instance value`,self, true);
+            $Debug(`Unexpected "${getType(slot)}" data type passed to renderSlots  instance\n at   ... ^ "${name}" slot"\n\nexpecting a hexax valid  DOM instance value`,self, true);
             return;
           }
           slot = isRender(slot) ? slot(patchFlags) : slot ;
-          if(isPrimitive(slot) && !isNull(slot)) slot=returnRender(()=> new PixelTextVNode(self, String(slot), px__VNode)) ;
+          if(isPrimitive(slot) && !isNull(slot)) slot=returnRender(()=> new HexaxTextVNode(self, String(slot), hx__VNode)) ;
           smartSlotMapping(self, slot, name, slottErr, defaultSlotsRecord);
         }
       }
@@ -2688,8 +2745,8 @@ const Pixel=(function(global){
   }
   function defineFallbackSlotsRef(self, options){
     function slotRender(def){
-      // if(isPixelBuild(def)) return null
-      if(def && !isPixelBuild(def) && !isPFunction(def)){
+      // if(isHexaxBuild(def)) return null
+      if(def && !isHexaxBuild(def) && !isPFunction(def)){
         $Debug(`Render functions default slot content requires to be a render function also`, self, true);
         return null;
       }else if(!def) return null;
@@ -2750,18 +2807,19 @@ const Pixel=(function(global){
     }
   }
   function RuntimeRefDir(self, options){
-    const hasRef=options.$attributes && hasProp(options.$attributes, '$$$$dir--ref$$$$');
+    const hasRef=options.$attributes && hasProp(options.$attributes, '[[[$$$$dir--ref$$$$]]]');
     if(!hasRef) return;
-    self.ownProperties['dir--ref']=options.$attributes['$$$$dir--ref$$$$'];
+    self.ownProperties['dir--ref']=options.$attributes['[[[$$$$dir--ref$$$$]]]'];
+    delete options.$attributes['[[[$$$$dir--ref$$$$]]]'];
   }
   function provideWidgetChildren(self, options){
     if(!options.$children) return;
-    const px__VNode= options.$children?.px__VNode;
+    const hx__VNode= options.$children?.hx__VNode;
     const patchFlags = options.$children?.patchFlags;
     const is_hyperscript = patchFlags ? patchFlags.core.map.is_hyperscript : false;
     const childrenRender=options.$children?.NodeList;
     const fallThrough=self?.core?.fallThrough ;
-    let children= !is_hyperscript && isPFunction(childrenRender) ? childrenRender(patchFlags, px__VNode, fallThrough) : childrenRender ;
+    let children= !is_hyperscript && isPFunction(childrenRender) ? childrenRender(patchFlags, hx__VNode, fallThrough) : childrenRender ;
     if( isRender( children ) ) {
       children.$$patchFlags$$ = patchFlags;
       children = children( patchFlags ) ;
@@ -2777,7 +2835,7 @@ const Pixel=(function(global){
       children= arrSet(childrenArr);
     }
     children = children && !isArray( children ) ? [ children ] : children ;
-    return [ children, patchFlags, px__VNode ] ;
+    return [ children, patchFlags, hx__VNode ] ;
   }
   function $fallThroughEngine(self, options){
     if(!options.fallThrough) return;
@@ -2797,24 +2855,26 @@ const Pixel=(function(global){
   }
   function runtimeSlotsFallThrough(self, options){
     $fallThroughEngine(self, options);
-    if(!options.$attributes || isTrue(options.$attributes && !options.$attributes['$$@fallThrough'])) return;
-    const fallThrough=options.$attributes['$$@fallThrough'];
-    delete options.$attributes['$$@fallThrough'];
+    if(!options.$attributes || isTrue(options.$attributes && !options.$attributes['[[[$$@fallThrough]]]'])) return;
+    const fallThrough=options.$attributes['[[[$$@fallThrough]]]'];
+    delete options.$attributes['[[[$$@fallThrough]]]'];
     const prop=fallThrough.prop;
     if(!hasProp(self.core.map, '$$fallThrough')) return;
     const value=self.core.map.$$fallThrough;
     delete self.core.map.$$fallThrough;
+    const hx__VNode= options?.$children?.hx__VNode;
+    const patchFlags = options?.$children?.patchFlags;
     if(isFalse(destructWarn(prop, value, self))) return;
     if(objectDestructureRegex.test(prop) || arrayDestructureRegex.test(prop) ){
       const fallThroughProps = {};
-      _destructure_wizard_compiler(self, value, prop, fallThroughProps )
+      _destructure_wizard_compiler(patchFlags, value, prop, fallThroughProps , hx__VNode)
       self.core.fallThrough=createObj('fallThrough', fallThroughProps);
     }else self.core.fallThrough=createObj('fallThrough', {[prop]:value});
   }
   function defineLateGlobalProps(self, build){
     dataModel.call(self, { $element:build.$element});
   }
-  function _Pixel_Build(options){
+  function _Hexax_Build(options){
     createCordinateProps(this, options);//create useful properties for the widget
     sanitizedOptions(this, options);//sanitize received options
     $ensureLifeCircleHooks(this, options);
@@ -2826,7 +2886,7 @@ const Pixel=(function(global){
       build=_$slotHydrationRenderer(self, options, build);
       build =  _hydrate_$Attributes(options, self, build);
       build=_preCompile_StyleSheet(options, self, build);
-      RuntimeRefDir(self, options);
+      // RuntimeRefDir(self, options);
       defineLateGlobalProps(self, build);
       if(isFalse(self.operands.initialized)) callbackHookWithCatch(self, self.operands._LIFECIRCLEHOOKS.postBuild, 'postBuild');
       return build;
@@ -2858,7 +2918,7 @@ const Pixel=(function(global){
       }catch(err){
         $Debug(`Error during the call of the build function`,self, true, DebugFlags.build);
         $Error(err);
-        return;
+        return false;
       }
       if(!isFunction(res)){
         $Debug(`Error during the procession of the build function\n\nfailed to return a render function when returning the build method\n \n This may conflict with the processing of returnable DOM  nodes`, self, true, DebugFlags.build);
@@ -2868,12 +2928,12 @@ const Pixel=(function(global){
       render= (inst, update)=> returnRender(res(), self);
       self.core.render=render;
     }else if(isString(self.core.build)){
-      render = (inst, update)=> returnRender(()=> _PixelTemplateParser(self.core.build, inst, false));
+      render = (inst, update)=> returnRender(()=> _HexaxTemplateParser(self.core.build, inst, false));
       self.core.render=render;
     }else if(isNull(self.core.build) && selector){
       inDomCaveatRemodeling(self);
       self.core.build=_GenerateRoot(selector, self)?.innerHTML || ''
-      render = (inst, update)=> returnRender(()=> _PixelTemplateParser( self.core.build, inst, false));
+      render = (inst, update)=> returnRender(()=> _HexaxTemplateParser( self.core.build, inst, false));
       self.core.render=render;
     }
     return render(self);
@@ -2914,7 +2974,7 @@ const Pixel=(function(global){
         $Debug(`error mounting widget, target not a valid native element`, self, true);
         return;
       }
-    }else if(isNativeElement(nodeSelector) || nodeSelector.isPixel_Fragment){
+    }else if(isNativeElement(nodeSelector) || nodeSelector.isHexax_Fragment){
       domRoot=nodeSelector;
     }
     return domRoot
@@ -2965,7 +3025,7 @@ const Pixel=(function(global){
   }
   function mount(nodeSelector){
     let domRoot=_GenerateRoot(nodeSelector, this);
-    if(!bool(domRoot.isPixel_Fragment)) define(domRoot, 'NodeList',{value:[], configurable:true, writable:true});
+    if(!bool(domRoot.isHexax_Fragment)) define(domRoot, 'NodeList',{value:[], configurable:true, writable:true});
     if(!domRoot.PATCH_FLAGS) define(domRoot, 'PATCH_FLAGS',{value:new Set(), configurable:true, writable:true});
     prefixManagement(this);
     let initialBuild=get_Init_Build(this, nodeSelector);
@@ -2977,28 +3037,28 @@ const Pixel=(function(global){
     }, this, true);
     domRoot.innerHTML='';
     if(domRoot.IS_PIXEL_MOUNTROOT && IS_ELEMENT_NODE(domRoot)){
-      $Debug(`A Pixel widget has already been mounted on this element, cannot mount more than one Wdget on a single root element`, this, true, "When trying to mount this initialBuild widget to the DOM");
+      $Debug(`A Hexax widget has already been mounted on this element, cannot mount more than one Wdget on a single root element`, this, true, "When trying to mount this initialBuild widget to the DOM");
       return this;
     }
     const MoutRootToken={
       IS_PIXEL_MOUNTROOT:true,
-      __mountRootToken:'px__'+_generateUUID(5),
+      __mountRootToken:'hx__'+_generateUUID(5),
     }
     if(isFalse(this.operands.initialized)) callbackHookWithCatch(this, this.operands._LIFECIRCLEHOOKS.preMount, 'preMount');
     if(isInDom(domRoot) && IS_ELEMENT_NODE(domRoot)) {
       domRoot.innerHTML='';
       domRoot.append(this.build.$element || '');
     }else domRoot=this.build.$element;
-    if(domRoot.isPixel_Fragment && !domRoot.trigger_Effect_Run ) define(domRoot, 'trigger_Effect_Run', {value: Widget_Effect_Trigger.bind(this)});
+    if(domRoot.isHexax_Fragment && !domRoot.trigger_Effect_Run ) define(domRoot, 'trigger_Effect_Run', {value: Widget_Effect_Trigger.bind(this)});
     whenMounted(this, this.build, ()=>{
-      if(isFalse(this.operands.initialized)) callbackHookWithCatch(this, this.operands._LIFECIRCLEHOOKS.postMount, 'postMount');
+      callbackHookWithCatch(this, this.operands._LIFECIRCLEHOOKS.postMount, 'postMount');
     });
     this.hasMountProto=true;
     return this;
   }
   function widget(name, widget){
-    if(!isString(name) || !validPixelWidget(widget)){
-      $Debug(`unrecognised global widget registration for ${name} widget`, this, true);
+    if(!isString(name) || !validHexaxWidget(widget)){
+      $Debug(`unrecognised global widget registration for "${name}" widget`, this, true);
       return this;
     }
     if(isEQ(len(new Set(arguments)),2)){
@@ -3117,7 +3177,7 @@ const Pixel=(function(global){
   function mountedWarning(self, name){
     if(isTrue(self.hasMountProto)){
       if(!self.core.map.mountWarn) {
-        $Debug(`This "mount" method has been called and calling of methods after the widget is mounted is prohibited\n\n call to the ('.${name}') method is considered an invalid pixel syntax`, self, true);
+        $Debug(`This "mount" method has been called and calling of methods after the widget is mounted is prohibited\n\n call to the ('.${name}') method is considered an invalid hexax syntax`, self, true);
         self.core.map.mountWarn=true;
       }
       return false;
@@ -3135,7 +3195,7 @@ const Pixel=(function(global){
         return thisArg;
       }
     })
-    _Pixel_Build.prototype[key]=fn;
+    _Hexax_Build.prototype[key]=fn;
   }
   function openTaskPrefix(self){
     self.core.depsQueue.vibrate();
@@ -3162,7 +3222,7 @@ const Pixel=(function(global){
   }
   function whenMounted(self, build, callback){
     return new Promise((resolve, reject)=>{
-      resolve(isEQ(isPixelVNode(build) ? build.$element.getRootNode() : build.getRootNode(), document))
+      resolve(isEQ(isHexaxVNode(build) ? build.$element.getRootNode() : build.getRootNode(), document))
     }).then((res)=>{
       callback();
     }).catch((err)=>{
@@ -3181,7 +3241,7 @@ const Pixel=(function(global){
       fn=pass;
     }
     return new Promise((resolve, reject)=>{
-      resolve(nextCircleReverse(self, fn , isPixelBuild(this)));
+      resolve(nextCircleReverse(self, fn , isHexaxBuild(this)));
     })
   }
   async function _Reactive_Renderer(data, callback, self, deep=false){
@@ -3212,7 +3272,7 @@ const Pixel=(function(global){
   function _hydrationEjectionTrigger(self, reacteData, selector){
     const { newV, oldV, ref  }= reacteData;
     const observer={ mutated:false, willMutate:false, updated_hooks:new Set() };
-    if(isPixelVNode(self.build)) {
+    if(isHexaxVNode(self.build)) {
       Node_Effect_Track( self , self.build , Render_Template( self , self.core.render , true ) , observer ) ;
       nextCircleReverse( self , () => {
         if( observer.mutated ) callUpdatedHook( self , observer ) ;
@@ -3224,10 +3284,10 @@ const Pixel=(function(global){
     const setElementCollection= arrSet(virtualBuild.NodeList)
     for( const [ ind, node] of arrSet(virtualElement.NodeList).entries()){
        const virtualNode= setElementCollection[ind]
-      if(isPixelVNode(node)){
-        if(isPixelTextVNode(node) && (isTrue(node.render_tracked || is_hyperscript))) RerenderingTextsContents(self, node, virtualNode, observer, virtualElement);
+      if(isHexaxVNode(node)){
+        if(isHexaxTextVNode(node) && (isTrue(node.render_tracked || is_hyperscript))) RerenderingTextsContents(self, node, virtualNode, observer, virtualElement);
         else if(isConditionalVnode(node, 'if') || isConditionalVnode(node, 'else-if') || isConditionalVnode(node, 'else') || isRenderlessVNode(node)) cond_Directive_Rerenderer(self, node, virtualElement, virtualNode, observer);
-        else if(isPixelWidgetVNode(node)) Widget_Effect_Trigger(self, node, virtualElement, observer);
+        else if(isHexaxWidgetVNode(node)) Widget_Effect_Trigger(self, node, virtualElement, observer);
         else if(isTrue(node.isWidgetWrapper)) LoopWrapperRehydration(self, node, virtualElement, virtualNode, observer);
         else Node_Effect_Track( self, node, virtualNode, observer );
       }else if(isCustomElement(node)){
@@ -3243,7 +3303,7 @@ const Pixel=(function(global){
       const shouldUpdateProp=(prop)=>  isFalse(has$$_bind(prop) && prop.startsWith('$$on:') || hasAt_bind(prop) ) && isFalse(hasAsterisks_bind(prop) && isOnListener(prop.slice(1)) || has$$_bind(prop) && prop.startsWith('$$bind:') && isOnListener(prop.slice(7)) ) && !isOnListener(prop);
       for(let [key, prop] of entries(props)){
         if( shouldUpdateProp( key ) ) {
-          AttributeManager( { [key]:prop }, element, self, virtualElement.compiler_options.px__VNode||virtualElement,  true, observer);
+          AttributeManager( { [key]:prop }, element, self, virtualElement.compiler_options.hx__VNode||virtualElement,  true, observer);
           observer.mutated=true;
         }
       }
@@ -3270,12 +3330,46 @@ const Pixel=(function(global){
       linkUpdateHook(self, parent, observer)
     }
   }
-  function cond_Directive_Rerenderer(self, node, vnode, virtualBuild, observer){
-    if(isRenderlessVNode(node)){
-      log(node)
+  function inDOMElementNodesRemover(self, vnode){
+    const getEl=elem=>isHexaxVNode(elem) ? elem.$element : isNativeElement(elem) || IS_DOCUMENT_FRAGMENT_NODE(elem) ? elem : isHexaxBuild(elem) ? elem.build.$element : null;
+    const replace=isArray(vnode);
+    vnode = replace ? vnode[0] : vnode
+    const element = getEl(vnode);
+    const replacer=replace ? vnode[1] : null;
+    const replacerEl=replacer ? getEl(replacer) : null;
+    if(IS_DOCUMENT_FRAGMENT_NODE(element) && isHexaxVNode(vnode)){
+      let index=0;
+      let done=false
+      for(let node of vnode.NodeList.values()){
+        inDOMElementNodesRemover(self, node);
+        index++;
+        vnode.NodeList.delete(node);
+        if(replace && !done){
+          log(element)
+          element['replaceChildren'](replacerEl);
+          if(isHexaxVNode(node)) node.$element=replacerEl;
+          done=true;
+        }
+      }
+    }else if(isNativeElement(element)){
+      if(replace){
+        element.replaceWith(replacerEl);
+        if(isHexaxVNode(vnode)) vnode.$element=replacerEl;
+      }else element.remove();
     }else{
-      log(node)
+      $Debug(`Unexpected in Dom Node removal Input system`, self);
     }
+  }
+  function cond_Directive_Rerenderer(self, node, vnode, virtualBuild, observer){
+    // log(node, virtualBuild, vnode)
+    if(isRenderlessVNode(node)){//add a newly created node and make it render
+      const NewNode=createVElement(...node.compiler_options.parameters());
+      // vnode.$element.append(NewNode.$element.$element)
+      log( NewNode )
+    }else if(isRenderlessVNode(virtualBuild) && !isRenderlessVNode(node)){//remove the old a make it renderless
+      
+    }
+    
   }
   function LoopWrapperRehydration( self, node, vnode, virtualBuild, observer){
     const  { orgType, ref, src }=node.compiler_options;
@@ -3320,12 +3414,12 @@ const Pixel=(function(global){
         let addedNode;
         if(is_hyperscript) addedNode=atom;
         else{
-          let { type, props, children,is_hyperscript, px__VNode, alias  }=node.compiler_options.args;
+          let { type, props, children,is_hyperscript, hx__VNode, alias  }=node.compiler_options.args;
           let { valRef, keyName }=alias;
           let  ctx={}
           if(valRef) ctx[valRef]=atom;
           if(keyName) ctx[keyName]=key;
-          if(px__VNode.LabContext) ctx=assign(px__VNode.LabContext, ctx);
+          if(hx__VNode.LabContext) ctx=assign(hx__VNode.LabContext, ctx);
           addedNode=node.compiler_options.Node(type, props, children, self, is_hyperscript, ctx, node.NodeList);
           addedNode.LabContext=ctx;
           addedNode.compiler_options.index=len(src)+key;
@@ -3337,7 +3431,7 @@ const Pixel=(function(global){
     }
     if(len(garbage)){
       for(let atom of garbage.values()){
-        atom.$element.remove();
+        inDOMElementNodesRemover(self, atom);
         node.NodeList.delete(atom);
         observer.mutated=true;
       }
@@ -3363,44 +3457,44 @@ const Pixel=(function(global){
       define(react, '$data',{ value, enumerable, configurable, writable});
       return _Proxy_Setup({}, react, true);
   }
-  function _initiateChildNodes(self, children,  px__VNode, element){
-    const is_hyperscript=px__VNode?.is_hyperscript;
-    children=isRender(children) ? children(self, px__VNode) : children;
+  function _initiateChildNodes(self, children,  hx__VNode, element){
+    const is_hyperscript=hx__VNode?.is_hyperscript;
+    children=isRender(children) ? children(self, hx__VNode) : children;
     if(isChildrenNode(children)){
       if(isPrimitive(children) && !isNull(children)){
-        const node=new PixelTextVNode(self, String(children), px__VNode);
-        node.compiler_options=assign(node.compiler_options,{ type:'text', value:()=>String(children), px__VNode });
-        if(isTrue(node.render_tracked)) px__VNode.render_tracked=true;
-        if(len(node.PATCH_FLAGS)) px__VNode.PATCH_FLAGS.add('ELEMENT_CHILDREN');
+        const node=new HexaxTextVNode(self, String(children), hx__VNode);
+        node.compiler_options=assign(node.compiler_options,{ type:'text', value:()=>String(children), hx__VNode });
+        if(isTrue(node.render_tracked)) hx__VNode.render_tracked=true;
+        if(len(node.PATCH_FLAGS)) hx__VNode.PATCH_FLAGS.add('ELEMENT_CHILDREN');
         element.append(node.$element);
-        if(px__VNode) px__VNode.NodeList.add(node);
+        if(hx__VNode) hx__VNode.NodeList.add(node);
       }else if(isArray(children)){
         for(const child of children.values()){
-          element=_initiateChildNodes(self, child, px__VNode,  element)
+          element=_initiateChildNodes(self, child, hx__VNode,  element)
         }
-      }else if(isPixelVNode(children) ){
+      }else if(isHexaxVNode(children) ){
         element.append(children.$element);
-        px__VNode.NodeList.add(children);
+        hx__VNode.NodeList.add(children);
       }else if(isCustomElement(children)){
         element.append(children);
-        px__VNode.NodeList.add(children);
+        hx__VNode.NodeList.add(children);
       }
     }
     return element;
   }
-  function widgetBindingReceiver(self, key, param, widget, px__VNode, modifiers){
-    let item=_$runModelBind(self, param, px__VNode)
+  function widgetBindingReceiver(self, key, param, widget, hx__VNode, modifiers){
+    let item=_$runModelBind(self, param, hx__VNode)
     if(isUndefined(item)) item='';
     if( !key && !isPObject(item)){
       $Debug(`Trying  to bind directly to instance.\nstatus : failed,\nreason : value not an object`, self, true);
       return;
     }else if(!key && isPObject(item)){
-      consume_Widget_Props(self, widget, {props:item}, px__VNode);
+      consume_Widget_Props(self, widget, {props:item}, hx__VNode);
     }else if(key){
-      consume_Widget_Props(self,widget, {props:{[key]:item}, px__VNode})
+      consume_Widget_Props(self,widget, {props:{[key]:item}, hx__VNode})
     }
   }
-  class pixelSignal{
+  class hexaxSignal{
     constructor(signal, func, options){
       this.signal=signal
       this.callback=func
@@ -3410,7 +3504,7 @@ const Pixel=(function(global){
     callback=undefined
     options=undefined
   }
-  function Widget_Directive_Handler(self, widget, props, px__VNode, modifiers){
+  function Widget_Directive_Handler(self, widget, props, hx__VNode, modifiers, metrics){
     let name=Object.keys(props)[0];
     let key=directive_sep(name);
     let param=props[name] || "";
@@ -3418,40 +3512,40 @@ const Pixel=(function(global){
     name=directive_sep(name)[0].slice(2);
     key.shift();
     key= isGT(len(key), 1) ? key.join(':') : key[0];
-    if(isEQ(name,'bind')) $$dir_BIND(self, { key, item:param }, widget, px__VNode, modifiers);
-    else if(isEQ(name, 'on')) $$dir_ON(self, param, widget, px__VNode, key, modifiers);
-    else if(isEQ(name, 'slot')) $$dir_SLOT(self, param, widget, px__VNode, modifiers);
-    else if(isEQ(name, 'ref')) $$dir_REF(self, param, widget, px__VNode, modifiers);
+    if(isEQ(name,'bind')) $$dir_BIND(self, { key, item:param }, widget, hx__VNode, modifiers);
+    else if(isEQ(name, 'on')) $$dir_ON(self, param, widget, hx__VNode, key, modifiers);
+    else if(isEQ(name, 'slot')) $$dir_SLOT(self, param, widget, hx__VNode, modifiers);
+    else if(isEQ(name, 'ref')) $$dir_REF(self, param, widget, hx__VNode, modifiers, metrics);
     else if(isEQ(name, 'model')) pass;
-    else if(isEQ(name, 'html') || isEQ(name, 'text')) $$dir_HTML(self, param, widget, px__VNode, isEQ(name, 'text'), modifiers);
+    else if(isEQ(name, 'html') || isEQ(name, 'text')) $$dir_HTML(self, param, widget, hx__VNode, isEQ(name, 'text'), modifiers);
     else if(isEQ(name, 'raw')) pass;
-    else if(isEQ(name, 'fall')) $$dir_FALL(self, param, widget, px__VNode, modifiers);
-    else if(isPixelDirective(name)) pass;
+    else if(isEQ(name, 'fall')) $$dir_FALL(self, param, widget, hx__VNode, modifiers);
+    else if(isHexaxDirective(name)) pass;
   }
-  function ResolveWidget(self, px__VNode, value, ){
+  function ResolveWidget(self, hx__VNode, value, ){
     if( !instance_Has_Widget( self , value.type ) ){
-      $Debug(`Template Compilation Error::\n\nUnresolved tagname "${value.type}"\n\n   ...if this is a pixel widget, make sure its registered through the "widgets" option or resolved through the custom nodemake resolver`,self, true);
+      $Debug(`Template Compilation Error::\n\nUnresolved tagname "${value.type}"\n\n   ...if this is a hexax widget, make sure its registered through the "widgets" option or resolved through the custom nodemake resolver`,self, true);
       return false;
     }
     const widget=normalize_Widget(self, value.type);
     if(!widget.name) widget.name=value.type;
     if(value.props) {
       widget.$attributes=createObj('$attributes');
-      consume_Widget_Props(self, widget, value, px__VNode);
+      consume_Widget_Props(self, widget, value, hx__VNode);
     }
-    return $compilerEngine(self, widget, value, px__VNode);//this sets the widget flags, passed the widget to _Pixel_Build, sets global widgets from  its parents if any, installs all BUILT_IN_WIDGETs, mounts the wodget to a fragment and return the domRoot'
+    return $compilerEngine(self, widget, value, hx__VNode);//this sets the widget flags, passed the widget to _Hexax_Build, sets global widgets from  its parents if any, installs all BUILT_IN_WIDGETs, mounts the wodget to a fragment and return the domRoot'
   }
-  function $compilerEngine ( self , widget , value , px__VNode ) {
+  function $compilerEngine ( self , widget , value , hx__VNode ) {
     if( widget.$attributes ) value.$attributes = assign( value.$attributes || {} , widget.$attributes || {} ) ;
     widget = defineWidget( widget ) ; 
-    widget = set_Widget_Flag( self , widget , value , px__VNode ) ;//setting the widget flag
+    widget = set_Widget_Flag( self , widget , value , hx__VNode ) ;//setting the widget flag
     if( !widget.$attributes && value.$attributes ) widget.$attributes = value.$attributes ;
-    let child = new _Pixel_Build( widget ) ;
+    let child = new _Hexax_Build( widget ) ;
     if( self ) {
       child = genericHydration( self , child ) ;
       child = child.install( genericGlobalPlugin , { self }) ;//build the widget and other installations
     }
-    child = child.mount( _createFragment() ) ;//mounts the build to a pixel fragment
+    child = child.mount( _createFragment() ) ;//mounts the build to a hexax fragment
     return child ;
   }
   function genericHydration(self, build){
@@ -3474,39 +3568,39 @@ const Pixel=(function(global){
       })
     }
   }
-  function set_Widget_Flag(self, widget, val, px__VNode){
+  function set_Widget_Flag(self, widget, val, hx__VNode){
     if(!val.$children) return widget;
-    widget.$children={ NodeList:val.$children, patchFlags:self, px__VNode };
+    widget.$children={ NodeList:val.$children, patchFlags:self, hx__VNode };
     return widget;
   }
-  function consume_Widget_Props(self, widget, value , px__VNode, isRerender=false){
+  function consume_Widget_Props(self, widget, value , hx__VNode, isRerender=false){
     entries(value.props).forEach(([ind, param])=>{
-      let name=__Attr_Name_Resolver(self, ind, px__VNode);
+      let name=__Attr_Name_Resolver(self, ind, hx__VNode);
       if(hasAsterisks_bind(name)) name='$$bind:'+name.slice(1);
       else if(hasAt_bind(name)) name='$$on:'+name.slice(1);
       if(has$$_bind(name)){
         let modifiers=name.split('|');
         name=modifiers.shift();
         modifiers = new Set(modifiers);
-        if( isPixelDirective(directive_sep(name)[0].slice(2))) Widget_Directive_Handler(self, widget, {[name]:param}, px__VNode, modifiers);
-        else _With_Custom_Directives(self,{key:name,  attr:param}, widget, px__VNode, modifiers);
+        if( isHexaxDirective(directive_sep(name)[0].slice(2))) Widget_Directive_Handler(self, widget, {[name]:param}, hx__VNode, modifiers, [value.props, ind]);
+        else _With_Custom_Directives(self,{key:name,  attr:param}, widget, hx__VNode, modifiers);
       }else if(hasSpread_bind(ind)) Manage_Widget_Spread(self, widget, name)
       else widget.$attributes[name]=param;
     });
     if(isTrue(isRerender)) return widget.$attributes
   }
-  function Manage_Widget_Spread(self, widget, props, px__VNode){
-    props=isString(props) ? _$runModelBind(self, props.slice(3), px__VNode) : props;
-    consume_Widget_Props(self, widget, { props }, px__VNode);
+  function Manage_Widget_Spread(self, widget, props, hx__VNode){
+    props=isString(props) ? _$runModelBind(self, props.slice(3), hx__VNode) : props;
+    consume_Widget_Props(self, widget, { props }, hx__VNode);
   }
   function _createFragment(){
     const fragment=new DocumentFragment();
-    define(fragment, 'isPixel_Fragment',{value:true});
+    define(fragment, 'isHexax_Fragment',{value:true});
     define(fragment, 'NodeList',{value:[], configurable:true, writable:true});
     define(fragment, 'PATCH_FLAGS',{value:new Set(), configurable:true, writable:true});
     return fragment;
   }
-  const devInfo='You are using the development version of pixel '+get_version().slice(6)+', make sure you switched to the minified build version when deploying to production with the (*.min.js) file extension';//development information
+  const devInfo='You are using the development version of hexax '+get_version().slice(6)+', make sure you switched to the minified build version when deploying to production with the (*.min.js) file extension';//development information
   class _Resolver{
     name=undefined
   }
@@ -3558,7 +3652,7 @@ const Pixel=(function(global){
         }else dirSet.add(directive);
       }
       if(len(dirSet)){
-        define(props, '$$@@dir$$--render',{value:dirSet, enumerable, configurable});
+        define(props, '[[[$$@@dir$$--render]]]',{value:dirSet, enumerable, configurable});
       }
     }
     return props;
@@ -3570,12 +3664,37 @@ const Pixel=(function(global){
       .replace(/\\/g, '&#39;');  
     return str;
   }
+  function negotiateRawDirective(self, attributes, node){
+   const { hasRaw, getRaw, getKey } = RawDirCheck(attributes);
+    if(isTrue(hasRaw) ) define(attributes, '[[[$$rawChildrenData$$]]]',{value:_escapeDecoder(node.innerHTML), enumerable, configurable});
+  }
+  function specializedProductionProcessor(self, attributes, node, metrics){
+    const [ hx__VNode, NodeList , tagName, fall ]=metrics;
+    let Vnode;
+    if(self){
+      negotiateRawDirective(self, attributes, node);
+      const children=function render(self, hx__VNode){
+        return IS_VALID_TAGNAME(tagName) ? _HexaxTemplateParser(node.innerHTML, self, true, hx__VNode) : node.innerHTML;
+      }
+      let props=()=>len(attributes) ? attributes : null;
+      const Node=()=> createVElement(tagName, props(), children, self, false, hx__VNode?.LabContext, arrSet(NodeList), fall);
+      Vnode=Node();
+      Vnode.compiler_options=assign(Vnode.compiler_options, {
+        props, children, type:tagName, hx__VNode, Node
+      });
+    }else{
+      const children=node.innerHTML.trim() ? _HexaxTemplateParser(node.innerHTML, null, true) : null;
+      Vnode={
+        type:tagName, props:len(attributes) ? attributes : null, children
+      }
+    }
+      NodeList.add(Vnode)
+  }
   const openingTagsRegex = /<([\w\-\$:.]+)(\s+[^>]*?(?:(?:[\w]+[!@#$%^&*()+\-\[\]{};:\\|,.<\/?]*)|(?:'[^']*')|(?:"[^"]*")))*\s*(\/)?>/g;
-  const openingTagAttrRegex=/^<[\w\-\$:.]+(.*?)?[\/]?>\s*$/;
-  const closingTagsRegex=/<[\/]([\w$]+)[ ]*>/g;
+  const openingTagAttrRegex=/^<[\w\-\$:.]+([\s\S]*)?[\/]?>\s*$/m;
+  const closingTagsRegex=/<[\/]([\w$.:\-]+)[ ]*>/g;
   const attrRegex=/([^=\s]*)\s*?=\s*?(?:(["'])(.*?)\2|([^"'\s>]+))/;
   const attributesRegex = /([^=\s]+)\s*=\s*(?:(["'])(.*?)\2|([^"'\s>]+))?|(\S+)(?:\s*=\s*(?:(["'])(.*?)\6|(\S+)))?/g;
-  const rawDirRegex=/\$\$raw[\w|$]*$/;
   function RunMustacheExcape(self, html){
     const [ open, close ]= self.core.settings.delimiters;
     const pattern=new RegExp(`${open}(.*?)${close}`, 'g');
@@ -3586,98 +3705,59 @@ const Pixel=(function(global){
   function openingTagsHydration( self , html ){
     return html.replace( openingTagsRegex , ( match , tag ,  union , closedTag ) => {
       let props = match.trim().match( openingTagAttrRegex )[ 1 ] ;
-      if( hasUpperCase( tag )) {
-        const nodeSpace = `$px-nodespace=${ tag }` ;
-        props =! isNull( props ) ? `${ props } ${ nodeSpace }` : nodeSpace ;
-      }else if( IsDomparserTag( tag )) tag = `px$$--${ tag }-$px` ;
+      let nodeSpace={ tagName:tag, props:{} }
+      if( IsDomparserTag( tag )) tag = `hx$$--${ tag }-$hx` ;
       if( props ) {
         props = props.replace( attributesRegex , ( mch , attr , sip , val , fall ) => {
           val = val || fall || null ;
           attr = isNull( attr || sip || val || fall ) ? mch.trim() : attr.trim() ;
           attr= isEmptyStr( attr ) ? null : attr ;
-          if( attr && attr.startsWith( '$px-$' ) || attr && attr.endsWith( '-$px' )) {
-            $Debug( "Indecent attribute name\nShould not start with '$px-$' or end with '-$px'\n\nThis are pixel system based template formating system" , self , true , "During Template Compilation" ) ;
+          if(attr && val && /[\w\$]+/.test( attr ) ) {
+            if(!isEQ(attr.trim(), '[[[$$$hexaxpack$$$]]]')) nodeSpace.props[attr]=val;
+            else nodeSpace=JSON.parse(_escapeReverseDecoder(val))
+          }else if(attr && !val && /[\w\$]+/.test( attr ) ) {
+            if(!isEQ(attr.trim(), '[[[$$$hexaxpack$$$]]]')) nodeSpace.props[attr]=""
           }
-          if( attr && hasUpperCase( attr )) attr = `${ attr }-$px` ;
-          return attr && val && /[\w\$]+/.test( attr ) ? `${ attr }="${ val }"` : attr && !val && /[\w\$]+/.test( attr ) ? `${ attr }=""` : '' ;
         })
-        let attrsMatch = props.match( attributesRegex ) ;
-        for ( let attr of attrsMatch || [] ) {
-          const attrMatch = attr.match( attrRegex ) ;
-          const attrName =attrMatch ? attrMatch[ 1 ] : null ;
-          if( attrName && hasUpperCase( attrName )) {
-            const fallbackAttr = `$px-${ attrName.toLowerCase() }=${ attrName }` ;
-            props = `${ props || '' } ${ fallbackAttr }` ;
-          }
-        }
       }
-      return `<${ tag } ${ props || '' } ${ closedTag && !IS_HTML_VOID_TAG( tag ) ? '></' + tag + '>' : '>' }` ;
+      nodeSpace=`[[[$$$hexaxpack$$$]]]="${_escapeDecoder(JSON.stringify(nodeSpace))}"`
+      return `<${ tag } ${nodeSpace} ${ closedTag && !IS_HTML_VOID_TAG( tag ) ? '></' + tag + '>' : '>' }` ;
     });
   }
-  function _PixelTemplateParser(html, self, parent, px__VNode, fall){
+  function _HexaxTemplateParser(html, self, parent, hx__VNode, fall){
     if(!html) return null;
-    if(self && isPixelBuild(self)) html=RunMustacheExcape(self, html);
-    html=openingTagsHydration( self , html).replace(closingTagsRegex, (match, tag)=> IsDomparserTag(tag) ? `</px$$--${tag}-$px>` : `</${tag}>` );
+    if(self && isHexaxBuild(self)) html=RunMustacheExcape(self, html);
+    html=openingTagsHydration( self , html).replace(closingTagsRegex, (match, tag)=> IsDomparserTag(tag) ? `</hx$$--${tag}-$hx>` : `</${tag}>` );
     const parser=new DOMParser().parseFromString(html,'text/html').body;
     const NodeList=new Set();
     for (let node of parser.childNodes){
       if(node ){
         if(IS_TEXT_NODE(node)){
           if(node.textContent.trim()){
-            if(fall) px__VNode.LabContext=assign(px__VNode.LabContext || {} , fall );
+            if(fall) hx__VNode.LabContext=assign(hx__VNode.LabContext || {} , fall );
             const value=node.textContent;
-            node=self ? new PixelTextVNode(self, value,  px__VNode) : value;
-            if(isPixelTextVNode(node)) node.compiler_options=assign(node.compiler_options,{ type:'text', value, px__VNode });
+            node=self ? new HexaxTextVNode(self, value,  hx__VNode) : value;
+            if(isHexaxTextVNode(node)) node.compiler_options=assign(node.compiler_options,{ type:'text', value, hx__VNode });
             NodeList.add(node);
           }
         }else if(IS_COMMENT_NODE(node))/*Ignore comment nodes*/pass;
         else if(IS_ELEMENT_NODE(node)){
-          const hashedTagged=tag=>(tag.startsWith('px$$--') && tag.endsWith('-$px'));
-          let tagName=hashedTagged(node.localName) ? node.localName.slice(6,-4) : node.localName;
-          const attributes={};
-          for (const attribute of entries(node.attributes)){
-            const { name, value }=attribute[1];
-            if(!name.startsWith('$px')) attributes[name]=value;
-            else if(isEQ(name,'$px-nodespace')) {
-              tagName=value;
-              node.removeAttribute('$px-nodespace');
-            }else if( name.startsWith('$px-') && name.endsWith('-$px')){
-              const attrN=name.slice(4);
-              if(hasOwn(attributes, attrN)){
-                attributes[value.slice(0,value.length-4)]=attributes[attrN];
-                delete attributes[attrN];
-              }
-            }
+          let nodeSpace=node.getAttribute('[[[$$$hexaxpack$$$]]]')
+          nodeSpace=JSON.parse(nodeSpace);
+          node.removeAttribute('[[[$$$hexaxpack$$$]]]');
+          let tagName=nodeSpace.tagName;
+          const attributes=nodeSpace.props;
+          specializedProductionProcessor(self, attributes, node, [ hx__VNode, NodeList, tagName, fall ]);
           }
-          let Vnode;
-          if(self){
-            if(hasOwn(attributes||{}, '$$raw')) define(attributes, '$$rawChildrenData$$',{value:_escapeDecoder(node.innerHTML), enumerable, configurable});
-            const children=function render(self, px__VNode){
-              return IS_VALID_TAGNAME(tagName) ? _PixelTemplateParser(node.innerHTML, self, true, px__VNode) : node.innerHTML;
-            }
-            let props=()=>len(attributes) ? attributes : null;
-            const Node=()=> createVElement(tagName, props(), children, self, false, px__VNode?.LabContext, arrSet(NodeList), fall);
-            Vnode=Node();
-            Vnode.compiler_options=assign(Vnode.compiler_options, {
-              props, children, type:tagName, px__VNode, Node
-            });
-          }else{
-            const children=node.innerHTML.trim() ? _PixelTemplateParser(node.innerHTML, null, true) : null;
-            Vnode={
-              type:tagName, props:len(attributes) ? attributes : null, children
-            }
-          }
-          NodeList.add(Vnode)
-        }
       }
     }
     if(self) return _getNodeListResponse(arrSet(NodeList), parent);
-    else return isGT(len(NodeList),1) ? NodeList : isEQ(len(NodeList),1) ? NodeList[0] : null ;
+    else return isGT(len(NodeList),1) ? arrSet(NodeList) : isEQ(len(NodeList),1) ? arrSet(NodeList).shift() : null ;
   }
   function _getNodeListResponse(NodeList, parent=false){
     NodeList=isSet(NodeList) ? arrSet(NodeList) : NodeList;
     if(isTrue(parent) && len(NodeList)) return isGT(len(NodeList),1) ? NodeList : NodeList[0];
-    else if(len(NodeList)) return isGT(len(NodeList),1) ?  new PixelFragmentVNode(parent, NodeList) : NodeList[0] ;
+    else if(len(NodeList)) return isGT(len(NodeList),1) ?  new HexaxFragmentVNode(parent, NodeList) : NodeList[0] ;
     else return null ;
   }
   function html( strings, ...values){
@@ -3688,7 +3768,7 @@ const Pixel=(function(global){
     if(!isString(html)){
       $Debug(`html parser helper expects strings values`);  return null;
     }
-    return _PixelTemplateParser( html, null);
+    return _HexaxTemplateParser( html, null);
   };
   function markdown(mkd){
     if(!isString(mkd)){
@@ -3736,10 +3816,10 @@ const Pixel=(function(global){
         if(isEQ('onAttrChanged',ind)) define(Hooks, 'attributeChangedCallback',{value, configurable});
       } 
     })
-    pixelCustomNativeElement.prototype.disConnectedCallback=Hooks.disConnectedCallback || pass;
-    pixelCustomNativeElement.prototype.adoptedCallback=Hooks.adoptedCallback || pass;
-      pixelCustomNativeElement.prototype.attributeChangedCallback=Hooks.attributeChangedCallback || pass;
-    pixelCustomNativeElement.prototype.connectedCallback=connectedCallback;
+    hexaxCustomNativeElement.prototype.disConnectedCallback=Hooks.disConnectedCallback || pass;
+    hexaxCustomNativeElement.prototype.adoptedCallback=Hooks.adoptedCallback || pass;
+      hexaxCustomNativeElement.prototype.attributeChangedCallback=Hooks.attributeChangedCallback || pass;
+    hexaxCustomNativeElement.prototype.connectedCallback=connectedCallback;
     function connectedCallback(){
       const props=new Object();
       if(len(entries(this.attributes))){
@@ -3756,7 +3836,7 @@ const Pixel=(function(global){
       user_defined_callback.call(this, ...arguments);
     }
     function render(){
-      return pixelCustomNativeElement;
+      return hexaxCustomNativeElement;
     }
     render.define=function define(name, inherit){
       if(!isString(name) || isEmptyStr(name) || IS_VALID_TAGNAME(name)){
@@ -3768,7 +3848,7 @@ const Pixel=(function(global){
         $Debug(`CustomElement registration failed`);
         return;
       }
-      customElements.define(name, pixelCustomNativeElement, inherit ? { extends:inherit} : {})
+      customElements.define(name, hexaxCustomNativeElement, inherit ? { extends:inherit} : {})
     }
     return render;
   }
@@ -3813,7 +3893,7 @@ const Pixel=(function(global){
       
     }
     plugin=function plugin(build, options){
-      build.widget('px-anchor', Anchor)
+      build.widget('hx-anchor', Anchor)
       const router=createObj('Router')
       dataModel.call(build, { $router:router } )
     }
@@ -3821,7 +3901,7 @@ const Pixel=(function(global){
   }
   const validRouterOptions="as,widget,path";
   const isRouteOpt=key=>_mapValue(validRouterOptions, key);
-  class RoutePath{
+  class URLRouterPath{
     constructor(path, widget, as){
       this.path=path
       this.widget=widget
@@ -3831,18 +3911,18 @@ const Pixel=(function(global){
       
     }
   }
-  const isRoutePath=route=>route instanceof RoutePath
+  const isURLRouterPath=route=>route instanceof URLRouterPath
   function path(path, widget, as){
     if(!isString(path)){
       $Debug(`parameter 1 received at path is not a string valid path`)
     }else if(!path.includes('/')){
       $Debug(`"${path}" is invalid\n\nMissing "/" decorator`)
-    }else if(!validPixelWidget(widget) && !isPromise(widget)){
-      $Debug(`parameter 2 of path macro expects a valid Pixel Widget or an asynchronous Promise instance`)
+    }else if(!validHexaxWidget(widget) && !isPromise(widget)){
+      $Debug(`parameter 2 of path macro expects a valid Hexax Widget or an asynchronous Promise instance`)
     }else if(as && !isString(as)){
       $Debug(`parameter 3 "as" alias expects a string value`);
     }
-    return new RoutePath(...arguments);
+    return new URLRouterPath(...arguments);
   }
   function buildRouter(routes){
     if(!isArray(routes)){
@@ -3850,8 +3930,8 @@ const Pixel=(function(global){
       return pass
     }
     for (const [ ind,  path] of routes.entries()){
-      if(!isRoutePath(path)){
-        $Debug(`Path arguments values  must be passed to the "Pixel.path" routing macro\n\nAt the route index ${ind+1}`);
+      if(!isURLRouterPath(path)){
+        $Debug(`Path arguments values  must be passed to the "Hexax.path" routing macro\n\nAt the route index ${ind+1}`);
         return pass
       }
       
@@ -3869,7 +3949,7 @@ const Pixel=(function(global){
     return await opts;
   }
   function defineWidget(opts, options){
-    if(!validPixelWidget(opts)){
+    if(!validHexaxWidget(opts)){
       $Debug(`Value Error\n\n invalid value for the defineWidget macro\n/... at /././. at`);
       return;
     }else if(isGT(arguments.length, 2)){
@@ -3886,14 +3966,14 @@ const Pixel=(function(global){
       }else if(isClass(opts)) widget=new opts();
       if(options) {
         for( const [ key, value ] of entries(options)){
-          if(!hasProp(widget, key ) && !isPixelProp(key)) widget[key]=value;
+          if(!hasProp(widget, key ) && !isHexaxProp(key)) widget[key]=value;
         }
       }
       return widget;
     }
   }
   function processPIXELFile(Source) {
-    const body=createPixelElement('body');
+    const body=createHexaxElement('body');
     body.innerHTML=Source
     const script=body.querySelector('script');
     const template=body.querySelector('template');
@@ -3917,7 +3997,7 @@ const Pixel=(function(global){
         data = xhr.responseText;
         callback(data);
       } else if (xhr.readyState === 4 && xhr.status !== 200) {
-        $Debug('Error loading/importing pixel widget file');
+        $Debug('Error loading/importing hexax widget file');
       }
     };
     xhr.send();
@@ -3934,8 +4014,8 @@ const Pixel=(function(global){
     let value=await doFetch(URL)
   }
   function initBuild(options, props, children){
-    if(!validPixelWidget(options)){
-      $Debug(`initBuild Error\n\nCannot compile value as a Pixel widget\nMaybe an invalid pixel widget value`);
+    if(!validHexaxWidget(options)){
+      $Debug(`initBuild Error\n\nCannot compile value as a Hexax widget\nMaybe an invalid hexax widget value`);
       return ;
     }
     let [ widget ] = propsAndChildrenGetter( ...arguments );
@@ -3943,7 +4023,7 @@ const Pixel=(function(global){
     
     widget['<<<!@---initBuild---@>>>']=true;
     if(widget.$children) widget.$children={ NodeList:widget.$children };
-    return new _Pixel_Build( widget );
+    return new _Hexax_Build( widget );
   }
   function initSSRBuild(options, props, children){
     return initBuild( ...arguments )
@@ -3968,7 +4048,7 @@ const Pixel=(function(global){
         $Debug(`Element props property expects an object value\n\nUnexpected "${getType(opt)}" value`);
         return;
       }else if(isEQ(name, 'children') && opt && !isChildrenNode(opt)){
-        $Debug(`Element children property expects a valid pixel child node instance value\n\nUnexpected "${getType(opt)}" value`);
+        $Debug(`Element children property expects a valid hexax child node instance value\n\nUnexpected "${getType(opt)}" value`);
         return;
       }
     }
@@ -4011,7 +4091,7 @@ const Pixel=(function(global){
       resolve(xhr.response)
     })
   }
-  class _PixelHttpRequestModule{
+  class _HexaxHttpRequestModule{
     post=function post(url,options){
       return new Req__init__(url,'POST',options)
     }
@@ -4046,13 +4126,13 @@ const Pixel=(function(global){
   function Request(urlOrOpts, methodOrOptions,options){
     return new Req__init__(...arguments)
   }
-  for(const [name, callback] of entries(Object.create(new _PixelHttpRequestModule()))) Request[name]=callback;
+  for(const [name, callback] of entries(Object.create(new _HexaxHttpRequestModule()))) Request[name]=callback;
   function resolveHooks(xhr, opts){
   
   }
   _$compiler_engine_hydrator();
 
-  global._PixelHttpRequestModule=_PixelHttpRequestModule;
+  global._HexaxHttpRequestModule=_HexaxHttpRequestModule;
   global._styleSheet_hydration=_styleSheet_hydration;
   global._compileToStaticTemplateScarfold=_compileToStaticTemplateScarfold;
   global.scarfold=scarfold;
@@ -4063,7 +4143,8 @@ const Pixel=(function(global){
   global._Evaluate_THIS=_Evaluate_THIS;
   global.None=None;
   global.renderSlots=renderSlots;
-  global.pixelCompilerConfig=pixelCompilerConfig;
+  global._escapeReverseDecoder=_escapeReverseDecoder;
+  global.hexaxCompilerConfig=hexaxCompilerConfig;
   global._mapValue=_mapValue;
   global.initBuild=initBuild;
   global.withModifiers=withModifiers;
@@ -4097,10 +4178,10 @@ const Pixel=(function(global){
   global.withDirectives=withDirectives;
   global.traverse=traverse;
   global.buffer=buffer;
-  global.createPixelElement=createPixelElement;
+  global.createHexaxElement=createHexaxElement;
   global.Widget=Widget;
   global.len=len;
-  global._PixelTemplateParser=_PixelTemplateParser;
+  global._HexaxTemplateParser=_HexaxTemplateParser;
   global._EvalWith=_EvalWith;
   global._Proxy_Setup=_Proxy_Setup;
   global.data=data;
@@ -4121,6 +4202,7 @@ const Pixel=(function(global){
   global.Fragment=Fragment;
   global._GenerateRoot=_GenerateRoot;
   global.withFallThrough=withFallThrough;
+  global.useAgent=useAgent;
   console.info(devInfo);//dev
   return global;
 })(({}));
