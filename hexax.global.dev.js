@@ -80,7 +80,9 @@ const Hexax=(function(global){
   }
   const isArgument=arg=>isEQ(_toStringCall(arg), "[object Arguments]");
   const isTuple=tp=>tp instanceof Tuple;
-  const len=obj=> isArray(obj) || isArgument(obj) ? obj.length : isSet(obj) || isTuple(obj) || isMap(obj) ? obj.size : isPObject(obj) ? Object.keys(obj).length : isString(obj) ? obj.length : isNumber(obj) ? obj : -1 ;
+  function len(obj){
+    return isArray(obj) || isArgument(obj) ? obj.length : isRef(obj) ? len(unWrapRef(obj))  : isSet(obj) || isTuple(obj) || isMap(obj) ? obj.size : isPObject(obj) ? Object.keys(obj).length : isString(obj) ? obj.length : isNumber(obj) ? obj : -1 ;
+  }
   const isValidWidgetOption=opts=>_mapValue(validWidgetOptions, opts);//checks if an option is a vslid Hexax widget option
   const HTML_TAGS="html,head,style,title,body,address,article,aside,footer,header,h1,h2,h3,h4,h5,h6,main,nav,section,blockquote,dd,div,dl,dt,figcaption,figure,li,menu,ol,p,pre,ul,a,abbr,b,bdi,bdo,cite,code,data,dfn,em,i,kbd,mark,q,rp,rt,ruby,s,samp,small,span,strong,sub,sup,time,u,var,audio,map,video,iframe,object,picture,portal,svg,math,canvas,noscript,script,del,ins,caption,col,colgroup,table,tbody,td,tfoot,th,thead,tr,datalist,fieldset,form,label,legend,meter,optgroup,option,output,progress,select,textarea,details,dialog,summary,button,template,slot,base,link,meta,hr,br,wbr,area,img,track,embed,source,input,template,slot" ;//All html valid tags supported by the Hexax framework
   const IS_HTML_TAG=txt=>_mapValue(HTML_TAGS, txt);
@@ -178,7 +180,7 @@ const Hexax=(function(global){
   const isWidgetResolver=data=>_validateType(data, _WidgetResolver);
   const isDirectiveResolver=data=>_validateType(data, _DirectiveResolver);
   const readOnlyModelProps="$element,$params,$attrs,$signals,$slots,$parent,$root";
-  const proxySkipped="$element,$attrs,$signals,$slots,$parent,$root,_observe,_useAgent,_deferTick,_mutate,_effectHook,[[[_Reactive__Model_]]]";
+  const proxySkipped="$element,$attrs,$signals,$slots,$parent,$root,_observe,_useAgent,_deferTick,_mutate,_effectHook,[[[_Reactive__Ref_]]]";
   const isProxySkipped=prop=>_mapValue(proxySkipped, prop);
   function createObj(name, props){
     if(isEQ(len(arguments), 1) && isPObject(name)) props=name;
@@ -211,7 +213,8 @@ const Hexax=(function(global){
       this.callback=fn;
     }
   }
-  class Model{}
+  class Model{
+  }
   const isModelInstance=model=>model instanceof Model;
   const isFallThrough = fall => fall instanceof fallThrough;
   const widgetSpecialAttrProps = "[[[$$rawChildrenData$$]]],[[[$$$$dir--ref$$$$]]],[[[$$@@dir$$--render]]],[[[$$@fallThrough]]],[[[~~slotName~~]]],[[[@@Events]]]";
@@ -234,7 +237,7 @@ const Hexax=(function(global){
     return new renderClass(self, callback);
   }
   function pass(){}
-  const isContextMethodString = ( self , hx__VNode , str ) => has_Object_Prop(self.model, str) || isTrue(hx__VNode && has_Object_Prop(hx__VNode.LabContext||{}, str) || isFNString(str));
+  const isContextMethodString = ( self , hx__VNode , str ) => object_Has_Path(self.model, str) || isTrue(hx__VNode && object_Has_Path(hx__VNode.LabContext||{}, str) || isFNString(str));
   const isIfKey=key=>/^\$\$if[\w|$]*$/.test(key);
   const isElseIfKey=key=>/^\$\$else-if[\w$|]*$/.test(key);
   const isElseKey=key=>/^\$\$else[\w$|]*$/.test(key);
@@ -265,6 +268,7 @@ const Hexax=(function(global){
   const mapMutationMethods="set,delete,clear";
   const tupleMutationMethods=setMutationMethods+",shift,unshift,splice,pop,shift"
   function getAgentMutators(data, prop, model){
+    data=unWrapRef(data)
     let mutateArgs= isArray(data) ? arrayMutationMethods : isSet(data) ? setMutationMethods : isMap(data) ? mapMutationMethods : isTuple(data) ? tupleMutationMethods : isPObject(data) ? "define,set,delete" : isPrimitive(data) ? "set" : "set";
     const mutation_object=createObj('mutatations');
     for(let name of mutateArgs.split(',').values()){
@@ -307,7 +311,7 @@ const Hexax=(function(global){
     const model= isHexaxBuild(this) ? this : isModelInstance(dataOrModel) ? dataOrModel : null;
     let ModelInstance= model && isHexaxBuild(model) ? model.model : model ? model : nukl;
     const prop=isHexaxBuild(this) ? dataOrModel : isModelInstance(dataOrModel) ? data : dataOrModel;
-    if(model && !has_Object_Prop(ModelInstance, prop)){
+    if(model && !object_Has_Path(ModelInstance, prop)){
       $Debug(`"${prop}" property is not a valid model property`, );
       return[data, pass];
     }
@@ -338,7 +342,7 @@ const Hexax=(function(global){
       return 
     }
     for (const [prop, value] of entries(props)){
-      if(!has_Object_Prop(this.model, prop)){
+      if(!object_Has_Path(this.model, prop)){
         $Debug(`"${prop}" not found in model instance\n\n..............at......"_mutate"`, this, true);
         return
       }
@@ -349,41 +353,49 @@ const Hexax=(function(global){
     }
   }
   const getIterator=obj=>_validateType(obj, [Set, Map, Array,Tuple ]) ? obj.entries() : isPObject(obj) ? entries(obj) : isIterator(obj) ? obj : [] ;
-  function isDataRef(value){
-    return isPObject(value) && value instanceof _Reactive__ && hasOwn(value, "initiative") && isEQ(value.initiative, "[[[_Reactive__Model_]]]");
-  }
-  class _Readonly_Ref{
-    _data=undefined
-    constructor(value){
-      define(this, '_data',{
-        get(){
-          return value;
-        }
-      })
-      define(this, 'initiative',{
-        get(){
-          return "[[[_Readonly_Ref_]]]"
-        }
-      })
+  function readonly(value, isShallow=false){
+    const watchers={
+      mutated:0,
+      observers:new Tuple()
     }
+    value=_createReactiveObjectProxyAccessors(value, watchers, isShallow, "", true);
+    return new Proxy(Object.preventExtensions(new _Reactive__(value, watchers, isShallow, true)), {
+      set(target, prop, valueX, receiver){
+        if(isEQ(prop, '_data')){
+          $Debug(`Cannot reassign/mutate a "readonly" ref value\n\n___MUTATION FAILED___\n........".${prop}" property assignment `);
+        }else{
+          $Debug(`Do not mutate a _Reactive__Ref_ instance object`);
+        }
+        return false;
+      }
+    })
   }
-  const isReadonly=value=>value instanceof _Readonly_Ref
-  function readonly(value){
-    return Object.preventExtensions(new _Readonly_Ref(value));
+  function isRef(value){
+    return value instanceof _Reactive__;
   }
-  function dataRefUnwrap(value){
+  function unWrapRef(value){
+    if(!isRef(value)) return value;
+    return value._data;
+  }
+  function persistRefMutation(ref){
     
   }
-  function fromDataRef(ref){
-    
+  function isReactiveRef(value){
+    return isRef(value) && isEQ(value["[[[GenreIDType]]]"], "[[[_Reactive__Ref_]]]");
   }
-  function isShallowReactiveValue(value){
-    
+  function isReadonlyRef(value){
+    return isRef(value) && isEQ("[[[_Readonly__Ref_]]]", value["[[[GenreIDType]]]"]);
   }
-  function runtimeShallowUnwrap(value){
-    
+  function isShallowRef(value){
+    return isRef(value) && isTrue(value.isShallow);
   }
-  function objFreeze(obj, deep){
+  function isShallowReactive(value){
+    return isReactiveRef(value) && isReadonlyRef(value);
+  }
+  function isShallowReadOnly(value){
+    return isReadonlyRef(value) && isShallowRef(value)
+  }
+  function objFreeze(obj, deep=true){
     if(!_validateType(obj, [Object, Array, Tuple])) return obj;
     if(isTuple(obj)) return obj.freeze();
     if(isTrue(deep)){
@@ -393,11 +405,26 @@ const Hexax=(function(global){
     }
     return Object.freeze(obj);
   }
-  function effectHook(fn){
+  function effectDependencyTracking(self, fn ){
+    fn = isAFunction(fn) ? fn : fn.bind(self.model);
+    self.operands.onEffectWatch = true;
+    fn();
+    self.operands.onEffectWatch=false;
+    const subscribers=arrSet(self.core.effectSubscribers);
+    self.core.effectSubscribers.clear();
+    return subscribers;
+  }
+  function effectHook(fn, config){
     if(!isPFunction(fn)){
       $Debug(`"effectHook" at parameter 1 argument expects a plain function`, this, true);
       return ;
+    }else if(isGT(len(arguments), 1) && !isPObject(config)){
+      $Debug(`config parameter 2 argument of effectHook expects a plain objectj`);
+      return;
     }
+    config.now=false;
+    const subscribers=effectDependencyTracking(this, fn );
+    return this.model._observe(subscribers, fn, config)
   }
   class Type{
     constructor(type, validator){
@@ -422,8 +449,9 @@ const Hexax=(function(global){
   const None=new NoneType();
   const isAnyType=data=>_validateType(data, AnyType);
   const isNoneType=data=>_validateType(data, NoneType);
+  
   function getType(value){
-    return isArray(value) ? 'array' : isDate(value) ? 'date' : isSet(value) ? 'set' : isMap(value) ? 'map' : isTuple(value) ? 'tuple' : value instanceof AnyType ? 'any' : value instanceof NoneType ? 'none' : typeof value;
+    return isArray(value) ? 'array' : isDate(value) ? 'date' : isSet(value) ? 'set' : isMap(value) ? 'map' : isTuple(value) ? 'tuple' : value instanceof AnyType ? 'any' : value instanceof NoneType ? 'none' : isRef(value) ? '_'+isReactiveRef(value) ? 'Reactive' : 'Readonly' +'__Ref_' :typeof value;
   }
   function isFrozenWarn(isFrozen, action, type){
     if(isFrozen){
@@ -602,7 +630,7 @@ const Hexax=(function(global){
       
     }
   }
-  function deepCompare(val1, val2){
+  function deepEqualityCheck(val1, val2){
     if(_validateType(val1, None) && _validateType(val2, None)){
       if(isEmptyStr(val1) && isEmptyStr(val2)) return true;
       else if(isUndefined(val1) && isUndefined(val2)) return true;
@@ -615,7 +643,7 @@ const Hexax=(function(global){
       if(!isEQ(len(val1), len(val2))) return false;
       val2=isSet(val2) || isTuple(val2) ? arrSet(val2) : val2;
       for(const [ key, value] of val1.entries()){
-        if(isFalse(deepCompare(value, val2[key]))) return false;
+        if(isFalse(deepEqualityCheck(value, val2[key]))) return false;
       }
       return true;
     }else if(isMap(val1)){
@@ -623,9 +651,9 @@ const Hexax=(function(global){
       let index=0;
       for(const [ key, value] of val1.entries()){
         const val2Key=val2.keys().next();
-        if(isFalse(deepCompare(key, val2Key))) return false;
+        if(isFalse(deepEqualityCheck(key, val2Key))) return false;
         const value2=val2.values().next();
-        if(isFalse(deepCompare(val2, value2))) return false;
+        if(isFalse(deepEqualityCheck(val2, value2))) return false;
         index++;
       }
       return true;
@@ -634,7 +662,7 @@ const Hexax=(function(global){
       let index=0;
       for(const [ key, value] of entries(val1)){
         if(isFalse(isEQ(key, keys(val2)[index]))) return false;
-        if(isFalse(deepCompare(value, val2[key]))) return false;
+        if(isFalse(deepEqualityCheck(value, val2[key]))) return false;
         index++;
       }
       return true
@@ -649,8 +677,7 @@ const Hexax=(function(global){
     forwardSlot=true
     forwardAttrs=true
     delimiters=['{{','}}']
-    subAttrBinding=false
-    inAttrDelimiters=this.delimiters
+    scopesStyleSheet=false
     isAsync=false
     isCustomElement=false
   }
@@ -669,11 +696,8 @@ const Hexax=(function(global){
     delimiters(delimiters){
       Global_Settings.delimiters=delimiters
     }
-    subAttrBinding(subAttrBinding){
-      Global_Settings.subAttrBinding=subAttrBinding
-    }
-    inAttrDelimiters(inAttrDelimiters){
-      Global_Settings.inAttrDelimiters=inAttrDelimiters
+    scopesStyleSheet(scopesStyleSheet){
+      Global_Settings.scopesStyleSheet=scopesStyleSheet
     }
     isAsync(isAsync){
       Global_Settings.isAsync=isAsync
@@ -906,6 +930,7 @@ const Hexax=(function(global){
     let dataObject;
     try{
       dataObject=_$runModelBind(self, data.obj, hx__VNode);
+      dataObject=unWrapRef(dataObject);
     }catch(error){
       $Debug(`Trouble accessing '${data.obj}' object for $$for loop\n\nnot found on instance or is undefined\n\n${error}`, self, true);
       return;
@@ -1546,7 +1571,7 @@ const Hexax=(function(global){
     return str;
   }
   function RenderableContextManeger(self, text, hasSafeString ){
-    text=compileToRenderable(text);
+    text=compileToRenderable(unWrapRef(text));
     return hasSafeString ? _escapeDecoder(text) : text ;
   }
   function resolveAccessor(self, vnode, node, hx__VNode){
@@ -1716,17 +1741,15 @@ const Hexax=(function(global){
     }
     const getValue = new Function('obj','$$$ctx', `
       with(obj){
-        if($$$ctx){
-          with($$$ctx){
-            return ${str};
-          }
+        with($$$ctx){
+          return ${str};
         }
-        return ${str};
       }
-      `);
+    `);
+      
     let value;
     try{
-      value = getValue(obj, isPObject(optional) ? optional : null);
+      value = getValue(obj, isPObject(optional) ? optional : {});
     }catch(error){
       throw new  Error(error);
     }
@@ -1744,6 +1767,7 @@ const Hexax=(function(global){
       let name=''
       attr=matches[0].replace(pattern, (match, text)=>_$runModelBind(self.model, text, hx__VNode, true))
     }
+    attr=unWrapRef(attr)
     if(hx__VNode) hx__VNode.PATCH_FLAGS.add('ELEMENT_ATTRIBUTES');
     return hasAsterisks_bind(iniAttr) ?  '*'+attr : attr;
   }
@@ -1769,30 +1793,62 @@ const Hexax=(function(global){
     `)
     return processor(obj, check);
   }
-  function has_Object_Prop(obj, str) {
-    if ((isString(str) ? str.includes('.') : false)) {
+  const accessorsRegex=/[.[\]]/;
+  const dynamicAccessorsRegex=/(\[(.*?)\])/g;
+  function object_Has_Path(obj, str, getRes) {
+    let res=false;
+    let value=obj
+    if ((!isEmptyStr(str) ? accessorsRegex.test(str) : false)) {
       const navigation = str.split('.');
-      let value = obj;
       for (const key of navigation) {
-        if (!hasOwn(value, key)) return false;
-        value = value[key];
+        if(dynamicAccessorsRegex.test(key)){
+          let shouldBreak=false;
+          let access=[];
+          let match=key.replace(dynamicAccessorsRegex, (match, p1, internal)=>{
+            internal=Number(internal)
+            if(!isNaN(internal)) access.push(internal)
+            return ""
+          })
+          if(shouldBreak && !res) {
+            return false
+          }
+            if(!value) return false
+            if(!isEmptyStr(match)) value = value[match];
+            if(len(access)) {
+              for(let [index, keys ] of access.entries()){
+                if(!isArray(value) && isNaN(Number(keys)) && isGT(Number(keys)+1, len(value) ))  return false
+                value=value[keys];
+              }
+            }
+        }else if (!hasOwn(value, key)) return false;
+        else {
+          value = value[key];
+          res=true;
+        }
       }
     } else {
       if (!hasOwn(obj, str)) return false;
+      else {
+        value=value[str]
+        return true
+      }
     }
-    return true;
+    return res;
   }
   function set_Object_Value(obj, path, value, check=false){
-    const processor=Function('obj','value','check',`
+    const processor=Function('obj','value','check','metrics',`
       try{
-        obj.${path}=value;
+        const [ isRef, get_Object_Value ] = metrics;
+        const initVal=get_Object_Value(obj, "${path}" );
+        if(isRef(initVal)) obj.${path}._data=value;
+        else obj.${path}=value;
       }catch(err){
-        if(check) throw new Error(err)
-        return
+        if(check) $Debug(err)
+        return err
       }
       return obj;
     `)
-    return processor(obj, value, check);
+    return processor(obj, value, check, [isRef, get_Object_Value, $Debug]);
   }
   function get_Prop_Path(obj, prop) {
     const stack = [{ object: obj, path: '' }];
@@ -2080,12 +2136,12 @@ const Hexax=(function(global){
     if(len(Data[1])) define(func, 'options', {value:Data[1], enumerable, configurable});
     return func;
   }
-  
   function bind_directive_receiver(self, props, vnode, hx__VNode, modifiers){
     let is_hyperscript=hx__VNode.is_hyperscript;
     let { item, key }=props;
     item=isOnListener(key) && !is_hyperscript && isString( item) && isContextMethodString(self, hx__VNode, item) ? item : `()=>{ ${ item } }` ;
     let bra=_$runModelBind(self, item||'', hx__VNode );
+    bra=unWrapRef(bra)
     if(isUndefined(bra)) bra='';
     if(!key){
       if (!isPObject(bra)) $Debug(`Directive attributes binding expects an objects value when not chained to any attribute/property argument`, self, true);
@@ -2103,6 +2159,7 @@ const Hexax=(function(global){
   function $$dir_HTML(self, value, vnode, hx__VNode, text, modifiers ){
     const is_hyperscript=hx__VNode.is_hyperscript;
     if(!is_hyperscript) value=_$runModelBind(self, value, hx__VNode, !modifiers.has('bind'))
+    value=unWrapRef(value)
     if( isPrimitive(value)) {
       const innerProp=isTrue(text) ? 'innerText' : 'innerHTML';
       if(!isNativeElement(vnode) && value)  self.model.$attrs[innerProp]=value;
@@ -2117,6 +2174,7 @@ const Hexax=(function(global){
     }
     const iswt=!isNativeElement(vnode)
     let value=_$runModelBind(self, item, hx__VNode, !modifiers.has('bind'));
+    value=unWrapRef(value)
     if(!isString(value)){
       $Debug(`value Error::\n\n slot name undefined or is not a string\n\n Error resolving slot  directive name reference on "${iswt  ?  self.ownProperties.name : vnode.localName}"`, self, true);
       return;
@@ -2136,17 +2194,18 @@ const Hexax=(function(global){
   function $$dir_ON(self, attr, node, hx__VNode, key, modifiers){
     const isWidget=!isNativeElement(node);
     if(isString(attr)){
-      const signalsRegex=/^(@@)/g
-      if(signalsRegex.test(attr)) attr=attr.replace(signalsRegex, (match)=>match='$signals.');
+      const signalsRegex=/^(@@[\w$]+)/g
+      if(signalsRegex.test(attr)) attr=attr.replace(signalsRegex, (match)=>match='$signals.'+match.slice(2));
       try{
         attr=attr.split(' ').join('').trim();
         const funcRef=attr;
         attr=_$runModelBind(self, isContextMethodString(self, hx__VNode, attr) ? attr : `()=>{${attr}}`, hx__VNode);
-        attr=has_Object_Prop(self.model, funcRef) && isPFunction(attr) ? attr.bind(self.model) : attr;
+        attr=object_Has_Path(self.model, funcRef) && isPFunction(attr) ? attr.bind(self.model) : attr;
       }catch(err){
         $Debug(`${err}`, self, true);
         return node;
       }
+      attr=unWrapRef(attr)
       if(!isPFunction(attr)){
         $Debug(`"${name}" event must be wrapped as or in a function \n\non.....on...\n  "${isWidget ?  '' : node.localName}" \n`, self, true);
         return node;
@@ -2178,18 +2237,19 @@ const Hexax=(function(global){
   }
   function $$dir_REF(self, item, node, hx__VNode, modifiers, metrics){
     const isWidget=!isNativeElement(node);
-    if(!has_Object_Prop(self.model, item)){
+    if(!object_Has_Path(self.model, item)){
       $Debug(`value "${item}" property value was accessed during render, but not initialized on model or is undefined\n\nat at\n ..."${name} directive on ${isWidget ? '$$ref' : vnode.localName} `,self, true);
       return;
     }
+    let ref;
     try{
-      get_Object_Value(self.model, item, modifiers.has('bind'));
+      ref=get_Object_Value(self.model, item, modifiers.has('bind'));
     }catch(err){
       $Debug(`value "${item}" property value was accessed during render, but not initialized on model or is undefined\n\nat at\n ..."${name} directive on ${isWidget ? '$$ref' : vnode.localName} `, self, true);
       return;
     }
     if(node && isWidget) {
-      node.$attributes['[[[$$$$dir--ref$$$$]]]']=item;
+      node.$attributes['[[[$$$$dir--ref$$$$]]]']=isRef(ref) ? item+'._data' : item;
     }else if(node) hx__VNode.compiler_options['dir--ref']=item;
   }
   function $$dir_SCOPED(self, item, node, hx__VNode, modifiers){
@@ -2199,7 +2259,7 @@ const Hexax=(function(global){
       return node;
     }
     let value=_$runModelBind(self, item, hx__VNode, !modifiers.has('bind'));
-    if(isFalse(value)) return node;
+    if(isFalse(unWrapRef(value))) return node;
     node.innerHTML=_styleSheet_hydration(self, node.innerHTML);
     return node;
   }
@@ -2227,12 +2287,12 @@ const Hexax=(function(global){
       $Debug(`undefined reference for directive "$$model"\n\n "${item}" is not defined on widget model instance\n\n${err}`, self, true);
       return
     }
-    node.value=initVal;
+    node.value=unWrapRef(initVal);
     const eventName=get_Model_Event(node);
     if(eventName){
       node.addEventListener(eventName, function(){
         try{
-          set_Object_Value(self.model, item , node.value );
+          set_Object_Value(self.model, isRef(initVal) ? item+'._data' : item , node.value );
           hx__VNode.render_tracked=true;
         }catch(err){
           $Debug(`${err}`);
@@ -2445,20 +2505,24 @@ const Hexax=(function(global){
     }
   }
   const BUILT_IN_WIDGETS={ 'hx-fragment':Fragment, 'hx-build':Build, 'hx-transition':Transition, 'hx-animation':Animation, 'hx-await':Await, 'hx-portal':Portal };
-  function populateModelData(self, key, value){
-    if(isReadonly(value)){
-      define(self.model, key, {
+  function populateModelData(self, key, value, code ){
+    if(isReadonlyRef(value)){
+      define(self[code], key, {
         get(){
           return value;
-        }
+        },
+        set(valueX){
+          $Debug(`cannot reassign/mutate a "readonly" ref property\n\n.........on property "${key}"`) ;
+          return false;
+        }, enumerable
       })
-    }else if(isDataRef(value)){
-      define(self.model, key, { value , enumerable} )
+    }else if(isReactiveRef(value)){
+      define(self[code], key, { value , enumerable } )
     }else{
-      self.model[key]=value;
+      self[code][key]=value;
     }
   }
-  function modelManager(opts,self){
+  function modelManager(self, opts){
     if(isNull(opts.model)) return;
     const modelData=isBaseWidget(opts) && isPObject(opts.model) ? opts.model : {} ;
     if(!isBaseWidget(opts) || isPFunction(opts.model)) {
@@ -2469,13 +2533,13 @@ const Hexax=(function(global){
       }
     }
     if(!isPObject(modelData)){ 
-      $Debug(`\nmodel method must return an object`);
+      $Debug(`\nmodel method must be an object type`);
       return;
     }
     entries(modelData).forEach(([key, value])=>{
-      populateModelData(self, key, value)
+      populateModelData(self, key, value, 'model')
     });
-    define(self.model, "[[[_Reactive__Model_]]]", { value:()=> self.ownProperties.hx_hash_+self.operands.PATCH_FLAG++, enumerable
+    define(self.model, "[[[_Reactive__Ref_]]]", { value:()=> self.ownProperties.hx_hash_+self.operands.PATCH_FLAG, enumerable
     })
   }
   function widgetsSetup(opts, self){
@@ -2634,7 +2698,7 @@ const Hexax=(function(global){
     }
     return paramsSet;
   }
-  function paramsManager(opts, self){
+  function paramsManager(self, opts){
     const params= opts.params ;
     const props=opts.$attributes||{};
     const garbage={};
@@ -2658,6 +2722,7 @@ const Hexax=(function(global){
   
   }
   function _hydrate_$Attributes(opts, self, vnode){
+    if(!isHexaxVNode(vnode)) return
     vnode=isPFunction(vnode) ? vnode() : vnode;
     if( isNativeElement(vnode.$element) && IS_ELEMENT_NODE(vnode.$element)){
       if(self.core.settings.forwardAttrs) AttributeManager( self.model.$attrs, vnode.$element, self, vnode);
@@ -2739,7 +2804,8 @@ const Hexax=(function(global){
   }
   function _$slotHydrationRenderer(self, opts, vnode){
     const slots=self.core.slots;
-    if(!len(slots))  return vnode;
+    if(!len(slots) )  return vnode;
+    else if(!vnode || !isHexaxVNode(vnode)) return ;
     vnode=isPFunction(vnode) ? vnode(self) : vnode;
     const slot_elements=vnode.$element.querySelectorAll('slot');
     const assynedSlots=new Set()
@@ -2768,7 +2834,7 @@ const Hexax=(function(global){
       }
     }
   }
-  const buildConfigOptions = "delimiters,isAsync,isCustomElement,forwardAttrs,subAttrBinding,inAttrDelimiters,forwardSlot" ;
+  const buildConfigOptions = "delimiters,isAsync,isCustomElement,forwardAttrs,scopesStyleSheet,forwardSlot" ;
   function setConfig( opts, self ){
     if(!opts.buildConfig || !len(opts.buildConfig)) return;
     entries(opts.buildConfig).forEach(([key, setting])=>{
@@ -2781,46 +2847,68 @@ const Hexax=(function(global){
   }
   const globalProps="blocks,widgets,directives,handlers,hang";
   const exceptionsOptions="$children,$attributes";
+  const flushOptions="post,sync"
   class _OBS{
-    constructor(propOrGetter, oldValue, callback){
+    flushType='post'
+    constructor(self, propOrGetter, oldValue, callback, options){
       this.propOrGetter=propOrGetter;
       this.oldValue=oldValue;
       this.callback=callback;
+      this.self=self
+      this.options=options;
+      if(isTrue(options.now)) this.callback.call(self.model, ...this.wrapValueArgs(self));
+      if(hasOwn(options, 'flushType')){
+        const flushType=options.flushType
+        if(!isString(flushType) && !_mapValue(flushOptions, flushType)){
+          $Debug(`unrecognised flushType options received\n\nvakue "${flushType}" is not a vailid flushType`, self, true);
+        }else this.flushType=flushType
+      }
     }
     getNewV(self){
       return getObsCurrentValue(self, this.propOrGetter) ;
     }
     shouldTrigger(self){
-      return !deepCompare(this.oldValue, this.getNewV(self));
+      return !deepEqualityCheck(this.oldValue, this.getNewV(self));
     }
     trigger(self){
       if(this.shouldTrigger(self)){
-        this.callback.call(self.model, this.getNewV(self), this.oldValue);
+        this.callback.call(self.model, ...this.wrapValueArgs(self));
         this.oldValue=this.getNewV(self);
       }
+    }
+    wrapValueArgs(self){
+      if(isArray(this.oldValue)){
+        const list=[]
+        const newValue=this.getNewV(self)
+        for (const [key, valueX] of this.oldValue.entries()){
+          const content=[newValue[key], valueX ]
+          list.push(content)
+        }
+        return list
+      }else{
+        return [ this.getNewV(self), this.oldValue , function stopEffect(){
+          this.stopEffect(self, this)
+        } ]
+      }
+    }
+    stopEffect( self, obs){
+      self.operands._OBSERVERS.delete(obs);
     }
   }
   function Observer_Track(self, opts){
     const errArgs=(name)=>[ self, true, "When calling the "+name+" observer method callback"]
     entries(opts.observers||{}).forEach(([name, method])=>{
-      if(!isPFunction(method)){
-        $Debug(`an observer handler must be a function value`, ...errArgs(name));
-        return;
-      }else if(!has_Object_Prop(self.model, name)){
-        $Debug(`observer undefined reference\n\n no such model instance as "${name}" define on this widget model instance`,...errArgs(name));
-        return;
-      }
-      self.operands._OBSERVERS.add(new _OBS(name, get_Object_Value(self.model, name), method));
+      EffectObserver.call(self.model, name, method, options);
     })
   }
-  function Observation_Dependecy_Notify(self){
+  async function _EffectDependencyNotifier(self){
     self.operands._OBSERVERS.values().forEach((obs)=>{
       obs.trigger(self);
     })
   }
   function RuntimeUtilitiesProvide(self, opts){
     define(self.core.utils, 'dataModel', {value:dataModel.bind(self), enumerable });
-    define(self.model, '_observe', {value:DATA_OBSERVER.bind(self), enumerable });
+    define(self.model, '_observe', {value:EffectObserver.bind(self), enumerable });
     define(self.model, '_deferTick', {value:deferTick.bind(self), enumerable });
     define(self.model, '_useAgent', {value:useAgent.bind(self), enumerable });
     define(self.model, '_mutate', {value:Mutate.bind(self), enumerable });
@@ -2832,47 +2920,60 @@ const Hexax=(function(global){
       return;
     }else if(!props) return this.model;
     for(let [key, value] of entries(props)){
-      if(!has_Object_Prop(this.model, key) && !isProxySkipped(key) && !isEQ(key, '$params')) this.model[key]=value;
-      else if(has_Object_Prop(this.model, key)) this._mutate({[key]:value});
+      if(!object_Has_Path(this.model, key) && !isProxySkipped(key) && !isEQ(key, '$params')) this.model[key]=value;
+      else if(object_Has_Path(this.model, key)) this._mutate({[key]:value});
     }
     return this.model;
   }
-  function chechObservers(self, propOrGetter, ){
-    const errArgs=()=>[ self, true, 'During the calling of the "_observe" macro'];
-    if(!isPFunction(propOrGetter) && !isString(propOrGetter) && !isArray(propOrGetter)){
-      $Debug(`proplem setting Observer_Track for ${propOrGetter}\n\n widget model instance has no such property`, ...errArgs());
+  function chechObservers(self, propOrGetter, callback){
+    const errArgs=()=>[ self, true, 'During the calling of the "effect" macro'];
+    if(!_validateType(propOrGetter, [Function, String, Array, Tuple, Set])){
+      $Debug(`proplem setting Observer_Track for ${propOrGetter}\n\n invalid type`, ...errArgs());
       return false
-    } else if(isString(propOrGetter) && !has_Object_Prop(this, propOrGetter)){
-      $Debug(`undefined property "${propOrGetter}" accessed in _observe macro`, ...errArgs());
+    }else if(!isPFunction(callback)){
+      $Debug(`observer callback expects a plain function method`);
       return false
     }
+    // } else if(isString(propOrGetter) && !object_Has_Path(this, propOrGetter)){
+    //   $Debug(`undefined property "${propOrGetter}" accessed in effect  macro`, ...errArgs());
+    //   return false
+    // }
     return true
   }
   function getObsCurrentValue(self, propOrGetter){
-    const tuple=new Tuple();
-     response;
+    const tuple=[]
+     let response;
     if(_validateType(propOrGetter, [Function, String])){
       response=isFunction(propOrGetter) ? propOrGetter() : get_Object_Value(self.model, propOrGetter);
     }else{
+      propOrGetter=!isArray(propOrGetter) ? arrSet(propOrGetter) : propOrGetter;
       propOrGetter.forEach((value)=>{
-        response=isFunction(propOrGetter) ? propOrGetter : get_Object_Value(self.model, propOrGetter);
-        tuple.add(response);
+        response=isPFunction(value) ? value() : get_Object_Value(self.model, value);
+        tuple.push(unWrapRef(response));
       })
     }
-    return isArray(propOrGetter) ? tuple.list() : response;
+    
+    return !_validateType(propOrGetter, [Function, String]) ? tuple : unWrapRef(response);
   }
-  async function DATA_OBSERVER(propOrGetter, callback){
-    let rv=chechObservers(this, propOrGetter);
+  function EffectObserver(propOrGetter, callback, options){
+    if(isEQ(len(arguments), 3) && !isPObject(options)){
+      $Debug(`parameter 3 arguments of effect observer expects a plain object`);
+      return 
+    }
+    let rv=chechObservers(this, propOrGetter, callback);
     if(isFalse(rv)) return;
-    const obsList=new Tuple()
     if(isArray(propOrGetter)){
-      const currentValues=new Tuple()
       propOrGetter.forEach((value)=>{
-        rv=chechObservers(this, value);
+        rv=chechObservers(this, value, callback);
         if(isFalse(rv)) return
       })
     }
-    this.operands._OBSERVERS.add(new _OBS(propOrGetter, getObsCurrentValue(this, propOrGetter), callback));
+    const observer=new _OBS(this, propOrGetter, getObsCurrentValue(this, propOrGetter), callback, options || {})
+    this.operands._OBSERVERS.add(observer);
+    const self=this
+    return function stopEffect(){
+      observer.stopEffect(self, observer)
+    }
   }
   function map_Events_Fall(self, options){
     if(!options.$attributes || !options.$attributes['[[[@@Events]]]']) return;
@@ -2967,18 +3068,24 @@ const Hexax=(function(global){
     define(self.ownProperties, 'hx_hash_', {value:hash, configurable, enumerable});
   }
   function _Data_Hydrations(self, options){
-    paramsManager(options, self);
-    modelManager(options, self);
-    install_State_Observer(self);
+    // entries(self.register.handlers).forEach(([key, handler])=>{
+    //   define(self.model, key, { 
+    //     set(valueX){
+    //       Reflect.set(self.model, key, valueX)
+    //       return true
+    //     } 
+    //   });
+    // })
+    install_State_Observer(self)
     self.model=_Proxy_Setup(self, self.model, true);
-    Observer_Track(self, options);
-    for(let [ key, hand] of entries(self.register.handlers)) {
-      self.model[key]=hand.bind(self.model);
-    }
+    entries(self.register.handlers).forEach(([key, handler])=>{
+      define(self.model, key, { value:handler.bind(self['model']), enumerable});
+      // self.model[key]=handler.bind(self.model)
+    })
   }
-  function install_State_Observer(self){
-    class Observer {
-      constructor(getter, callback, self) {
+  function install_State_Observer(self){ 
+    class Observer{
+      constructor(getter, callback, self){
         this.getter = getter;
         this.callback = callback;
         this.value = this.get();
@@ -2987,8 +3094,7 @@ const Hexax=(function(global){
       update() {
         const oldValue = this.value;
         this.value = this.getter();
-        if (isFalse(deepCompare(this.value , oldValue))){
-          // log('willMutate', this.self)
+        if (isFalse(deepEqualityCheck(this.value , oldValue))){
           deferEventCircleThread(this.self, ()=>{
             this.callback(this.value, oldValue);
           })
@@ -3009,85 +3115,111 @@ const Hexax=(function(global){
       depend() {
         if (self.core.activeObserver) this.subscribers.add(self.core.activeObserver);
       }
-      notify() {
+      notify(arg) {
+        self.operands.PATCH_FLAG=1
         this.subscribers.forEach((observer) => observer.update());
       }
     }
     self.core.Dependency=Dependency;
   }
-  function _Proxy_Setup(self, obj, deep=false){
-    function Hydrate_Data_Proxy(obj, deep){
-      function trackDependency(dependency) {
-        if (self.core.activeObserver) dependency.depend();//call the depend
-      }
-      const dependency = new self.core.Dependency();
+  function trackDependency(self, dependency) {
+    if (self.core.activeObserver) dependency.depend();//call the depend
+  }
+  function _Proxy_Setup(self, obj, deep=false ){
+    const dependency = new self.core.Dependency();
+    function Hydrate_Data_Proxy(obj, deep, path=""){
       for(let [key , value] of getIterator(obj)){
-        if(isDataRef(value)){
-          value.effectTrigger((ref)=>{
-            ref=ref();
+        if(isReactiveRef(value) && !isShallowReactive(value) || isShallowReadOnly(value)){
+          value.effectTrigger((ref, getter)=>{
+            generateDependencySubscriptions(self, ()=>value)
             dependency.notify();
-            // log('an update triggered')
           })
-          // log(value)
-        }
+        }else if( isTrue(deep) && isIterable(value) && !isProxySkipped(key) && !isReadonlyRef(value) && isFalse(isPFunction(value) && value.isHandler) && !isRef(obj) ) obj[key]=Hydrate_Data_Proxy(value, deep, path)
       }
       obj= new Proxy(obj, {
         get(target, prop){
-          trackDependency(dependency);
-          return Reflect.get(...arguments);
+          trackDependency(self, dependency);
+          const getter=()=> Reflect.get(...arguments);''
+          generateDependencySubscriptions(self, getter);
+          
+          return getter();
         },
         set(target, prop, value, receiver){
-          const oldValue=target[prop]
-          if(isDataRef(oldValue)) {
+          const oldValue=()=>target[prop]
+          if(isReactiveRef(oldValue())) {
             $Debug(`cannot reassign to a "dataRef" property\n\nTry reassigning to "${prop}._data" instead`)
             return false
           }
-          Reflect.set(...arguments)
+          generateDependencySubscriptions(self, oldValue);
           dependency.notify();
+          Reflect.set(...arguments);
           return true
         },
-        defineProperty(target, prop, value){
-          Reflect.defineProperty(...arguments);
+        defineProperty(target, prop, value, receiver){
           dependency.notify();
+          Reflect.defineProperty(...arguments);
+          generateDependencySubscriptions(self, ()=>target[prop])
           return true;
         },
         deleteProperty(target, prop){
           Reflect.deleteProperty(...arguments);
           dependency.notify();
           return true;
-        },
-      })
-      if(isTrue(deep) && !isDataRef(obj) && !isReadonly(obj)){
-        for(const [ key, value] of entries(obj) ){
-          if(isIterable(value) && !isProxySkipped(key) && !isDataRef(value) && !isReadonly(value) ) obj[key]=Hydrate_Data_Proxy(value, true);
         }
-      }
+      })
       return obj
     }
-    return Hydrate_Data_Proxy(obj, deep)
+    return Hydrate_Data_Proxy(obj, deep, )
   }
-  function mutatingHandlersCompile(src, prop, mutatingMethods, dependency){
-    mutatingMethods.split(',').forEach((method)=>{
-      src[prop][method]=new Proxy(src[prop][method],{
-        apply(target, thisArg, args){
-          const returnValue= Reflect.apply(...arguments);
-          set_Object_Value(src, prop, src[prop])
-          dependency.notify();
-          return returnValue;
+  function generateDependencySubscriptions(self, getter){
+    if(!self.operands.onEffectWatch) return;
+    self.core.effectSubscribers.add(getter)
+  }
+  // function mutatingHandlersCompile(src, prop, mutatingMethods, dependency){
+  //   mutatingMethods.split(',').forEach((method)=>{
+  //     src[prop][method]=new Proxy(src[prop][method],{
+  //       apply(target, thisArg, args){
+  //         const returnValue= Reflect.apply(...arguments);
+  //         set_Object_Value(src, prop, src[prop])
+  //         dependency.notify();
+  //         return returnValue;
+  //       }
+  //     })
+  //     // set_Object_Value(src, prop+'.'+method, proxy)
+  //   })
+  // }
+  function defineGetter(obj, prop, value, desc={}){
+    const { enumerable=false, writable=false, debug=false }=desc;
+    const descriptor={
+      get (){
+        return value
+      },
+    }
+    if(writable || debug ){
+      descriptor.set=function(valueX){
+        if(writable){
+          value=valueX
+        }else if(debug){
+          $Debug(`${prop} cannot be assigned`)
         }
-      })
-      // set_Object_Value(src, prop+'.'+method, proxy)
-    })
+      }
+    }
+    if(isTrue(enumerable)) descriptor.enumerable=enumerable
+    return define(obj, prop, descriptor)
   }
   function createCordinateProps(self, opts){
     self.model=new Model();
     opts=opts || {};
-    self.ownProperties=createObj('ownProperties',{ name:opts?.name || 'UnknownWidget', slot_name:hasProp(opts, '$attributes')  ? opts.$attributes['[[[~~slotName~~]]]'] : undefined , isInitialBuild:false });
-    if(has_Object_Prop(opts, '$attributes.[[[~~slotName~~]]]')) delete opts.$attributes['[[[~~slotName~~]]]'];
-    self.register=createObj( 'register',{ directives:createObj('directives'), blocks:createObj('blocks'), widgets:createObj('widgets'), handlers:createObj('handlers'), agents:createObj('agents'), properties:createObj('properties')});
-    self.operands=createObj('operands',{ _OBSERVERS:new Set(), _LIFECIRCLEHOOKS:createObj('_LIFECIRCLEHOOKS'), _OPTIONS:createObj('_OPTIONS'), garbageWatch:false, initialized:false , PATCH_FLAG:0});
-    self.core=createObj('core',{utils:createObj('Utils'), settings:createObj('settings', Global_Settings), slots:createObj('Slots'), map:createObj('map',{ is_hyperscript:false }), activeObserver:null});
-    self.$globals=createObj('$globals',{register:createObj('register', self.register), setupOptions:createObj('setupOptions'), $hanger:createObj('$hanger'), legalOptions:createObj('legalOptions'), controller:new Set()});
+    defineGetter(self, 'ownProperties', createObj('ownProperties',{ 
+      name:opts?.name || 'UnknownWidget', 
+      slot_name:hasProp(opts, '$attributes')  ? opts.$attributes['[[[~~slotName~~]]]'] : undefined , 
+      isInitialBuild:false 
+    }), { } )
+    if(object_Has_Path(opts, '$attributes.[[[~~slotName~~]]]')) delete opts.$attributes['[[[~~slotName~~]]]'];
+    defineGetter(self,'register',createObj( 'register',{ directives:createObj('directives'), blocks:createObj('blocks'), widgets:createObj('widgets'), handlers:createObj('handlers'), agents:createObj('agents'), properties:createObj('properties')}) );
+    defineGetter(self, 'operands',createObj('operands',{ _OBSERVERS:new Set(), _LIFECIRCLEHOOKS:createObj('_LIFECIRCLEHOOKS'), _OPTIONS:createObj('_OPTIONS'),  garbageWatch:false, initialized:false , PATCH_FLAG:0, onEffectWatch:false, modelMethods:createObj('modelMethods')}));
+    defineGetter(self, 'core',createObj('core',{utils:createObj('Utils'), settings:createObj('settings', Global_Settings), slots:createObj('Slots'), map:createObj('map',{ is_hyperscript:false }, ), activeObserver:null, effectSubscribers:new Set()}));
+    defineGetter(self, '$globals',createObj('$globals',{register:createObj('register', self.register), setupOptions:createObj('setupOptions'), $hanger:createObj('$hanger'), legalOptions:createObj('legalOptions'), controller:new Set()}));
   }
   function slotDebuger(self){
     return (slotName, slotContent)=>{
@@ -3285,7 +3417,7 @@ const Hexax=(function(global){
     }else self.core.fallThrough=createObj('fallThrough', {[prop]:value});
   }
   function defineLateGlobalProps(self, build){
-    dataModel.call(self, { $element:build.$element});
+    if(isHexaxVNode(build)) dataModel.call(self, { $element:build.$element});
   }
   function _Hexax_Build(options){
     createCordinateProps(this, options);//create useful properties for the widget
@@ -3299,16 +3431,18 @@ const Hexax=(function(global){
       build=_$slotHydrationRenderer(self, options, build);
       build =  _hydrate_$Attributes(options, self, build);
       build=_preCompile_StyleSheet(options, self, build);
-      // RuntimeRefDir(self, options);
+      RuntimeRefDir(self, options);
       defineLateGlobalProps(self, build);
       if(isFalse(self.operands.initialized)) callbackHookWithCatch(self, self.operands._LIFECIRCLEHOOKS.postBuild, 'postBuild');
       return build;
     }
-    _Data_Hydrations(this, options);
+    
     resolveBuildLab(this, options);
     resolve_Proto_Call(this, options);
   }
   function resolveBuildLab(self, options){
+    paramsManager(self, options);
+    modelManager(self, options);
     let value=options.build || options.template || options.markdown 
     define(self.core, 'build', {value, writable, enumerable});
     self.core.opts=options;
@@ -3435,13 +3569,14 @@ const Hexax=(function(global){
     let domRoot=_GenerateRoot(nodeSelector, this);
     if(!bool(domRoot.isHexax_Fragment)) define(domRoot, 'NodeList',{value:new Tuple(), configurable:true, writable:true});
     if(!domRoot.PATCH_FLAGS) define(domRoot, 'PATCH_FLAGS',{value:new Set(), configurable:true, writable:true});
+    _Data_Hydrations(this, this.core.opts)
     prefixManagement(this);
     let initialBuild=get_Init_Build(this, nodeSelector);
     if(!initialBuild) return
     this.build=Render_Template(this, initialBuild);
     this.model._deferTick(()=>{
       _Reactive_Renderer(this.model, (newV, oldV, ref)=>{
-        Observation_Dependecy_Notify(this);
+        _EffectDependencyNotifier(this);
         _hydrationEjectionTrigger(this, { newV, oldV, ref },  nodeSelector );
       }, this, true);
     })
@@ -3457,7 +3592,7 @@ const Hexax=(function(global){
     if(isFalse(this.operands.initialized)) callbackHookWithCatch(this, this.operands._LIFECIRCLEHOOKS.preMount, 'preMount');
     if(isInDom(domRoot) && IS_ELEMENT_NODE(domRoot) ) {
       domRoot.innerHTML='';
-      domRoot.append(this.build.$element || '');
+      domRoot.append(this.build?.$element || '');
       if(this.ownProperties.isInitialBuild) this.property('$root', this.build);
     }else domRoot=this.build.$element;
     if(domRoot.isHexax_Fragment && !domRoot.trigger_Effect_Run ) define(domRoot, 'trigger_Effect_Run', {value: Widget_Effect_Trigger.bind(this)});
@@ -3519,6 +3654,7 @@ const Hexax=(function(global){
     if(isEQ(len(arguments),2)){
       this.$globals.register.blocks[name]=func;
     }
+    return this ;
   }
   function property(name, value){
      if(!isString(name)){
@@ -3540,27 +3676,31 @@ const Hexax=(function(global){
   }
   function configDelimeters(delimiters){
     
+    return this
   }
   function configDebug(debug){
     
+    return this
   }
   function configForwardAttrs(forwardAttrs){
     
+    return this;
   }
   function configIsAsync(isAsync){
     
+    return this
   }
   function configForwardSlot(){
     
+    return this
   }
   function configIsCustomElement(isCustomElement){
     
+    return this
   }
-  function configInAttrDelimiters(inAttrDelimiters){
+  function configScopesStyleSheet(scopesStyleSheet){
     
-  }
-  function configSubAttrBinding(subAttrBinding){
-    
+    return this
   }
   function controller(options){
     if(!isPObject(options)){
@@ -3569,7 +3709,7 @@ const Hexax=(function(global){
     }
     this.$globals.controller.add(options);
     optionsRegistery(this, options);
-    
+    return this
   }
   function configBuildOptions(buildOptions){
     
@@ -3601,7 +3741,7 @@ const Hexax=(function(global){
     return true;
   }
   function buildMethods(){
-    return { mount, widget, install, handler, directive, property, block, configDelimeters, configIsAsync, configIsCustomElement, configForwardSlot, configSubAttrBinding, configInAttrDelimiters, controller, configForwardAttrs, configBuildOptions, destroy };
+    return { mount, widget, install, handler, directive, property, block, configDelimeters, configIsAsync, configIsCustomElement, configForwardSlot, configScopesStyleSheet, controller, configForwardAttrs, configBuildOptions, destroy };
   }
   for(let [ key, fn ] of entries( buildMethods() )){
     fn=new Proxy(fn, {
@@ -3668,15 +3808,18 @@ const Hexax=(function(global){
       observers.push(observer);
       observer.update();
     }
-    observe(()=>data['[[[_Reactive__Model_]]]'], (newV, oldV)=>{
-      try{
-        callback(newV, oldV, "");
-      }catch(err){
-        $Debug(`Encountered a Problem during DOM rendering batch\n\n`, self, true);
-        $Debug(err);
-        return false;
-      }
-    })
+    if(self.operands.PATCH_FLAG){
+      observe(()=>data['[[[_Reactive__Ref_]]]'], (newV, oldV)=>{
+        try{
+          callback(newV, oldV, "");
+          self.operands.PATCH_FLAG=0
+        }catch(err){
+          $Debug(`Encountered a Problem during DOM rendering batch\n\n`, self, true);
+          $Debug(err);
+          return false;
+        }
+      })
+    }
   }
   const isReadOnlyProp=key=>_mapValue(readOnlyModelProp, key);
   function _hydrationEjectionTrigger(self, reacteData, selector){
@@ -3706,9 +3849,16 @@ const Hexax=(function(global){
     }
   }
   const isConditionalHx_Vnode=node=>isConditionalVnode(node, 'if') || isConditionalVnode(node, 'else-if') || isConditionalVnode(node, 'else') ;
+  function virtualBuildFilterExchange(self, node, vnode, parent){
+    self.operands.initialized=false;
+    const NewNode=node.compiler_options.Node();
+    self.operands.initialized=true;
+    node.$element.replaceWith(NewNode.$element);
+    parent.NodeList.replace(node, NewNode);
+  }
   function Node_Effect_Track(self, virtualElement, virtualBuild, observer){
     const is_hyperscript=self.core.map.is_hyperscript;
-    const NodeListElementsCollection= virtualBuild?.NodeList || []
+    const NodeListElementsCollection= virtualBuild?.NodeList || new Tuple()
     for( const [ ind, node] of virtualElement.NodeList.entries()){
        const virtualNode= NodeListElementsCollection.at(ind)
       if(isHexaxVNode(node)){
@@ -3722,6 +3872,7 @@ const Hexax=(function(global){
         
       }else pass ;
     }
+      // if(IS_ELEMENT_NODE(virtualElement.$element) && !node.$element.isEqualNode(virtualBuild.$element)) virtualBuildFilterExchange(self, virtualElement, virtualBuild, virtualElement);
     AttributeAndPropsReactiveManager(self, virtualElement, virtualBuild,[is_hyperscript, observer] );
   }
   function Widget_Effect_Trigger(self, node, virtualElement, observer){
@@ -3867,7 +4018,6 @@ const Hexax=(function(global){
         observer.mutated=true;
       }
     }
-    
     if(len(garbage)){
       for(let atom of garbage.values()){
         inDOMElementNodesRemover(self, atom);
@@ -3875,7 +4025,7 @@ const Hexax=(function(global){
         observer.mutated=true;
       }
     }
-    Node_Effect_Track(self, node, virtualBuild, observer)
+    Node_Effect_Track(self, node, virtualBuild, observer);
     node.compiler_options.src=value;
   }
   function _fromKey(obj, key){
@@ -3892,95 +4042,148 @@ const Hexax=(function(global){
   }
   class _Reactive__ {
     _data=undefined
-    constructor(reactive, watchers){
-      define(this, '_data', {
-        get(){
-          return reactive._data;
-        },
-        set(value){
-          reactive._data=value
-          return true
-        }
-      })
+    constructor(reactive, watchers, isShallow, isReadonlyRef){
+      if(isReadonlyRef){
+        define(this, '_data', {
+          get(){
+            return unWrapRef(reactive);
+          }
+        })
+      }else{
+        define(this, '_data', {
+          get(){
+            return unWrapRef(reactive._data);
+          },
+          set(value){
+            if(isRef(value)){
+              value.effectTrigger(()=>{
+                watchers.mutated=1
+              })
+              return true
+            }
+            reactive._data=unWrapRef(value)
+            return true
+          }
+        })
+      }
       this.EffectObservers=watchers;
-      define(this, 'EffectObservers',{
-        get(){
-          return watchers
-        }
-      })
-      define(this, 'initiative',{
-        get(){
-          return "[[[_Reactive__Model_]]]"
-        }
-      })
+      define(this, 'EffectObservers',{ value:watchers, enumerable })
+      define(this, 'isShallow',{ value:isShallow, enumerable })
+      define(this, '[[[key]]]',{ value:_generateUUID(7, 'alphaNum').toUpperCase(), enumerable })
+      define(this, 'EffectObservers',{ value:watchers, enumerable })
+      define(this, '[[[GenreIDType]]]',{ value: `[[[_${ isReadonlyRef ? "Readonly" : "Reactive" }__Ref_]]]`, enumerable })
     }
     effectTrigger(fn, self){
+      if(isEQ(this["[[[GenreIDType]]]"], '[[[_Readonly__Ref_]]]') && isFalse(this.isShallow)) return
       let mutated=this.EffectObservers.mutated;
       define(this.EffectObservers , 'mutated', {
         get(){
           return mutated;
         },
-        set(value){
-          mutated=value
-          fn(()=>this)
-          return true
-        }
-      })
-      //call the effectTrigger call with an function param
-    }
-  }
-  function reactiveAccessorsForIterables(iterable, watcher, path){
-    if(!len(iterable)) return iterable;
-    if(isPObject(iterable)) return definePropertyAccessors(iterable, watcher)
-    for(let [key, value] of getIterator(iterable)){
-      define(iterable, key, {
-        get(){
-          return isIterable(value) ? reactiveAccessorsForIterables(value, watcher ) : value;
-        },
-        set(valueX) {
-          const oldValue = value
-          value = valueX
-            // Notify watchers if property has changed
-          watcher.mutated++
-          watcher.ActiveRecord[get_Prop_Path(iterable, key)]=iterable[key]
+        set(valueX){
+          mutated=valueX;
+          fn(()=>this);
           return true;
         }
-      })
+      }) //call the effectTrigger call with an function param
     }
-    return iterable
+    isSameRef(ref){
+      return isRef(ref) && isEQ(this["[[[key]]]"] , ref["[[[key]]]"]);
+    }
   }
-  function definePropertyAccessors(obj, watcher, deep, path="", init){
-    obj=!isPObject(obj) ? { _data:obj } : obj
+  function _createReactiveObjectProxyAccessors(iterable, watcher, deep, path, readonly){
+    if(!isIterable(iterable) || !len(iterable)) return iterable;
+    if(isPObject(iterable)) return definePropertyAccessors(iterable, watcher, deep, path, false , readonly);
+    return new Proxy(iterable, {
+      get(target, prop, receiver){
+        const value=Reflect.get(...arguments);
+        if(isRef(value)){
+          return unWrapRef(value)
+        }
+        return isIterable(value) && deep && !isRef(value) ? _createReactiveObjectProxyAccessors(value, watcher , deep, path, readonly) : value;
+      },
+      set(target, prop, value, receiver){
+        if(readonly && !deep){
+          $Debug(`Cannot reassign/mutate a "readonly" ref value\n\n___MUTATION FAILED___\n........".${prop}" property assignment `);
+          return false;
+        }
+        Reflect.set(...arguments);
+        if(isRef(value)){
+          value.effectTrigger(()=>{
+            watcher.mutated=1
+          })
+          return true
+        }
+        watcher.mutated=1;
+        return true;
+      },
+      deleteProperty(target, prop ){
+        if(readonly && !deep){
+          $Debug(`Cannot reassign/mutate a "readonly" ref value\n\n___MUTATION FAILED___\n........".${prop}" property assignment  `);
+          return false;
+        }
+        Reflect.deleteProperty(...arguments);
+        watcher.mutated=1;
+        return true
+      },
+      defineProperty(target, prop, descriptor){
+        if(readonly && !deep){
+          $Debug(`Cannot reassign/mutate a "readonly" ref value\n\n___MUTATION FAILED___ \n........".${prop}" property assignment `);
+          return false;
+        }
+        Reflect.defineProperty(...arguments)
+        watcher.mutated=1
+        let value=descriptor.value;
+        if(isRef(value)){
+          value.effectTrigger(()=>{
+            watcher.mutated=1
+          })
+          return true
+        }
+        return true;
+      }
+    })
+  }
+  function definePropertyAccessors(obj, watcher, deep, path="", init, readonly){
+    obj=!isPObject(obj) && isTrue(init) ? { _data:obj } : obj;
+    if(!isPObject(obj) && isIterable(obj) && (!readonly && !deep)) return _createReactiveObjectProxyAccessors(obj, watcher, deep, path, readonly);
+    else if(!isPObject(obj) || !readonly && deep) return obj;
     for (let [key, value ] of entries(obj)){
       define(obj, key, {
         get(){
-          return isIterable(value) && deep ? reactiveAccessorsForIterables(value, watcher , path) : value;
+          return isIterable(value) ? _createReactiveObjectProxyAccessors(value, watcher , deep, path, readonly) : value;
         },
         set(valueX) {
+          if(readonly && !deep){
+            $Debug(`Cannot reassign/mutate a readonly ref value\n\n___MUTATION FAILED___ \n........".${key}" property assignment `);
+            return false;
+          }
           const oldValue = value
-          if(isEQ(key, '_data' ) && isTrue(init) && !isPrimitive(valueX)){
-            value = definePropertyAccessors(valueX, watcher, true, "")
+          if(isRef(valueX)){
+            valueX.effectTrigger(()=>{
+              watcher.mutated=1
+            })
+          }
+          if(isEQ(key, '_data' ) && isTrue(init) && !isPrimitive(valueX) && !isRef(valueX)){
+            value = definePropertyAccessors(valueX, watcher, deep, path, false, readonly)
           }else value = valueX
             // Notify watchers if property has changed
-          watcher.mutated++
-          watcher.ActiveRecord[get_Prop_Path(obj, key)]=obj[key];
-          
+          watcher.mutated=1;
           return true;
         }
       })
     }
-    return obj
+    return obj ;
   }
-  function dataRef(target){
-    const ActiveRecord={};
+  function dataRef(target, isShallow=false){
+    if(isRef(target)) return target;
     const observers=new Tuple();
-    const watchers={ ActiveRecord, observers, mutated:0};
+    const watchers={ observers, mutated:0};
     let mutated=watchers.mutated
-    target =definePropertyAccessors(target, watchers);
-    let reactive={ _data:target }
-    reactive=Object.hasOwn(target, '_data') ? target : reactive;
+    target =definePropertyAccessors(target, watchers, !isShallow , "");
+    let reactive=Object.hasOwn(target, '_data') ? target : { _data:target};
     reactive=definePropertyAccessors(reactive, watchers, false ,"", true);
-    return Object.preventExtensions(new _Reactive__(reactive, watchers))
+    return Object.preventExtensions(new _Reactive__(reactive, watchers, isShallow, false ))
   }
   function _initiateChildNodes(self, children,  hx__VNode, element){
     const is_hyperscript=hx__VNode?.is_hyperscript;
@@ -4058,7 +4261,7 @@ const Hexax=(function(global){
       widget.$attributes=createObj('$attributes');
       consume_Widget_Props(self, widget, value, hx__VNode);
     }
-    return $compilerEngine(self, widget, value, hx__VNode);//this sets the widget flags, passed the widget to _Hexax_Build, sets global widgets from  its parents if any, installs all BUILT_IN_WIDGETs, mounts the wodget to a fragment and return the domRoot'
+    return $compilerEngine(self, widget, value, hx__VNode);//$compilerEngine the widget flags, passed the widget to _Hexax_Build, sets global widgets from  its parents if any, installs all GLOBAL_WIDGETS_AND_PLUGINS, mounts the widget to a fragment and return the domRoot'
   }
   function $compilerEngine ( self , widget , value , hx__VNode ) {
     if( widget.$attributes ) value.$attributes = assign( value.$attributes || {} , widget.$attributes || {} ) ;
@@ -4068,28 +4271,27 @@ const Hexax=(function(global){
     let child = new _Hexax_Build( widget ) ;
     if( self ) {
       child = controllerHydration( self , child ) ;
-      child = child.install( controllerGlobalPlugin , { self }) ;//build the widget and other installations
+      child = child.install( controllerGlobalPlugin , { self } ) ;//build the widget and other installations
     }
-    child = child.mount( _createFragment() ) ;//mounts the build to a hexax fragment
-    return child ;
+    return child.mount( _createFragment() ) ;//mounts the build to a hexax fragment
   }
-  function controllerHydration(self, build){
-    if(!len(self.$globals.controller)) return build;
-    for(let genre of self.$globals.controller.values()){
-      build.controller(genre);
+  function controllerHydration( self , build ) {
+    if( !len( self.$globals.controller ) ) return build ;
+    for( let genre of self.$globals.controller.values() ) {
+      build.controller( genre ) ;
     }
     // build.property('$parent', self.build)
     return build;
   }
-  function controllerGlobalPlugin(build, options){
-    for(const [key, value] of entries(options.self.$globals.register)){
-      entries(value).forEach(([name, data])=>{
-        if(isEQ(key, 'widgets')) build=build.widget(name, data);//in the root, uses the build.widget prototype to define global widgets
-        else if(isEQ(key, 'blocks')) build=build.block(name, data);//in the root, uses the build.widget prototype to define global properties
-        else if(isEQ(key, 'directives')) build=build.directive(name, data);//in the root, uses the build.widget prototype to define global directive
-        else if(isEQ(key, 'handlers')) build=build.handler(name, data);//in the root8, uses the build.widget prototype to define global handlers
-        else if(isEQ(key, 'hangers')) build=build.hang(name, data);//in the root8, uses the build.widget prototype to define global hangers
-        else if(isEQ(key, 'properties')) build=build.property(name, data);//in the root8, uses the buil/d.widget prototype to define global propertiess
+  function controllerGlobalPlugin ( build , options ) {
+    for ( const [ key , value ] of entries( options.self.$globals.register ) ) {
+      entries( value ).forEach( ( [ name , data ] ) => {
+        if ( isEQ( key , 'widgets' ) ) build = build.widget( name , data ) ;//in the root, uses the build.widget prototype to define global widgets
+        else if ( isEQ( key , 'blocks' ) ) build = build.block( name , data ) ;//in the root, uses the build.widget prototype to define global properties
+        else if ( isEQ( key , 'directives' ) ) build = build.directive( name , data );//in the root, uses the build.widget prototype to define global directive
+        else if ( isEQ( key , 'handlers' ) ) build = build.handler( name , data ) ;//in the root8, uses the build.widget prototype to define global handlers
+        else if ( isEQ( key , 'hangers' ) ) build = build.hang( name , data ) ;//in the root8, uses the build.widget prototype to define global hangers
+        else if ( isEQ( key , 'properties' ) ) build = build.property( name , data ) ;//in the root8, uses the buil/d.widget prototype to define global propertiess
       })
     }
   }
@@ -4150,8 +4352,11 @@ const Hexax=(function(global){
     }
     return new _WidgetResolver(name);
   }
-  function defer(obj, prop){
-    
+  function defer(getter){
+    if(!isPFunction(getter)){
+      $Debug(`defer expects a getter function`);
+      return 
+    }
   }
   function batch(name, value, modifiers){//dynamically resolving and controlling of directives and arguments
     if(!_validateType(name, [String, Function, Object])){
@@ -4662,6 +4867,7 @@ const Hexax=(function(global){
 
   global._HexaxHttpRequestModule=_HexaxHttpRequestModule;
   global._styleSheet_hydration=_styleSheet_hydration;
+  global.isRef=isRef;
   global._compileToStaticTemplateScarfold=_compileToStaticTemplateScarfold;
   global.scarfold=scarfold;
   global.importWidget=importWidget;
@@ -4673,6 +4879,7 @@ const Hexax=(function(global){
   global.renderSlots=renderSlots;
   global._escapeReverseDecoder=_escapeReverseDecoder;
   global.hexaxCompilerConfig=hexaxCompilerConfig;
+  global.isReactiveRef=isReactiveRef;
   global._mapValue=_mapValue;
   global.initBuild=initBuild;
   global.withModifiers=withModifiers;
@@ -4689,8 +4896,10 @@ const Hexax=(function(global){
   global.Build=Build;
   global.Transition=Transition;
   global.asyncWidget=asyncWidget;
+  global.isShallowRef=isShallowRef;
   global.Animation=Animation;
   global._createVElement=_createVElement;
+  global.isReadonlyRef=isReadonlyRef;
   global.markdown=markdown;
   global._validateType=_validateType
   global.Any=Any;
@@ -4729,9 +4938,11 @@ const Hexax=(function(global){
   global._createFragment=_createFragment;//dev
   global.$Debug=$Debug;//dev
   global.Fragment=Fragment;
+  global.isShallowReactive=isShallowReactive;
   global.Tuple=Tuple;
   global._GenerateRoot=_GenerateRoot;
   global.withFallThrough=withFallThrough;
+  global.isShallowReadOnly=isShallowReadOnly;
   global.useAgent=useAgent;
   console.info(devInfo);//dev
   return global;
