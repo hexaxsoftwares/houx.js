@@ -112,7 +112,7 @@ const Hexax=(function(global){
   const isArgument=arg=>isEQ(_toStringCall(arg), "[object Arguments]");
   const isTuple=tp=>tp instanceof Tuple;
   function len(obj){
-    return isArray(obj) || isArgument(obj) ? obj.length : isRef(obj) ? len(unWrapRef(obj))  : isSet(obj) || isTuple(obj) || isMap(obj) ? obj.size : isPObject(obj) ? Object.keys(obj).length : isString(obj) ? obj.length : isNumber(obj) ? obj : -1 ;
+    return isArray(obj) || isArgument(obj) ? obj.length : isRef(obj) ? len(unWrapRef(obj))  : isSet(obj) || isTuple(obj) || isMap(obj) ? obj.size : isPObject(obj) ? keys(obj).length : isString(obj) ? obj.length : isNumber(obj) ? obj : -1 ;
   }
   const isValidWidgetOption=opts=>_mapValue(validWidgetOptions, opts);//checks if an option is a vslid Hexax widget option
   const HTML_TAGS="html,head,style,title,body,address,article,aside,footer,header,h1,h2,h3,h4,h5,h6,main,nav,section,blockquote,dd,div,dl,dt,figcaption,figure,li,menu,ol,p,pre,ul,a,abbr,b,bdi,bdo,cite,code,data,dfn,em,i,kbd,mark,q,rp,rt,ruby,s,samp,small,span,strong,sub,sup,time,u,var,audio,map,video,iframe,object,picture,portal,svg,math,canvas,noscript,script,del,ins,caption,col,colgroup,table,tbody,td,tfoot,th,thead,tr,datalist,fieldset,form,label,legend,meter,optgroup,option,output,progress,select,textarea,details,dialog,summary,button,template,slot,base,link,meta,hr,br,wbr,area,img,track,embed,source,input,template,slot" ;//All html valid tags supported by the Hexax framework
@@ -397,22 +397,15 @@ const Hexax=(function(global){
   }
   const getIterator=obj=>_validateType(obj, [Set, Map, Array,Tuple ]) ? obj.entries() : isPObject(obj) ? entries(obj) : isIterator(obj) ? obj : [] ;
   function readonly(value, isShallow=false, isComputed=false, metrics = []){
+    if(isReactiveRef(value)) return toReadonlyRef(value);
+    else if(isReadonlyRef(value)) return value;
     let [ mutate=false, key ]=metrics
     const watchers={
       mutated:0,
       observers:new Tuple()
     }
     value=_createReactiveProxyObjectOrArray(value, watchers, isShallow, "", true);
-    return new Proxy(Object.preventExtensions(new _Reactive__(value, watchers, isShallow, true, isComputed, mutate, key)), {
-      set(target, prop, valueX, receiver){
-        if(isEQ(prop, '_data')){
-          $Debug(`Cannot reassign/mutate a "readonly" ref value\n\n___MUTATION FAILED___\n........".${prop}" property assignment `);
-        }else{
-          $Debug(`Do not mutate a _Reactive__Ref_ instance object`);
-        }
-        return false;
-      }
-    })
+    return Object.preventExtensions(new _Reactive__(value, watchers, isShallow, true, isComputed, key))
   }
   function isRef(value){
     return value instanceof _Reactive__;
@@ -420,9 +413,6 @@ const Hexax=(function(global){
   function unWrapRef(value){
     if(!isRef(value)) return value;
     return value._data;
-  }
-  function persistRefMutation(ref){
-    
   }
   function isReactiveRef(value){
     return isRef(value) && isEQ(value["[[[GenreIDType]]]"], "[[[_Reactive__Ref_]]]");
@@ -462,10 +452,10 @@ const Hexax=(function(global){
   }
   const isReadonlyBypasser = bypasser=>bypasser instanceof readonlyBypasser;
   function defineReadonlyGetter(parent, prop, value, metrics=[], ){ 
-    let [ isShallow=false, isComputedRef=false, mutate=false, key]=metrics;
+    let [ isShallow=false, isComputedRef=false, key]=metrics;
     define(parent, prop, {
       get(){
-        return isReadonlyRef(value) ? value : isRef(value) ? toReadonlyRef(value, isShallow, isComputedRef, [mutate, key ]) : readonly(value, isShallow, isComputedRef, [ mutate, key ] );
+        return isReadonlyRef(value) ? value : isRef(value) ? toReadonlyRef(value, isShallow, isComputedRef, [mutate, key ]) : readonly(value, isShallow, isComputedRef, [ exists(key), key ] );
       }
     })
   }
@@ -561,9 +551,9 @@ const Hexax=(function(global){
       }
       this.size=len(this.store);
     }
-    freeze(deep){
+    freeze(deep=false){
+      this.store=objFreeze(this.store, deep);
       this.isFrozen=true;
-      this.store=Object.freeze(this.store);
       return this;
     }
     values(){
@@ -1339,7 +1329,7 @@ const Hexax=(function(global){
       }
   }
   function keyIndex(obj, key){
-    return isObject(obj) ? Object.keys(obj).indexOf(key) : _validateType(obj, [Array, Set, Number]) ? Number(key) : isMap(obj) ? obj.keys().indexOf(key) : NaN;
+    return isObject(obj) ? keys(obj).indexOf(key) : _validateType(obj, [Array, Set, Number]) ? Number(key) : isMap(obj) ? obj.keys().indexOf(key) : NaN;
   }
   function VNodeManager(self, options, element, hx__VNode, siblings, saveGarbageContent){
     const { type, props, children }=options;
@@ -1669,8 +1659,8 @@ const Hexax=(function(global){
   }
 //A replacement for the with  js expression
   function _EvalWith( data , expression , autoReturn=false) {
-    expression=formatExpression('obj', Object.keys(data), expression)
-    const run = Function( 'obj',...Object.keys( data ) , `"use strict"; ${ autoReturn ? 'return' : '' } ${ expression }` );
+    expression=formatExpression('obj', keys(data), expression)
+    const run = Function( 'obj',...keys( data ) , `"use strict"; ${ autoReturn ? 'return' : '' } ${ expression }` );
     return run( data );
   }
   function hasSpecialCharacters(value) {// Define the regular expression for special characters
@@ -2440,6 +2430,10 @@ const Hexax=(function(global){
         }
       });
     }
+    hx__VNode.patch_tracks.add({
+      'model:Value':item,
+      initialValue:unWrapRef(initVal)
+    });
   }
   function _Resolve_Builtin_Directives(self, key, attr, vnode, hx__VNode, modifiers){
     let item =bindKeyAsValue(key, attr);
@@ -2744,8 +2738,8 @@ const Hexax=(function(global){
     const [ props, param ] = metrics ;
     if(props && _mapValue(props, param)){
       const value=!props[param] && !isBoolean(props[param]) ? '' : props[param];
-      define(paramsSet, param, {value,enumerable, configurable});
-    }else define(paramsSet, param, {value:'',enumerable, configurable});
+      paramsSet[param]=value;
+    }else paramsSet[param]=undefined; 
   }
   function runObjectifiedParamsValidation(self, paramsSet, objMetrics){
     const [ props, param, ind ] = objMetrics;
@@ -2766,8 +2760,7 @@ const Hexax=(function(global){
       return false;
     }else if(isTrue(param.required) && !_mapValue(props || {}, ind)){
       $Debug(`Params validation error........\n\nrequired params is missing\n\nat at\n  ....."${ind}"  param`, self, true);
-      // defineReadonlyGetter(paramsSet, ind, undefined, [false, false, self.ownProperties.hx_hash_] )
-      define(paramsSet,ind,{value:undefined, enumerable, configurable, writable});
+      paramsSet[ind]=undefined;
       return false;
     }
   }
@@ -2780,7 +2773,7 @@ const Hexax=(function(global){
           define(paramsSet,ind,{value:undefined, enumerable, configurable });
           $Debug(`Params validation error .....\n\nproperty validation for widget default value failed, property "${ind}" is of an invalid type\n\n${ isArray(param.type) ? "Matches no type in the validation list" :  'typeof '+ param.type.name+" required"}`, self, true); 
           return false;
-        }else define(paramsSet,ind,{value:defaultValue , enumerable, configurable});
+        }else paramsSet[ind]=defaultValue ;
       }
     }
   }
@@ -2799,9 +2792,9 @@ const Hexax=(function(global){
           return false ;
         }
       }
-      define(paramsSet,ind,{value, enumerable, configurable, writable});
+      paramsSet[ind]=value
     }else if(_mapValue(props, ind) && !_validateType(value, param.type)){
-      define(paramsSet,ind,{value:undefined, enumerable, configurable });
+      paramsSet[ind]=undefined;
       $Debug(`Params validation error .....\n\nproperty validation for widget Params value failed, property "${ind}" is of an invalid type\n\n${ isArray(param.type) ? "Matches no type in the validation list" :  'typeof '+param.type.name+" required"}`, self,  true);
       return false;
     }
@@ -2828,7 +2821,7 @@ const Hexax=(function(global){
         if(_validateType(param, [Function, Array]) ){
           rv=paramsKeysDefer(self, paramsSet, [ props, ind, param ]);//Defer type, runs validation for tyoes in Array and JavaScript prototype Methods tyoes
           if(isFalse(rv)) return false;
-        }else if(isArray(params) && isString(param)) arrayParamsResolver(self, paramsSet, [props, params])//array and string based validation
+        }else if(isArray(params) && isString(param)) arrayParamsResolver(self, paramsSet, [props, param])//array and string based validation
         if(isPObject(param)){
           let rv=runObjectifiedParamsValidation(self, paramsSet, [ props, param, ind ]);//params in object type
           if(isFalse(rv)) return false;
@@ -2860,6 +2853,11 @@ const Hexax=(function(global){
         define(self.model.$attrs, ind, {value, configurable,enumerable, writable});
       }
     })
+    if(paramsSet && len(paramsSet)){
+      for(const [key, value ] of entries(paramsSet)){
+        defineReadonlyGetter(paramsSet, key, value , [ true, false, self.ownProperties.hx_hash_ ] );
+      }
+    }
   }
   function GarbagePropsPrefix(self, paramsSet, garbage, props){
   
@@ -3214,7 +3212,7 @@ const Hexax=(function(global){
     install_State_Observer(self)
     self.model=_Proxy_Setup(self, self.model, true);
     entries(self.register.handlers).forEach(([key, handler])=>{
-      define(self.model, key, { value:handler.bind(self['model']), enumerable});
+      define(self.model, key, { value:handler.bind(self.model), enumerable});
     })
     computedRefsCompile(self, options)
     Observer_Track(self, options);
@@ -3349,12 +3347,43 @@ const Hexax=(function(global){
       name:opts?.name || 'UnknownWidget', 
       slot_name:hasProp(opts, '$attributes')  ? opts.$attributes['[[[~~slotName~~]]]'] : undefined , 
       isInitialBuild:false 
-    }), { } )
+    }), {} )
     if(object_Has_Path(opts, '$attributes.[[[~~slotName~~]]]')) delete opts.$attributes['[[[~~slotName~~]]]'];
-    defineGetter(self,'register',createObj( 'register',{ directives:createObj('directives'), blocks:createObj('blocks'), widgets:createObj('widgets'), handlers:createObj('handlers'), agents:createObj('agents'), properties:createObj('properties')}) );
-    defineGetter(self, 'operands',createObj('operands',{ _OBSERVERS:new Set(), _LIFECIRCLEHOOKS:createObj('_LIFECIRCLEHOOKS'), _OPTIONS:createObj('_OPTIONS'),  garbageWatch:false, initialized:false , PATCH_FLAG:0, onEffectWatch:false, modelMethods:createObj('modelMethods')}));
-    defineGetter(self, 'core',createObj('core',{utils:createObj('Utils'), settings:createObj('settings', Compiler_Config_Options), slots:createObj('Slots'), map:createObj('map',{ is_hyperscript:false }, ), activeObserver:null, effectSubscribers:new Set()}));
-    defineGetter(self, '$globals',createObj('$globals',{register:createObj('register', self.register), setupOptions:createObj('setupOptions'), $hanger:createObj('$hanger'), legalOptions:createObj('legalOptions'), controller:new Set()}));
+    defineGetter(self,'register', createObj( 'register', { 
+        directives:createObj('directives'), 
+        blocks:createObj('blocks'), 
+        widgets:createObj('widgets'), 
+        handlers:createObj('handlers'), 
+        agents:createObj('agents'), 
+        properties:createObj('properties')
+      }) );
+    defineGetter(self, 'operands',createObj('operands',{ 
+      _OBSERVERS:new Set(), 
+      _LIFECIRCLEHOOKS:createObj('_LIFECIRCLEHOOKS'), 
+      _OPTIONS:createObj('_OPTIONS'),  
+      garbageWatch:false, 
+      initialized:false , 
+      PATCH_FLAG:0, 
+      onEffectWatch:false, 
+      modelMethods:createObj('modelMethods')
+    }));
+    defineGetter(self, 'core',createObj('core',{
+      utils:createObj('Utils'), 
+      settings:createObj('settings', Compiler_Config_Options), 
+      slots:createObj('Slots'), 
+      map:createObj('map',{ 
+        is_hyperscript:false 
+      } ), 
+      activeObserver:null, 
+      effectSubscribers:new Set()
+    }));
+    defineGetter(self, '$globals', createObj('$globals',{
+      register:createObj('register', self.register), 
+      setupOptions:createObj('setupOptions'), 
+      $hanger:createObj('$hanger'), 
+      legalOptions:createObj('legalOptions'), 
+      controller:new Set()
+    }));
   }
   function slotDebuger(self){
     return (slotName, slotContent)=>{
@@ -3423,7 +3452,6 @@ const Hexax=(function(global){
     if(len(defaultSlotsRecord)){
       self.core.slots.default=()=>new HexaxFragmentVNode(patchFlags, defaultSlotsRecord.list());
     }
-    // log(self.core.slots)
     if(!is_hyperscript) return;
     defineFallbackSlotsRef(self, options);
   }
@@ -3689,17 +3717,17 @@ const Hexax=(function(global){
       
     }
   }
-  function prefixManagement(self){
-    const options=self.core.opts;
-    validateRegistryProvider(self);
-    runtimeSlotsFallThrough(self, options);
-    const setData = provideWidgetChildren(self, options);
-    _induceSlotContents(self, options, setData || [] );
-    delete self.core.opts;
-    mergeRegisteries(self);
-    _$instanciateModelProps(self);
-    define(self.model, "[[[_Reactive__Ref_]]]", { value:()=> self.ownProperties.hx_hash_+self.operands.PATCH_FLAG, enumerable
-    })
+  function prefixManagement( self ) {
+    const options = self.core.opts ;
+    validateRegistryProvider( self ) ;
+    runtimeSlotsFallThrough( self , options ) ;
+    const setData = provideWidgetChildren( self , options ) ;
+    _induceSlotContents( self , options , setData || [] ) ;
+    delete self.core.opts ;
+    mergeRegisteries( self ) ;
+    _$instanciateModelProps( self ) ;
+    define( self.model , "[[[_Reactive__Ref_]]]" , { value : () => self.ownProperties.hx_hash_ + self.operands.PATCH_FLAG , enumerable
+    } ) ;
   }
   function computedRefsCompile(self, opts){
     if(!opts.computedRefs || !len(opts.computedRefs)) return
@@ -3713,15 +3741,15 @@ const Hexax=(function(global){
         return computed.call(self.model);
       } )
       const computedRef=readonly(value, isgetter, true);
-      computedRef.InternalEffect['[[[computed__Ref]]]']=true;
+      computedRef.InternalEffect[ '[[[computed__Ref]]]' ] = true;
       computedRef.InternalEffect.computed=computed;
-      if(len(subscribers)) {
-        self.model._observe(subscribers, ()=>{
-          if(isComputedRef(computedRef)){
-            computedRef.InternalEffect.updateFlags++;
-            if(!computedRef.InternalEffect.ModelInstance) computedRef.InternalEffect.ModelInstance=self.model;
+      if( len( subscribers ) ) {
+        self.model._observe( subscribers , () => {
+          if( isComputedRef( computedRef ) ) {
+            computedRef.InternalEffect.updateFlags ++;
+            if( !computedRef.InternalEffect.ModelInstance ) computedRef.InternalEffect.ModelInstance = self.model;
           }
-        })
+        } )
       }
       define(self.model, key, {
         get(){
@@ -4039,6 +4067,15 @@ const Hexax=(function(global){
           observer.mutated=true;
         }
       }
+      if(Is_Form_Element(element) && len(virtualElement.patch_tracks)){
+        const patch=arrSet(virtualElement.patch_tracks)[0]
+        const prop=patch['model:Value'];
+        const initVal=patch.initialValue;
+        const currentValue=get_Object_Value(self.model, prop);
+        if(!deepEqualityCheck(initVal, unWrapRef(currentValue))){
+          element.value=unWrapRef(currentValue)
+        }
+      }
     }
   }
   const isConditionalHx_Vnode=node=>isConditionalVnode(node, 'if') || isConditionalVnode(node, 'else-if') || isConditionalVnode(node, 'else') ;
@@ -4073,10 +4110,9 @@ const Hexax=(function(global){
     const params=consume_Widget_Props(self, { $attributes:{}}, { props }, !virtualElement.LabContext ? node : virtualElement, true);
     const inst=node.widget_instance;
     for(const [ key, val ] of entries(params)){
-      if(hasProp(inst.model.$params, key) && !isEQ(inst.model.$params[key], val)) {
-        inst.model.$params[key]=val;
-        observer.mutated=true;
-        linkUpdateHook(self, node, observer);
+      if(object_Has_Path(inst.model.$params, key) && !deepEqualityCheck(unWrapRef(get_Object_Value(inst.model.$params, key)), unWrapRef(val))) {
+        // log(key, inst.ownProperties)
+        useReadonlyBypass(inst.model.$params, key, unWrapRef(val), inst.ownProperties.hx_hash_);
       }
     }
   }
@@ -4235,7 +4271,9 @@ const Hexax=(function(global){
   class _Reactive__ {
     _data=undefined
     constructor(reactive, watchers, isShallow=false, isReadonlyRef=false, isComputed=false, bypassKey=undefined){
-      if(isReadonlyRef){
+      define(watchers, 'readonlyBypassKey',{value:bypassKey, enumerable, writable});
+      define(this, 'InternalEffect',{ value:watchers, enumerable , configurable});
+      if(isReadonlyRef && !bypassKey){
         define(this, '_data', {
           get(){
             const returnValue=()=>{
@@ -4246,34 +4284,30 @@ const Hexax=(function(global){
             }
             return returnValue();
           }
-        })
-        if(bypassKey ){
-          this.InternalEffect.readonlyBypassKey=Symbol(bypassKey);
-          define(this, "_data", {
-            set(valueX){
-              if(!isReadonlyBypasser(valueX) && !isEQ(Symbol(this.InternalEffect.readonlyBypassKey), Symbol(valueX.bypassKey))){
-                $Debug(`Cannot reassign/mutate a "readonly" ref value\n\n___MUTATION FAILED___\n........".${prop}" property assignment \n\nNot a readonly bypasser instance \n.........>>>bypassKey verification failure`);
-                return false;
-              }
-              const value=valueX.value
-              if(isRef(value)){
-                value.effectTrigger(()=>{
-                  watchers.mutated=1
-                })
-                return true
-              }
-              watchers.mutated=1
-              reactive=unWrapRef(value)
-              return true
-            }
-          })
-        }
+        });
       }else{
         define(this, '_data', {
           get(){
+            if(isReadonlyRef){
+              const returnValue=()=>{
+                if(isComputed && this.InternalEffect.updateFlags){
+                  this.InternalEffect.updateFlags=0;
+                  return this.InternalEffect.computed.call(this.InternalEffect.ModelInstance) ;
+                }else return unWrapRef(reactive);
+              }
+              return returnValue();
+            }
             return unWrapRef(reactive._data);
           },
           set(value){
+            // if(isReadonlyRef && bypassKey ){
+            // log('InternalEffect', value, reactive)
+            //   if(!isReadonlyBypasser(value) && !isEQ(Symbol(this.InternalEffect.readonlyBypassKey), Symbol(value.bypassKey))){
+            //     $Debug(`Cannot reassign/mutate a "readonly" ref value\n\n___MUTATION FAILED___\n........".${prop}" property assignment \n\nNot a readonly bypasser instance \n.........>>>bypassKey verification failure`);
+            //     return false;
+            //   }
+            //   value=value.value
+            // }
             if(isRef(value)){
               value.effectTrigger(()=>{
                 watchers.mutated=1
@@ -4286,11 +4320,13 @@ const Hexax=(function(global){
           }
         })
       }
-      watchers={ cache:null, '[[[computed__Ref]]]':false, updateFlags:0, computed:pass, ModelInstance:null, ...watchers}
+      watchers.cache=null;
+      watchers["[[[computed__Ref]]]"]=false
+      watchers.updateFlags=0;
+      watchers.computed=pass
+      watchers.ModelInstance=null;
       define(this, 'isShallow',{ value:isShallow, enumerable })
       define(this, '[[[key]]]',{ value:_generateUUID(7, 'alphaNum').toUpperCase(), enumerable })
-      define(watchers, 'readonlyBypassKey',{value:undefined});
-      define(this, 'InternalEffect',{ value:watchers, enumerable })
       define(this, '[[[GenreIDType]]]',{ value: `[[[_${ isReadonlyRef ? "Readonly" : "Reactive" }__Ref_]]]`, enumerable })
     }
     effectTrigger(fn, self){
@@ -4316,7 +4352,7 @@ const Hexax=(function(global){
     return dataRef(valueX);
   }
   function _createReactiveProxyObjectOrArray(iterable, watcher, deep, path, readonly, bypass){
-    if(!isIterable(iterable) || !len(iterable)) return iterable;
+    if(isRef(iterable) || !isIterable(iterable) || !len(iterable)) return iterable;
     if(isPObject(iterable) && !bypass){
       try{
         return definePropertyAccessors(iterable, watcher, deep, path, false , readonly);
@@ -4375,6 +4411,7 @@ const Hexax=(function(global){
     })
   }
   function definePropertyAccessors(obj, watcher, deep, path="", init, readonly){
+    if(isRef(obj)) return obj
     obj=!isPObject(obj) && isTrue(init) ? { _data:obj } : obj;
     if(!isPObject(obj) && isIterable(obj) && (!readonly && !deep)) return _createReactiveProxyObjectOrArray(obj, watcher, deep, path, readonly);
     else if(!isPObject(obj) || !readonly && deep) return obj;
@@ -4411,7 +4448,7 @@ const Hexax=(function(global){
     const watchers={ observers, mutated:0};
     let mutated=watchers.mutated
     target =definePropertyAccessors(target, watchers, !isShallow , "");
-    let reactive=Object.hasOwn(target, '_data') ? target : { _data:target};
+    let reactive=hasOwn(target, '_data') ? target : { _data:target};
     reactive=definePropertyAccessors(reactive, watchers, false ,"", true, false );
     return Object.preventExtensions(new _Reactive__(reactive, watchers, isShallow, false, false ))
   }
@@ -4463,7 +4500,7 @@ const Hexax=(function(global){
     options=undefined
   }
   function Widget_Directive_Handler(self, widget, props, hx__VNode, modifiers, metrics){
-    let name=Object.keys(props)[0];
+    let name=keys(props)[0];
     let key=directive_sep(name);
     let param=props[name] || "";
     param=bindKeyAsValue(name, param);
@@ -4987,7 +5024,6 @@ const Hexax=(function(global){
     }
     let [ widget ] = propsAndChildrenGetter( ...arguments );
     widget = defineWidget( widget ) ;
-    
     widget['<<<!@---initBuild---@>>>']=true;
     if(widget.$children) widget.$children={ NodeList:widget.$children };
     return new _Hexax_Build( widget );
@@ -5047,9 +5083,9 @@ const Hexax=(function(global){
     return new Promise((resolve, reject)=>{
       const xhr=new XMLHttpRequest()
       xhr.open(method,url,options.async||true)
-      if(Object.hasOwn(options,'timeout')) xhr.timeout=options.timeout
-      if(Object.hasOwn(options,'headers')  && typeof options.headers==='object'){
-        for(const [header, value] of Object.entries(options.headers)){
+      if(hasOwn(options,'timeout')) xhr.timeout=options.timeout
+      if(hasOwn(options,'headers')  && isPObject(options.headers)){
+        for(const [header, value] of entries(options.headers)){
           xhr.setRequestHeader(header, value)
         }
       }
@@ -5093,7 +5129,7 @@ const Hexax=(function(global){
   function Request(urlOrOpts, methodOrOptions,options){
     return new Req__init__(...arguments)
   }
-  for(const [name, callback] of entries(Object.create(new _HexaxHttpRequestModule()))) Request[name]=callback;
+  for(const [name, callback] of entries(createObj('Request', new _HexaxHttpRequestModule()))) Request[name]=callback;
   function resolveHooks(xhr, opts){
   
   }
@@ -5185,4 +5221,4 @@ const Hexax=(function(global){
   global.useAgent = useAgent ;
   console.info( devInfo ) ; //dev
   return global ;
-} )( ( {} ) ) ;
+} )( ( { } ) ) ;
