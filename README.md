@@ -1,8 +1,7 @@
 ## HexaxJs
-### Hexax : Empowering web development Creativity, Beyond Rendering
+### Hexax : The Transparent Web Renderer for perfectionists
 
 ### Welcome to hexax documentation
-
 
 
 Hexax empowers creativity, speedy development while Building web apps.
@@ -10,20 +9,19 @@ Hexax empowers creativity, speedy development while Building web apps.
 
 ### 1. Introduction
 
-Hexax is a JavaScript framework designed with the target to enhancing creativity, speedy prototyping and efficient workflow while building web applications.  
-It provides you with a flexible and intuitive API for creating an interactive user interfaces using a declarative syntax. 
+Hexax is a JavaScript framework designed with the target of enhancing creativity, speedy prototyping and efficient workflow while building web applications.  
+It provides you with a flexible and intuitive API for creating an interactive user interfaces leveraging a declarative syntax. 
 
 Hexax is a framework where creativity meets efficiency.
 
 This guide isn't just about syntax and functions; it's a journey into a mindset that unleashes your creative potential and accelerates your web development skills.
 
-Hexax leverages reactive data and efficient rendering to delivering high-performance applications.
+Hexax leverages reactive data and efficient rendering to help delivering high-performance applications.
 
 This guide will take you through a detailed journey, covering installation, basic concepts, advanced features, and practical examples.
 
-Whether you're a newcomer to web development or seeking to expand your skills, Hexax serves as your guide to a higher level of web UI development.
+Whether you're a newcomer to web development or seeking to expand your skills, Hexax serves as your guide to a higher level web UI development.
 
-Let's dive in!
 
 ### 2. **Getting Started : installation and setting up your Hexax playground**
 
@@ -32,20 +30,20 @@ A basic understanding of HTML, CSS, and JavaScript is essential. If you're new t
 
 #### **Installation Proccess:**
 
-Hexax is a dependency-free, browser-oriented javascript library. This means that using it is as simple as adding a `<script>` tag to your document head. No need for complicated build steps.
+Hexax is a dependency-free, browser-oriented, open-source javascript library. This means that using it is as simple as adding a `<script>` tag to your document head. No need for complicated build steps.
 
 You can simply load Hexax by just including the following script tag in your main HTML file head tag and get going:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/hexaxsoftwares/hexax-js@main/hexax.global.dev.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/hexaxsoftwares/Hexax-js@main/hexax.global.dev.js"></script>
 ```
 You might also prefer the esm browser module. Here is the cdn link to a hexax exported components module.
 ```html
-<script src="https://cdn.jsdelivr.net/gh/hexaxsoftwares/hexax-js@main/hexax.esm-browser.dev.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/hexaxsoftwares/Hexax-js@main/hexax.esm-browser.dev.js"></script>
 ```
 Some discreet developers might prefer loading and hosting hexax locally in production.
 
-Then you can simply download the file from this jsdelivr Link . `https://cdn.jsdelivr.net/gh/prince9216/HexaxJs@main/hexax.global.dev.js` and copy the file to your project directory, then link to it from your html head file .
+Then you can simply download the file from this jsdelivr Link . `https://cdn.jsdelivr.net/gh/hexaxsoftwares/Hexax-js@main/hexax.global.dev.js` and copy the file to your project directory, then link to it from your html head file .
 
 ```html 
 <script src='path/to/hexax.global.dev.js'></script>
@@ -64,33 +62,32 @@ Once installed, hexax becomes your creative companion.
 
 ## **Understanding hexax**
 
-Once hexax is included in your project, the global namespace `Hexax` will be exposed and available within your script scope if you are using the self/cdn hosting.  
-Regular imports of hexax modules from 'hexax' will be available if using the cli version
+Once hexax is included in your project, the global namespace `Hexax` will be exposed and available within your script context scope if you are using the self/cdn hosting.  
+Regular imports of hexax modules from `'hexax'` will be available if using the cli version or exported module
 
-Destructuring while using the self/cdn hosting
+Destructuring while using the self/cdn hosting goes as below
 ```javascript
-  const { initBuild, Template, data, el, ref } = Hexax;
+  const { initBuild, dataRef, el } = Hexax;
   ```
-Regular imports while using the cli installation guide
+Regular imports while using the cli/esm installation guide
 ```javascript
-import { initBuild, Template, data,  el, ref } from 'hexax'
+import { initBuild, dataRef,  el } from 'hexax'
 ```
   
-### **Widgets and model instances**
-  
+### **Introducing Widgets**
+
 Hexax widgets are independent entities encapsulating UI components.  
-A widget can be a full page, or a simple component block of your application.  
+A widget can range from a full page, to a simple component block within your application.  
 Every widget has its own state, structure, and behavior and takes care of how it's model reactivity system is managed.  
 
 This can be confusing at the moment , but don't bother, this documentation is designed for both beginners and experienced developers alike.
 
-A Hexax widget can be defined using an object type, a class or a regular javascript function .   
-Hexax supports the use of both dataTypes as valid widgets for  simplicity and completeness.  
+We define a widget with a simple plain javascript object:
+Hexax supports the use of both classes and functions as valid widgets for  simplicity and completeness. You can learn how to use them in their dedicated sections  
 
 Let's create your inaugural hexax widget.   
-Envision a widget as the fundamental building block of your web application.  
-We are working with an object based widget in this  example since it's the most simple and recommended way of writing widgets in hexax.  
-You can learn about using class and functions as widgets in their specific documentation.
+Envision a widget as the fundamental building block of your web application or a way you are allowed to create a self defined tag that can only be used in hexax compiled environment.  
+Widgets helps you decomponentise your UI structure into smaller functions and components which helps reduce the complexity of project management.
 
 Consider the example below
 ```javascript
@@ -107,101 +104,102 @@ In the example code above, we created an object containing widget options that m
 
 lets go through the options above.
 
-1. The ***model*** option: Requires to be a method/function.
+1. The ***model*** option: Expects a function.
 
-The model option is used to define statefull properties that are to be exposed to the public instances.   
-The model returned object values  are esposed to the widget instance and can be used in bulding and encapsulating the widget model and reactive datas.
+The model option is used to define initial statefull properties that are to be exposed to the public instances.   
+The model have you assign to `this` with property names of your model data.  
+The `this` object values  are esposed to the widget instance and are however used in bulding and encapsulating the widget model and reactive datas.
 
-This simply means that the widget UI gets updated whenever any of the properties of the widget model difined properties  are mutated or  change.
+This simply means that the widget UI and template will be provided a direct access to the model defined properties.  
+You can simply make simple assignment to the `this` keyword within the model.
+```javascript
+model(){
+  this.count=0
+  this.info=[]
+  this.greeting='Hello
+}
+```
+The model method does not utilize a return value, do returned content will be ignored.
 
 2. The ***template*** option: A string based option that is used to define your widget markup texts.  
-Its recommended to use backticks while parsing this option to allow the use of multline system.
+Its recommended to use backticks while parsing this option to leverage the use of multline system.
+
+You can parse any valid html markup to the template option, hexax only provides you with addition compile time semantics to help you build efficiently.
 
 In the previous example, we've crafted a simple widget that conveys a greeting message.  
 The `model` function establishes the widget's initial data store, and the `template` option defines the UI structure using the string based markup texts.  
-Note how the model defined property via the inScope this keyword was to be accessed within the template tags directly. 
-This widget UI build gots updated whenever the model returned properties changes or got mutated.
+Note how the model defined property via the inScope this keyword was to be accessed within the template tags directly by using the hexax interpolation syntax  
+`{{ greeting }}`  
+> Note: The properties are accessed directly, you don't have to access them through `this`
 
-Meanwhile , if you prefer a more programmatic way to build your UI, hexax provides you with the `build` method which must return a render function.  The build method gets the `template` option ignored once is presented ,even if it does not return a valid UI instance.  
-A render function is a function returned by the build function which in return also returns an instance of the `el` hyperscript function.   
-A render function is required when building your UI using the `el` hyperscript function like in the example below
-
+Without using the hexax based interpolation syntax, javascript provides you with a string interpolation system within the  backticks multline strings syntax.
+But accessing `this` in the template option will rather point to the wrapping object.  
+Same foul occurs if you are using a class based widget type, it will point to the class object.  
+For example  
 ```javascript
-import { el } from 'hexax'
-export default{
-  
-  build(){
-    return ()=>el('h1',{ class:'myheading' }, 'Hello World! from Hexax');
-  }
-}
-```
-MeanWhile, while returning a render function, an  arrow function is recommended.
-
-Another optional native and simple way of encapsulating your ui from the build method if you prefer using the string based markup text is by using the `html` passed to `ctx.utils.scarfold` utility function.  e.g
-
-```javascript
-import { html } from 'hexax'
 let app={
-  build(params, ctx){
-    const { scarfold }= ctx.utils;
-    return scarfold(html`
-        <!--your html template strings -->
-    `)
-  }
+  template:`<button > ${this.propValue} </button>`
 }
+
 ```
-Notice in  the widget that a render function is not required but us a fundamental concept while returning UI instance from the build method.  
-You can directly return an instance of `scarfold` component without a render function with a Parameter of `html` javascript multline string literal, if you prefer the native way of building your ui from the build method.
-
-The build function runs only once throughout the life of a widget, and uses its returned value to build the widget UI in hexax.
-
-if the build method/render function directly returns a string,it will be passed and compiled as a textNode.  
-The build function must return a render function in form of an arrow function or an instance of the `scarfold` function.
-
-We will continue this documentation using the template option throughout our examples.
+Hexax reactive dependency tracker will not be notified if you used a non model defined prop since the widget UI build gots updated whenever the model returned properties changes or got mutated.  
+Just know you have to declare all your initial values in model function, this also is useful in helping you reason about a widget as a self defined component.
 
 ### **Widgets as Art, Initial Entry point.**
 
-In hexax, you're not just building widgets; you're crafting art. Each widget is like a brushstroke, contributing to the canvas of your application. Think about the composition, the flow, and the visual poetry you create through your widgets.
+In hexax, you're not just building widgets; you're crafting an art. Each widget is like a brushstroke, contributing to the canvas of your application. Think about the composition, the flow, and the visual poetry you create through your widgets.
 
 When building with hexax, there must be an entry point for your app build. This is a fundamental concept.
 
 The `initBuild` component is used to create an initial entry point widget, other child widgets can be passed here as components, pages or building blocks to the `initBuild` widget.
 
 The initBuild method is passed a widget as its first Parameter.
-This is an initial entrypoint of the app, we will learn how to use other widgets as child widgets  later on in this document.
+This is an initial entrypoint widget of the app, we will learn how to use other widgets as child widgets  later on in this document.
 
 Study the code below.
 ```javascript
 const { initBuild } = Hexax;
 let build = initBuild({
   model() {
-    this.count= 0;
+    this.greeting='Hello Hexax
   },
-  template:`<button>The count is {{ count }}</button>` // Craft your visual poetry!
+  template:`<h1> {{ greeting }} </h1>` // Craft your visual poetry!
 });
 
 build.mount(/*root element instance or selector*/);
 ```
-An initBuild instances expects to be mounted , you ll ve to use the `build.mount` prototype method of the `initBuild()` to inject the widget ui into the dom.
+After creating an initial Build using `initBuild`, the DOM will still not display your template untill it's mounted.  
+You ll ve to use the `build.mount` prototype method of the `initBuild()` to inject the widget template into the dom by providing a selector or a DOM Node as a first parameter to the mount prototype method.
 
 There should be a root dom node in the html dom, where an initBuild instance would be mounted. The mount method is passed a seloctor or an instance of a dom node as a parameter.
 
-The innerHtml of the mount Node target will be used as a fallback widget template if the build and the template options are both not provided or both returns no valid dom instance.
+The innerHtml of the mount Node target will be used as a fallback widget template if the build and the template options are both not provided or both returns `null` or `undefined`.
 
-***Note:*** The in Dom template parsing caveat will be implemented since hexax won't be able to take the responsibility of processing the innerHtml content before resolving.
+***Note:*** The in Dom template parsing caveat will be implemented when using the mount Root content as template in initBuild since hexax won't be able to take the responsibility of processing the innerHtml content before resolving.  
+
 
 ```javascript
 //syntax
+const { initBuild } = Hexax;
+let build = initBuild({
+  model() {
+    this.greeting='Hello Hexax
+  },
+  template:`<h1> {{ greeting }} </h1>` // Craft your visual poetry!
+});
   build.mount(/*selector*/)
 ```
 Your widget template will be injected into the selected dom element, clearing all inner content of the selected element
 
 ***Note:*** More than one `initBuild` instance cannot be mounted into the same inDom Node.
+But you can also have more than one `initBuild` in your project or in the same dom, provided they are not mounted into the same element
 
 ### **Template Syntax**
 
-Hexax provides you an efficient way of encapsulating templates logic into your Hexax template without using the default javascript multline string interpolation system.
+Hexax introduces a powerful templating language for expressing your UI elements using simple html markup syntax.  
+Here is a well tested template language that provides you an efficient semantics of encapsulating complex logic into your Hexax template without foul or imposing perfomance loop holes.
+
+Let's explore the templating features with some examples:
 
 You can iterpolate model instances into the template by using the double curly braces, `{{ count }}`. 
 
@@ -217,38 +215,503 @@ let app={
 }
 ```
 
-`{{` and `}}` is the opening and closing tag.
-This are the default settings. Any text within this tags will be parsed as javascript expression with the model instances in scope.
+`{{` and `}}` denotes the opening and closing tag by default . Any text within this tags will be parsed as javascript expression with the model instances in scope.
 
-This mustache tags can only accepts single expressions,parsing of statements will raise a Hexax template Error.
-Expressions are syntaxs that can return a value, like a function call `value()` or using a variable `count`.
-Statements are like declaring a function/variable/class  or iterating using the `for` loop Statement, or conditional Statement using `if/else-if/else` or deleting an object property using the `delete` keyword.
+This mustache tags can only accepts single expressions, Which simply means that parsing of statements or more that one Expressions will raise a Hexax template Error.
+Expressions are syntaxs that can be passed to a javascript function `return` keyword.  
+For instance, a method call `value()` or inscope variable reference  `count`.
+Statements are variable declarations using maybe the (`let|var|const`) keywords, reassignendts,  iterating using the `for` loop Statement, control flow using `if/else-if/else` or deleting an object property using the `delete` keyword.
+Jusr make sure any expression passed can be received by a function's `return Statement
 
-During template compilation, calling of a function that does not return a primitive value, will return an empty string or 'undefined' in some cases since we target in Dom text interpolation.
-e.g.
+During template compilation, calling of a function that does not return a primitive value, will make hexax call its `prototype.toString()` method if it's callable.  
+If not, it will be parsed `JSON.stringify` if it's not null or undefined.
+`undefined` or nullish values will be transformed to an empty strong (`""`)
 
-`{{ func() }}` or tenary operations e.g , `{{ count ? count : 0 }}` are all  valid template expression provided it does'nt consist of a statement or more than a single expression
+
+A method call `{{ func() }}` or tenary operations e.g , `{{ count ? count : 0 }}` can be a valid template expression provided it does'nt consist of a statement or more than a single expression
 
 Many javascript keyword will not be accepted if found within the template tags.
 keywords like 
 ```javascript
-function,delete,for,if,else,else-if,const,var,let,class,super,constructor
+function,delete,for,if,else,else-if,const,var,let,class
+```
+> Note: The mustache tags connot be used in attributes
+
+<!--### **Hexax UI Symphony: Templating as Expressions**-->
+
+Hexax templates are more than just HTML with placeholders. They are expressions of intent, a language to communicate with your UI.
+
+
+```javascript
+
+let app ={
+  model() {
+    this.name='Hexax Explorer',
+  },
+  template:`
+      <div>
+        <h1>Welcome, {{ name }}</h1>
+        <input $$model='name' placeholder='Type your name'>
+      </div>`
+  ,
+};
+
+```
+In this example, an input field dynamically updates the `name` text based on user input. The `$$model` directive establishes a two-way binding between the input and the data.
+
+Hexax templates provide a concise and expressive way to define UI logic.
+
+Confused of what directives are , we ll learn of that in the next section.
+Just know directives are a kind of special attributes with compile-time hydration that provides useful modifications on our UI build.
+
+##### **Hexax Template parsing caveat**
+
+View your templates as a dialogue with your application – a conversation that shapes the user experience using an efficient and dynamic implemention.
+
+Tags can be immediately closed if they expects no children nodes  by adding a forward slash before the closing of the opening tag.  `<h2 />`  
+This helps you omit a closing tag for non void tags and saving you the stress of writing a closing tag, since there are no use case of children elements.
+```html
+<element attr='value' />
+<p/>
+```
+If this is a non void tag, Html Requires that a closing tag be provided or it ll anex the next of the tags till the end of the parent closing tag, as it's children nodes.  
+Omiting the immediately closing Syntax like , `<element attr-value >` or not including a closing tag, will include all nodes following it as its children.
+
+for example...
+```html
+<p class='alert alert-primary m-3 p-4' ><!--No closing tag provided--> 
+  Hello Hexax Text Node
+<input placeholder="Write something...">
+```
+In the above code, Both the `Hello Hexax Text Nodee` text and the input element will  all be included as children nodes of th `p` element since the `p` element expects a closing tag.
+
+The immediate closing syntax, `<p />` helps close  the element without a closing tag.
+
+In terms of void elements, like  the ` input, br, img etc` elements , they can be rendered without being immediately closed or a closing tag.
+
+When parsing attributes, attributes names and value cases sensitivity are maintained except in cases where an `initBuild` mount node is used as template.
+
+If an attribute value does not contain a space or special characters that may conflict with html tags like the `<, >, = , ", '`, which may confuse the hexax attribute passer,  you can pass them without quoting them.
+
+e.g.  
+`<element attr=my Value />` ×Bad  
+`<element attr="my Value" />` √great  
+
+the `Value` text path in the first example above will be compiled as a different attribute. It should be quoted like in the later code if they belong to a single attribute property, gor containing a space.
+
+`<element innerHtml=<div/> />` ×Bad  
+`<element innerHtml="<div/>" />` √great  
+
+`<element onclick=()=>count++ />` ×bad   
+In the ablove examples, the arrow **>** in the attribute will be misinterpreted as the end of the opening tag if they were not quoted.  
+`<element onclick="()=>count++" />` √great  
+For example `<element attr=myValue />` works perfectly fine, Hexax accepts non quoted attributes values once they follow the hexax attributes passing caveats.
+
+Also when a binded attribute name matches your attribute value text, you can just pass the attribute while omiting the value part . 
+This works like the native javascript objects option mapping.
+
+For example `<element *name=name />` can just be written as `<element *name />` or using the `$$bind` binding directive, `<element $$bind:name />`  or but not without a binding since binding is required for this feature to work  
+For example
+```html
+<element  name />`
+<!-- will result in -->
+<element name="" />
+<!--using binding, Hexax will force the attribute name into a model prop, will rather raise an exception when path is not defined on model-->
+<element *message />
+<!--results in the following -->
+<element *message=message />
 ```
 
-To customize these mustaches tags, you will ve to setup a widget configuration option known as the  `buildConfig`  in your  widget which is an object of widget configuration settings. 
-Then you parse in an option `delimiters` with an array value of two datas consisting of two string values,  an opening and closing tags. 
+This also works in direct  use of directives cases.
+e.g.
+```javascript
+let app={
+  model(){
+    this.text='Hexax Explorer'
+  },
+  template:` <h1 $$text /> `
+}
+```
+In the above example code, `text` will be mapped as the value of the `$$text` directive and passed to the context of the model instances. 
+The above widget will  result in the following dom node
+```html
+<h1 innerText="Hexax Explorer" ></h1>
+```
+You must ve been confused of the terms, directives and binding, don't worry, it's no big deal.  
+We will explain in details in our next section.
+
+#### **Attributes Data binding : Connecting your UI system**
+
+To bind an attribute value to a widget model instance data scope , use the `$$bind` directive. 
+
+The `$$bind` will be passed an argument of the attribute value separated by a hyphen (`:`);
+For example.
+```html
+<input $$bind:value=inputValue >
+```
+The `inputValue` text will be resolved to the model properties.  
+A `propValue is not defined` exception will be loged to the console if no model property with this value exists.  
+
+Since the `$$bind` directive may be needed more often, we provided you with a short form of using the bind, for easy accessibility by prepending an asterisks (`*`) sign to an attribute.
+```html
+<element *value=inputValue ></element>
+```
+
+However, we ll continue this documentation  with the use of the asterisks method throughout the rest of this document as it's shorter and easier to access .  
+But the `$$bind` form remains more self explainatory and easier to reason about
+
+For example, `*class='color'` will bind the class attribute to the value of `color` expression, meaning that the text value, `color` will be evaluated as a javascript expression with the model state instances in scope.
+
+Same rules implies as with the template mustache interpolation tags.   Once an attribute name is preceded with an asterisks, its value will be treated as a javascript expression .
+
+Data binding in Hexax is not just connecting reactive variables with the template attribute; it's orchestrating a symphony of interactions. 
+
+Envision your UI elements harmonizing with the underlying data. Your application is a symphony where each note resonates with a data point.
+
+Consider the code below
+```javascript
+let app={
+  model(){
+    this.color='bg-info'
+    this.name= ' myParagraph'
+  },
+  // ...
+  template:`
+    <p *class="color + name" >Hello, Hexax!</p>
+    `;
+    
+  ,
+};
+```
+
+This example binds the `class` attribute to the value of `color` concentenated with the name property resulting in the dom node as follows
+```html
+<p class="bg-info myParagraph">Hello, Hexax!</p>
+```
+
+#### **Dynamic Attribute Names and Values**
+
+Use square brackets `[]` to specify dynamic attribute names or values.  
+You do not need to use the `$$bind` directive on  this attribute for this feature to work  
+Once an attribute Name is enclosed within square brackets, the text within the enclosed bracket will be binded to the model public instances.
+Same rules applies as with the mustache interpolation and binding directives.
+
+Watch the example...
+
+ ```javascript
+ const { dataRef }=Hexax
+let app={
+  model(){
+    this.name='class',
+  },
+  // ...
+  template:`<p [name]='alert alert-primary'>Dynamic Attribute</p>`
+  //The attribute value not bound in this case.
+  ,
+};
+```
+Using the `$$bind` directive binds the contents Attribute value not Attribute name.
+Which means, if you do not wish to bind the attribute value, you can omit the `$$bind` directive.
+
+### **Hexax directives**
+
+Hexax directives a special transformed attributes an modifiers that perfoms usefull manipulation on elements while working with Hexax.  
+Hexax provides directives that allow you to conditionally display elements, bind reactive datas to an input element during compilation, reference an element or skip the compilation of an element's children.
+
+Directive is a special attribute used in manipulating a node or widget before, during or after compilation.
+
+Hexax directives are not just instructions; they are artistic attributes guiding the flow of your application or widget build. See `$$if` as a creative decision, `$$for` as a rhythmic pattern, and `$$ref` as a dynamic palette.
+
+Here are some commonly used directives:
+
+##### $$raw 
+To skip the compilation of an elements children and innerContent, use the `$$raw` attribute. 
+
+compilation of all children of the element will be skipped while building this element.
+
+The `$$raw` directive does not need to be passed a value, it presence on an element is considered and defaults to truthy, considers only boolean values, other values are ignored and falls back to `true`. 
+
+Scopes to html elements nodes only and will be consumed by a root element when passed as a widget prop if there is a single root element within the widget.
+
+#### **Conditional rendering Directives**
+
+To render elements/widget based on some evaluated result of an expression or value, Hexax provides you with some useful condition based directives.
+
+##### $$if
+
+```javascript
+let app={
+  template:`<button $$if='false'></button>`
+  
+}
+```
+
+this element will not render since the condition render result is falsy
+
+##### $$else-if
+
+Checks if the previous element/widget  has a `$$if`/`$$else-if` directive, if not found, will raise an `Hexax Error`.
+
+The `$$else-if` directive ,if available on the next element or widget following a `$$if` or other `$$else-if` element/widget , will be processed if, the `$$if`,ir `$$else-if ` on the previous element/widget, evaluates to false
+Inoder to make it effective, should be passed to the next element or widget after the previous relative conditioned element/widget 
+
+If unable  to find a relative conditional directive on the previous element/widget, will raise a hexax conditional Directive Error.
+
+##### $$else
+The `$$else` directive , displays its element if the previous `$$if` or `$$else-if` , if any, statements are falsy
+
+Its always a gotcha to pass a $$if alongsode the $$for directive, if possible, avoid $$if with $$for on the same element/Widget.
+
+#### List rendering
+
+##### $$for
+list rendering helps you render a widget or an element, from an iterable value , the resulting value will be available on the element, or widget rendering scope.
+
+To achieve this , hexax provides you with the `$$for` directive.
+
+here is a minimal example on using '$$for' directive.
+```javascript
+import { dataRef  }  from 'hexax
+let app={
+  model(){
+    this.fruits:dataRef({
+      orange:{id:223, color:'yellow',shape:'circle',count:56},
+      mango: {id:3570,color:'green',shape:'rect',count:911},
+      pearl:{id:67,color:'navy-blue',shape:'rectangle',count:2},
+    })
+  },
+  template:`
+  <div $$for="(  value , key , index ) of fruits">
+    <h1 >{{name}} </h1>
+    <h3 >COLOR: {{value.color}}</h3>
+    <h3 >SHAPE: {{value.shape}}</h3>
+    <p>it's over {{ value.count }} pieces</p>
+  </div>
+`
+}
+```
+
+`$$for `encapsulates element datas, and creates the relative data based on the evaluasted loop data, then passes the positional arguments to the element/widget context.
+
+It also follows the common javascript  forloop structure.
+Destructuring of arrays and object are also allowed.
+Array destruct extends to Set,Array and the Hexax builtin Tuple.
+
+###### Accepted constructs
+```javascript
+item of iterable
+// just the value key name and the iteration syntax
+( value , key ) of iterable
+// value and key provided within a bracked
+( value ) in iterable
+//first argument in the parenthesis always remain the item value rather than keys
+( count ) of number
+//if a number is used, like above, the first wiil be the number count from 1- number
+3
+//number passed directly without a value/key props, element will be compiled to the number of count.
+( count ) in 5
+//same as the example above, just with a value getter prip
+`iterable`  
+//just the iterable value property
+{ item:[], value='' }
+//iterable passed directly rather than props
+{ id, name } of arrayProfiles
+//the value is an object, so we destructured the resulting object into the template context.
+[ value ] of values
+//array destructure
+( [ value ] ,  key , index ) of iterable
+// Destructuring syntax with key and index definition
+
+```
+
+The `$$for` directive can iterate over any iterable  object or number value type.
+
+A parenthesis `()`, and greaterthan/lesserthan  characters `<>` can all be used in enclosing the key value pairs.
+
+It's recommended to use the `for...of` when iterating through an object over the `for...in` iterator protocol except when iterating over a none object data type, e.g A number.
+
+Like in `< text > in arrayData `.
+
+The `for...in` iterator at times may produce unexpected result when used on an object data type expecially in cases where key/value pairs is required.
+
+We  do not recommend the use of key value paires in `for...in` loops, since the value of the value path  reference will remain "undefined";
+
+From the JavaScript official documentation, it's quoted 
+
+> `Many JavaScript style guides and linters recommend against the use of 'for...in', because it iterates over the entire prototype chain which is rarely what one wants, and may be a confusion with the more widely-used "for...of" . `
+
+Both the `for...of` and `for...in` can be used interchangeably.
+
+It's included in Hexax's support for completeness.`
+
+If a single reference is passed, it references the value data. If the iterated data is a Number, it will reference the number count.  
+Can be enclosed within bracked or standalone.
+
+For example...
+
+`value of iterable` works aswell as 
+
+`( value ) of iterable`
+
+In cases where key/value pairs are required, then the enclosing brackets are required.
+Here if `for...in` is used, the second value might be of `undefined`.
+
+An iterable or a number can just be passed without a looping format , like key or value mapping. The widget or element will be evaluated to the count of the iterable or number value.
 
 e.g
 ```javascript
+template:`<input $$for="iterable" >`
+```
+
+***Note:*** No  value of key/index or value is passed to the context, remember.
+
+#### ***Artistic Directives***
+
+##### $$model
+
+Data instances defined and exposed from the model method option can be two way binded efficiently using the '$$model' directive.
+    e.g.
+```javascript
+const { dataRef } = Hexax
+
 let app={
-    buildConfig:{
-        delimiters:['[[',']]']
+  model(){
+    this.value=dataRef("Hexax Explorer")
+  }
+  template:`
+    <input $$model='value._data'>
+    <h3> {{ value._data}} </h3>
+    `
+}
+```
+By using the `$$model` directive, the input element is now bound to and from the value state data, which means, the input is been populated with the data from the value property, any update to the input will aswell update the value property, hereby triggering a state rerendering.
+
+Scoped to Input, Textarea and select elements only.
+
+##### $$ref
+
+Accessing a node object from inside a widget and side effect manipulation on dom objects can be achieved using the '$$ref' directive.
+
+`$$ref` is used to reference in template variables.
+```javascript
+
+let app={
+  model(){
+    this.value:""
+  }
+  template:`
+    
+    <input $$ref=value >
+    `,
+  handlers:{
+    doSomething(){
+     console.log(this.value)//<input>
+     //will now be populated with the instance of the input element
     }
+  }
 }
 
 ```
+Value of `value` property will be populated with the element or widget instance if passed to a widget tag.
 
-The values will be used in interpolating template strings instead of the default curly brace patterns within the present widget.
+##### $$text
+
+Injecting an innerText content into a Dom Node is achieved using the `$$text` directive.
+
+This directive uses the `element.innerText` method to populate an element's innerText with the provided string value.
+
+This is how to...
+
+```javascript
+const { html } = Hexax
+
+let app={
+  model(){
+    this.text:"Hexax Explorer"
+  }
+  template:`
+    
+    <p $$text=text > </p>
+```
+
+ 
+##### $$html
+
+Same as `$$text` only used in inserting innerHtml into an element.
+
+##### $$bind
+
+Used in binding attributes to the reactive data instance.
+```javascript
+let app={
+  model(){
+    this.value='m-5 primary btn'
+  },
+  template:`<button $$bind:class='value' > Hello Hexax</button>`
+}
+```
+The `$$bind` directive can be chained  with other attributes with exception of directives 
+
+Cannot chain more  than one attribute to `$$bind`.   
+Since `$$bind` is been used too frequently, hexax provides  a shortform of invorking  the binding directive using the  asterisks (`*`).  
+```html
+<button $$bind:class='value' > Hello Hexax</button>
+<!--can just  be written as  -->
+<button *class='value' > Hello Hexax</button>
+```
+`$$bind` can also be used to parse an object of elements  attributes and values without passing an argument to `$$bind`.
+```html
+`<button $$bind="{ class:value+' btn', innerText:'click me'}" />
+```
+This  works  as like the hexax spread syntax, you  can however declare  the object within the model  instance  and reference it  from the  binding attribute value. 
+```html
+<button $$bind=buttonProps />
+```
+Or more preferably, you can use the hexax attribute spread syntax binding.  
+```html
+<button ...buttonProps />
+```
+The spread syntax cannot be used on a none plain javascript object.  
+Hexax also provide way more useful directives and an API on how to build Custom directives on both widget and html elements
+Contact  the Hexax builtin directives API for more about Hexax directives.
+
+##### **Custom Directive**
+
+Hexax provides a declarative interface for building customized directives.
+This is useful when you want to incorparate useful and self defined functionality into a HexaxDomInstance .
+
+You can create a fully functional directive using a function or an object consisting of hooks callback.   
+directives must be registered using the directives option.
+Here  is an example of creating a custom directive 
+```javascript
+
+export default{
+  directives:{
+    autoFocus(el, value, modifiers){
+      //receives the element/Widget instance, value being  passed and and array modifiers
+      el.focus()
+    },//a function directive behaves as the created hook
+    beautify:{//an option based directive accepts LifeCycleHooks methods e.g. created, mounted, unMounted, 
+    
+      created(vnode, value, modifiers){
+        vnode.$element.style.background='#0a3039'
+      },
+      mounted(vnode, value, modifiers){
+        
+      },
+      init(build, value, modifiers){
+        //Reaceives thw nodeObjectValue as passed to the defineVNodeElement module
+      }
+    }
+  },//usagw
+  template:`
+  <input placeholder='Write your content' $$autoFocus >
+  `
+}
+```
+Custom directives can also be used the same way as built in directives.  Beware of hexax builtin directives name while registering your custom in order not to conflict
+
+Read the directives API Docs for more Details on using directives.
 
 ### **Building Blocks: Components Based Architecture**
 
@@ -260,7 +723,7 @@ Let's create a simple header widget and compose it into a larger application str
 const { initBuild } = Hexax;
 
 // Component
-let header = {
+let Header = {
   model() {
     this.title= 'Hexax World';
   },
@@ -277,21 +740,22 @@ let build = initBuild({
         <p>Welcome to the {{ title }}</p>
       </div>`,
   widgets:{
-    Header:header
+    Header
   }
 });
 
 app.mount(/*root element instance or selector*/);
 ```
 
-Here, we've created a simple header widget (`header`) and seamlessly integrated it into a larger application structure (`build`). Widgets enhance the modularity and manageability of your application.
+Here, we've created a simple header widget (`Header`) and seamlessly integrated it into a larger application structure (`build`). Widgets enhance the modularity and manageability of your application.
 
 This means widgets can be nexted down the thread as much as you wish, by composing a widget into another that is composed into a larger Component.
 
 Before a widget can be used in another widget as a tag , it must be registered in the `widgets` object option.
 Many widgets  as possible can be used within the `Header`  widget provided it's registered.
 ***Note:*** During widget registration, be sure it followed the hexax widget naming rules. 
-Must not conflict with any built in hexax widgets, must pass atleast one of these tests .
+Must not conflict with any built in hexax widgets.  
+Widgets registration names must pass atleast one of these tests .
 
 contains :
  1. A hyphen (-),
@@ -331,6 +795,7 @@ let app={
 Example using hyperscript.
 ```javascript
 const { el ) = Hexax
+
 let app={
   model(){
     this.count=0
@@ -419,7 +884,6 @@ let app= initBuild({
         Clicked {{ count }} times
       </button>` ,
   handlers: {
-    
     increment() {
       this.count++;
     },
@@ -432,514 +896,57 @@ Now, a button increments a counter with every click by calling the `increment` m
 
 This reactivity system may not be effective when a data been mutated is accesed from an object based dataType like a Set, Map, Array, or a plain object.
 
-Utilize the `data` macro for deep reactive object dataTypes reactivity hydration:
-Its returned datas are exposed to the template instances directly as `<propName>.$data`.
+Utilize the `dataRef` macro for deep reactive object dataTypes reactivity hydration:
+Its returned datas are exposed to the template instances directly as `<propName>._data`.
 
 here is a minimal example
 
 ```javascript
-const { data }=Hexax
+const { dataRef }=Hexax
 let widget={
   model(){
     //initialized widget instances
-    this.obj=data({
+    this.obj=dataRef({
       message:"Exploring Hexax",
       count:0
     })
-    this.num=data(34)
+    this.num=dataRef(34)
   },
   build(){
     //accessed in the widget through the ***this*** keyword
-    this.obj.$data.count+=70
-    //to access them in template, it ll be esposed as $data.count, this datas object are reactive data
-    return Template`
-      <h1>{{ obj.$data.message}}</h1>
-      <p >{{ obj.$data.count }}</p>
-      <h5> {{ num.$data}}</h5>
+    this.obj._data.count+=70
+    //to access them in template, it ll be esposed as _data.count, this datas object are reactive data
+    return html`
+      <h1>{{ obj._data.message}}</h1>
+      <p >{{ obj._data.count }}</p>
+      <h5> {{ num._data}}</h5>
       `
   }
 }
 ```
-By utilizing the `data` macro, this helps us handle dependency tracking for nexted and deep data properties;
+By utilizing the `dataRef` macro, this helps us handle dependency tracking for nexted and deep data properties;
 
-### **Hexax UI Symphony: Templating as Expressions**
-
-Hexax templates are more than just HTML with placeholders. They are expressions of intent, a language to communicate with your UI.
-
-View your templates as a dialogue with your application – a conversation that shapes the user experience using an efficient and dynamic implemention.
-
-Hexax introduces a powerful templating language for expressing your UI elements using simple html markup syntax.  
-Let's explore the templating features with an example:
-
-```javascript
-
-let app ={
-  model() {
-    this.name='Hexax Explorer',
-  },
-  template:`
-      <div>
-        <h1>Welcome, {{ name }}</h1>
-        <input $$model='name' placeholder='Type your name'>
-      </div>`
-  ,
-};
-
-```
-
-Example using the hyperscript powered UI  , you will need the `withDirectives` and the `buffer` macros to use the `$$model` directive.
-```javascript
-import { el, withDirectives, buffer } from 'hexax'
-let app={
-  model(){
-    this.name="Hexax Explorer"
-  },
-  build(){
-    return ()=> el('div', 
-      [
-        el('h1', 'Welcome, '+ this.name ),
-        el("input", withDirectives({ placeholder : "Type your name"},
-          [buffer("model","name",[]) , ]),   )
-      ]
-      )
-  }
-```
-The `withDirectives` macro takes the elements normal attributes as its first argument, then an array containing buffer instances of directives .
-Which are passed the directive name if registered down the thread/builtin or the actual directive instance if in scope, model based propertyName as value inthe case of the $$model directive and an array of modifiers if any. 
-
-Can accept as many directives as possible.
-
-In this example, an input field dynamically updates the `name` text based on user input. The `$$model` directive establishes a two-way binding between the input and the data.
-
-Hexax templates provide a concise and expressive way to define UI logic.
-
-Confused of what directives are , we ll learn of that soon.
-
-##### **Hexax Template parsing caveat**
-
-In hexax, dom templates is made to be an essential made easy for all , especially for people who comes from native html background.
-
-Tags can be immediately closed if they expects no children nodes , this helps you omit a closing tag for non void tags and saving you the stress of writing a closing tag since there are no children elements to wrap inbetween.
-```html
-<element attr='value' />
-<p/>
-```
-If this is an element that Requires a closing tag,  omiting the immediately closing Syntax like , `<element attr-value >` or not including a closing tag, will include all nodes following it as its children.
-
-for example...
-```html
-<p > 
-Hello Hexax
-<input>
-```
-In the above code, Both the `Hello Hexax` text and the input element are all child nodes of th p element since the `p` element Requires a closing tag and none  was provided.
-
-The immediate closing syntax, `<p />` helps close  the element without a closing tag.
-
-In terms of void elements, like  the ` input, br, img ` elements , they can be rendered without being immediately closed or a closing tag.
-
-When parsing attributes, attributes names and value cases sensitivity are maintained.
-
-If an attribute value does not contain a space or special characters that may conflict with html tags like the `<, >, = , ", '`,or confuse the hexax attribute passing caveat,  you can pass them without quoting them.
-
-e.g.
-`<element attr=my Value />` ×Bad
-`<element attr='my Value' />` √great
-
-the `Value` text path in the first example above will be compiled as a different attribute. It should be quoted if they belong to a single attribute property.
-
-`<element innerHtml=<div/> />` ×Bad
-`<element innerHtml="<div/>" />` √great
-
-
-`<element onclick=()=>count++ />` ×bad   
-In the ablove examples, the arrow **>** in the attribute will be misinterpreted as the end of the opening tag
-`<element onclick="()=>count++" />` √great
-
-
-
-For example `<element attr=myValue />` works perfectly fine, Hexax accepts non quoted attributes values once they follow the hexax attributes passing caveats.
-
-Also when your attribute name matches your attribute value text, you can just pass the attribute while omiting the value part. 
-This works like the native javascript objects option mapping.
-
-For example `<element *name=name />` can just be written as `<element *name />` or using the `$$bind` binding directive, `<element $$bind:name />`  or  even without a binding if no binding is required `<element  name />`
-
-This also works in direct  use of directives cases.
-e.g.
-```javascript
-let app={
-  model(){
-    this.text='Hexax Explorer'
-  },
-  template:` <h1 $$text /> `
-}
-```
-In the above example code, `text` will be mapped as the value of the `$$text` directive. 
-The above widget will  result in the following dom node
-```html
-<h1 innerText="Hexax Explorer" ></h1>
-```
-
-### **Attributes Data binding : Connecting your UI system**
-
-To bind an attribute value from a widget instance data, use the `$$bind` data binding directive. 
-
-`*attr=data` is a shorthand way of binding data Attributes to the official binding directive `$$bind:attr=data` .
-
-The `$$bind` data binding  directive is the official method, but we ll continue with the use of the asterisks method throughout the rest of this documentation as it's shorter and easier to reason about.
-
-For example, `*class='color'` will bind the class attribute to the value of `color` expression, meaning that the text value, `color` will be evaluated as a javascript expression with the model state instances in scope.
-
-Same rules implies as in template mustache tags  except that here, values may also return none primitive values like `Sets,Object,Arrays,RegRxp,class,function`  instances. Once an attribute name is preceded with an asterisks, its value will be treated as a javascript expression.
-
-Data binding in Hexax is not just connecting reactive variables with the template attribute; it's orchestrating a symphony of interactions. 
-
-Envision your UI elements harmonizing with the underlying data. Your application is a symphony where each note resonates with a data point.
-
-e.g
-```javascript
-let app={
-  model(){
-    this.color=data('bg-info'),
-    this.name= ' myParagraph'
-  },
-  // ...
-  template:`
-    <p *class='color.$data + name'>Hello, Hexax!</p>
-    <input $$model=color >
-    `;
-    
-  ,
-};
-```
-
-This example binds the `class` attribute to the value of `color` concentenated with the name property resulting in the dom node as follows
-```html
-<p class="bg-info myParagraph">Hello, Hexax!</p>
-```
-And an input element that is bound to the color model property.
-Changes to the input value updates the `class` content of the paragraph element.
-
-#### **Dynamic Attribute Names and Values**
-
-Use square brackets `[]` to specify dynamic attribute names or values. You can aswell Dynamically reference properties from widget data instances:
-Once an attribute Name is enclosed within square brackets, the text within the enclosed bracket will be binded to the model public instances.
-Same rules applies as with the mustache interpolation and must return a primitive value.
-
-Watch the example...
-
- ```javascript
- const { data }=Hexax
-let app={
-  model(){
-    this.name='class',
-    this.value=data('bg-dark')
-  },
-  // ...
-  template:`<p [name]='value.$data'>Dynamic Attribute</p>`;//<p class="value.$data">Dynamic  Attribute</p>
-  //The attribute value not bound in this case.
-  ,
-};
-```
-Using the `$$bind` directive binds the contents Attribute value not Attribute name.
-
-### **Hexax directives**
-
-Hexax provides directives that allow you to conditionally display elements, bind reactive datas to an input element during compilation, reference an element or skip the compilation of an element's children.
-
-Directive is a special attribute used in manipulating a node or widget before, during or after compilation.
-
-Hexax directives are not just instructions; they are artistic attributes guiding the flow of your application or widget build. See `$$if` as a creative decision, `$$for` as a rhythmic pattern, and `$$ref` as a dynamic palette.
-
-Here are some commonly used directives:
-
-##### $$raw 
-To skip the compilation of an elements children and innerContent, use the `$$raw` attribute. 
-
-compilation of all children of the element will be skipped while building this element.
-
-The `$$raw` directive does not need to be passed a value, it presence on an element is considered and defaults to truthy, considers only boolean values, other values are ignored and falls back to `true`. 
-
-Scopes to html elements nodes only and will be consumed by a root element when passed as a widget prop if there is a single root element within the widget.
-
-#### **Conditional rendering Directives**
-
-To render elements/widget based on some evaluated result of an expression or value, Hexax provides you with some useful condition based directives.
-
-##### $$if
-
-```javascript
-let app={
-  template:`<button $$if='false'></button>`
-  
-}
-```
-
-this element will not render since the condition render result is falsy
-
-##### $$else-if
-
-Checks if the previous element/widget  has a `$$if`/`$$else-if` directive, if not found, will raise an `Hexax Error`.
-
-The `$$else-if` directive ,if available on the next element or widget following a `$$if` or other `$$else-if` element/widget , will be processed if, the `$$if`,ir `$$else-if ` on the previous element/widget, evaluates to false
-Inoder to make it effective, should be passed to the next element or widget after the previous relative conditioned element/widget 
-
-If unable  to find a relative conditional directive on the previous element/widget, will raise a hexax conditional Directive Error.
-
-##### $$else
-The `$$else` directive , displays its element if the previous `$$if` or `$$else-if` , if any, statements are falsy
-
-Its always a gotcha to pass a $$if alongsode the $$for directive, if possible, avoid $$if with $$for on the same element/Widget.
-
-#### List rendering
-
-##### $$for
-list rendering helps you render a widget or an element, from an iterable value , the resulting value will be available on the element, or widget rendering scope.
-
-To achieve this , hexax provides you with the `$$for` directive.
-
-here is a minimal example on using '$$for' directive.
-```javascript
-import { data  }  from 'hexax
-let app={
-  model(){
-    this.fruits:data({
-      orange:{id:223, color:'yellow',shape:'circle',count:56},
-      mango: {id:3570,color:'green',shape:'rect',count:911},
-      pearl:{id:67,color:'navy-blue',shape:'rectangle',count:2},
-    })
-  },
-  template:`
-  <div $$for="[ name, value ] of fruits.$data">
-    <h1 >{{name}} </h1>
-    <h3 >COLOR: {{value.color}}</h3>
-    <h3 >SHAPE: {{value.shape}}</h3>
-    <p>it's over {{ value.count }} pieces</p>
-  </div>
-`
-}
-```
-
-`$$for `encapsulates element datas, and creates the relative data based on the evaluasted loop data, then passes the positional arguments to the element/widget context.
-
-It also follows the common javascript  forloop structure.
-
-###### Accepted constructs
-
-`item of iterable`,
-
-`[ key, value ] of iterable`,
-
-`[ value ] in iterable`,
-
-`[ index, count ] of number`,
-
-`count in 5`,
-
-`3`,
-
-`[ count ] in 5`
-
-`iterable`
-
-
-The `$$for` directive can iterate over any iterable  object or number value type.
-
-Both a parenthesis `()`,  block brackets `[]` and curly bracket `{}` can all be used in enclosing the key value pairs.
-
-It's recommended to use the `for...of` when iterating through an object over the `for...in` iterator protocol except when iterating over a none object data type, e.g A number.
-
-Like in `[ text ] in arrayData `.
-
-The `for...in` iterator at times may produce unexpected result when used on an object data type expecially in cases where key/value pairs is required.
-
-We  do not recommend the use of key value paires in `for...in` loops, since the value of the value path  reference will remain "undefined";
-
-From the JavaScript official documentation, it's quoted 
-
-> `Many JavaScript style guides and linters recommend against the use of 'for...in', because it iterates over the entire prototype chain which is rarely what one wants, and may be a confusion with the more widely-used "for...of" . `
-
-Both the `for...of` and `for...in` can be used interchangeably.
-
-It's included in Hexax's support for completeness.`
-
-If a single reference is passed, it references the value data. If the iterated data is a Number, it will reference the number count.  
-Can be enclosed within bracked or standalone.
-
-For example...
-
-`value of iterable` works aswell as 
-
-`[ value ] of iterable`
-
-In cases where key/value pairs are required, then the enclosing brackets are required.
-Here if `for...in` is used, the second value might be of `undefined`.
-
-An iterable or a number can just be passed without a looping format , like key or value mapping. The widget or element will be evaluated to the count of the iterable or number value.
-
-e.g
-```javascript
-template:`<input $$for="iterable" >`
-```
-
-***Note:*** No  value of key/index or value is passed to the context, remember.
-
-#### ***Artistic Directives***
-
-##### $$model
-
-Data instances defined and exposed from the model method option can be two way binded efficiently using the '$$model' directive.
-    e.g.
-```javascript
-const { data } = Hexax
-
-let app={
-  model(){
-    this.value=data("Hexax Explorer")
-  }
-  template:`
-    
-    <input $$model='value.$data'>
-    <h3> {{ value.$data}} </h3>
-    `
-}
-```
-By using the `$$model` directive, the input element is now bound to and from the value state data, which means, the input is been populated with the data from the value property, any update to the input will aswell update the value property, hereby triggering a state rerendering.
-
-Scoped to Input, Textarea and select elements only.
-
-##### $$ref
-
-Accessing a node object from inside a widget and side effect manipulation on dom objects can be achieved using the '$$ref' directive.
-
-`$$ref` is used to reference in template variables.
-```javascript
-
-let app={
-  model(){
-    this.value:""
-  }
-  template:`
-    
-    <input $$ref=value >
-    `,
-  handlers:{
-    doSomething(){
-     console.log(this.value)//<input>
-     //will now be populated with the instance of the input element
-    }
-  }
-}
-
-```
-Value of `value` will be populated with the element or widget instance if passed to a widget tag.
-
-##### $$text
-
-Injecting an innerText content into a Dom Node is achieved using the `$$text` directive.
-
-This directive uses the `element.innerText` method to populate an element's innerText with the provided string value.
-
-This is how to...
-
-```javascript
-const { Template } = Hexax
-
-let app={
-  model(){
-    this.text:"Hexax Explorer"
-  }
-  template:`
-    
-    <p $$text=text > </p>
-5}
-```
-
- 
-##### $$html
-
-Same as `$$text` only used in inserting innerHtml into an element.
-
-##### $$bind
-
-Used in binding attributes to the reactive data instance.
-```javascript
-let app={
-  model(){
-    this.value='m-5 primary btn'
-  },
-  template:`<button $$bind:class='value' > Hello Hexax</button>`
-}
-```
-The `$$bind` directive can be chained  with other attributes exception of directives 
-
-Cannot chain more  than one attribute to `$$bind`.   
-Since `$$bind` is been used too frequently, hexax provides  a shortform of invorking  the binding directive using the  asterisks (`*`).  
-```html
-<button $$bind:class='value' > Hello Hexax</button>
-<!--can just  be written as  -->
-<button *class='value' > Hello Hexax</button>
-```
-`$$bind` can also be used to parse an object of elements  attributes and values.
-```html
-`<button $$bind="{ class:value+' btn', innerText:'click me'}" />
-```
-This  works  as like the hexax spread syntax, you  can however declare  the object within the model  instance  and reference it  from the  binding attribute value. 
-```html
-<button $$bind=buttonProps />
-```
-Or more preferably, you can use the hexax attribute spread syntax binding.  
-```html
-<button ...buttonProps />
-```
-The spread syntax cannot be used on a none plain javascript object.  
-Hexax also provide way more useful directives and an API on how to build Custom directives on both widget and html elements
-Contact  the Hexax builtin directives API for more about Hexax directives.
-
-##### **Custom Directive**
-
-Hexax provides a declarative interface for building customized directives.
-This is useful when you want to incorparate useful and self defined functionality into a HexaxDomInstance .
-
-You can create a fully functional directive using a function or an object consisting of hooks callback.   
-directives must be registered using the directives option.
-Here  is an example of creating a custom directive 
-```javascript
-
-export default{
-  directives:{
-    autoFocus(el, value, modifiers){
-      //receives the element/Widget instance, value being  passed and and array modifiers
-      el.focus()
-    },//a function directive behaves as the created hook
-    beautify:{//an option based directive accepts LifeCycleHooks methods e.g. created, mounted, unMounted, 
-    
-      created(el, value, modifiers){
-        el.style.background='#0a3039'
-      },
-      mounted(el, value, modifiers){
-        
-      },
-      init(build, value, modifiers){
-        //Reaceives thw nodeObjectValue as passed to the defineVNodeElement module
-      }
-    }
-  },
-  template:`
-  <input placeholder='Write your content' $$autoFocus >
-  `
-}
-```
-Custom directives can also be used the same way as built in directives.  Beware of hexax builtin directives name while registering your custom in order not to conflict
-
-Read the directives API Docs for more Details on using directives.
 
 ### **Display rendering**
+To customize these mustaches tags, you will ve to setup a widget configuration option known as the  `buildConfig`  in your  widget which is an object of widget configuration settings. 
+Then you parse in an option `delimiters` with an array value of two datas consisting of two string values,  an opening and closing tags. 
+
+e.g
+```javascript
+let app={
+    buildConfig:{
+        delimiters:['[[',']]']
+    }
+}
+
+```
+
+The values will be used in interpolating template strings instead of the default curly brace patterns within the present widget.
+
 
 hexax offers flexibility in rendering your UI widgets.
 
-You have two options for rendering your UI widgets: using template strings or the `el` Hyperscript function.
+You have two options for rendering your UI widgets: using template strings or the `el` Hyperscript function through render .
 
 Choose the rendering option that best suits your coding style and project requirements.
 
@@ -965,7 +972,7 @@ let app= {
 
 #### **The Hyperscript Function: programmatic templating approach**
 
-The `el` function is a hyperscript function for creating virtual DOM nodes, offering a programmatic approach to widget definition:
+The `el` function is a hyperscript function for creating virtual DOM nodes, offering a programmatic approach to widget definition : Just an alternative to React's JSX
 
 Choose the rendering option that best suits your coding style and project requirements.
 
@@ -981,7 +988,7 @@ let app={
   }
 }
 ```
-el macro can accept as many child `el` instances as possible.
+el macro can accept as many child `el` instances as possible by wrapping them in an array.
 
 ```javascript
 let app={
@@ -994,10 +1001,10 @@ let app={
   },
 };
 ```
-For multiple root Nodes, you can wrap them in square bracket
+For multiple root Nodes, you can wrap them in array square brackets seperated by comma.
 `return ()=>[el('p', 'Header'), el('input')]`
 
-the first argument is required and  must be a string value of a valid html/svg/resolved Custom makeNativeElement tag name, an unresolved makeNativeElement instance or an instance of a widget, other two arguments  can be dynamicaly passed as children `el` nodes or attributes. 
+the first argument is required and  must be a string value of a valid html/svg/resolved Custom makeNativeElement tag name, an unresolved makeNativeElement instance or an instance of a valid  widget dataType, other two arguments  can be dynamicaly passed as children `el` nodes or attributes. 
 
 The el function accepts only three arguments, whereas 2nd and 3rd arguments can be passed dynamicaly,  if there are no need for any, it absence does not matter as there is no contextual defined position for any of the both, unlike other frameworks where you have to pass a positional arguments or null  to the hyperscript function.
 
@@ -1008,11 +1015,17 @@ let app= {
   build() {
     return ()=>el('div',
       [
-        el('h1', 'Header'),
-        el('input', { type: 'text' }),
-        el(MyWidget),
-        el('p',['A child text node',el('br')],{ class:'m-5 text-primary'}),
-        el('makeNativeElement')
+        el('h1', 'Header'),//only a text node child
+        
+        el('input', { type: 'text' }),//only am object of attributes or Params 
+        
+        el(MyWidget),//omly widget definition
+        
+        el('p',['A child text node',el('br')],{ class:'m-5 text-primary'}),//children nodes paseed at parameter 2 before an attributes objecr
+        
+        el('makeNativeElement'),//registered customElements 
+        
+        el('input')//just an element name
       ]
     );
   },
@@ -1030,9 +1043,9 @@ You can pass Parameters  to your widgets to make them more dynamic and reusable.
 
 Params is a consistent way of passing model based datas from the parent down to the child widget
 
-Define the params option in the widget's options object and access them in the template as `$params.xxx`.
+You can Define the params option in the widget's options object and access them in the template as `$params.xxx`.
 
-validation can be a type function, or an object consisting of type , default, or required, and a validator method which returns a conditional boolean value
+validation can be a type function, or an object consisting of type , a validator method which should conditionally return a boolean value and default, or required properties.
 
 e.g
 
@@ -1040,19 +1053,20 @@ e.g
 let app={
   params:{
     color:String,//a String prototype functiob, which will be ised to chech against params datas
-    validator(value){
-      //a validator function, with a Parameter of the value
-      if(!typeof value === "string") return false
-      else return true;
+    
     }
     seed:{
       type:Object,
       required:true,//required may not co-exist with the default option
-      default:{}
+      default:{},
     }
     name:{
       type:String,
-      default:()=>'Prince'//default validation option may be passed a finction which returned the valie
+      default:'Prince'//default validation option may be passed a finction which returned the valie
+      validator(value){
+      //a validator function, with a Parameter of the value
+      if(!typeof value === "string") return false
+      else return true;
     }
   },
   template:`<h2> My name is {{ $params.name }} </h2>`
@@ -1119,7 +1133,7 @@ Can be used same way as other normal dataType.
 
 ### ***Custom Nodes: Element free Styling***
 
-Hexax allows you to create custom elements by using the makeNativeElement module. You can register your custom elements by calling node.resolve(). This is useful when you want to encapsulate complex functionality into reusable components.
+Hexax allows you to create custom elements by using the makeNativeElement module. You can register your custom elements by calling node.define(). This is useful when you want to encapsulate complex functionality into reusable components.
 for a custom element, use the `makeNativeElement` macro, then pass on normal widget options
 
 here is a minimal example on creating a hexax custom element
@@ -1186,36 +1200,35 @@ Slot elements can be passed default contents by providing inner cointent to it. 
 Slots works same as in other frameworks that uses the slot system, with slight differences in hexax.   
 If a child widget has only a single root element, Hexax will try to parse all default slots to its innerHtml if, there is no default slot provided, and it has no innerHtml content.
 
-To disable this action, you can set the `inheritSlots` settings to false in your buildConfig settings option  as it defaults to true.
+To disable this action, you can set the `forwardSlot` settings to false in your buildConfig settings option  as it defaults to true.
 
 All widget instances of the parent, are available, within the child widget scope, but not the other way round.  
-but if need be to access a child widget's data within the scope it's defined in the parent, hexax provides you with the `fallThrogh` setting option in the child widget's buildConfig.
-
-An Onject of string values bound to the  model public instance.  
-Access to model instances are to be exposed directly, the `this` keyword would not be available in the scope,and so,  should be passed as a string format  e.g
+but if need be to access a child widget's data within the scope it's defined in the parent, hexax provides you with the `fallThrogh`  option in the child widget.
+A method with it;s `this` keyword  model public instance.  
+Access to model instances are to be exposed directly, the `this` keyword would be available in the scope,and so it's returned value will be exposed as a state within it's consumer scope  e.g
 
 ```javascript
 let app={
-  buildConfig:{
-    fallThrogh:{
-      count:'count.$data',//direct access to widget instance datas like in the string interpolation system
-      name:'$params.name',
-      msg:messages//namespace variable
+  fallThrogh(){
+    return {
+      count:this.count._data,//direct access to widget instance datas like in the string interpolation system
+      name:this.$params.name,
+      msg:this.messages//namespace variable
     }
   }
 }
 
 ```
-Only strings values that can be resolved to a valid child widfet public instance path are allowed.  You can perfom computation within the strings as its passed as an  expression, or call a handler withing tge strings  texts.  
-This will be exposed to the scope of the child widget tag as `$fall[xxx]` or `this.$fall[xxx]` if using the hyperscript function. e.g
+Any value can be returned from the fallThrogh.  
+This will be exposed to the scope of the child widget tag through the `$$fall` directive. e.g
 ```html
-    <Widget>
+    <Widget $$fall=prop >
       <!-- fallThrogh attributes of this child widget will only be available within this scope of Widget instance as $fall-->
-        <h1>{{ $fall.<xxx> }}</h1>
+        <h1>{{ prop.<xxx> }}</h1>
     </Widget>
 ```
-
-Elements with no specified slot, will be rendered into the default slot, if any default slot element is provided or the  child element  has a  single root element with no innerHtml contents or childNodes.
+if `$$fall` omits a value, fall will be used instead
+Elements with no specified slot mapping, will be rendered into the default slot, if any default slot element is provided or the  child element  has a  single root element with no innerHtml contents or childNodes.
 
 Slot contents are merged , and replaces  the matching slot element within the child widget template.
 
@@ -1224,7 +1237,7 @@ Slot contents are merged , and replaces  the matching slot element within the ch
 The build function is the widget major building compilation engine.
 The build function has access to some useful widget options data as parameters, through two arguments, `[params, context]` provided.
 
-The params parameter is a reference to `this.$params` datas object while the context is aswell an object, with access to, styles, events, slots ,attrs and  $hydrated context  .
+The params parameter is a reference to `this.$params` datas object while the context is aswell an object, with access to, , signals, slots ,attrs and  utils .
 
 This is useful when utilizing the hyperscript pattern.
 Here is an example
@@ -1235,16 +1248,16 @@ let app={
     }
 }
 ```
-This properties can be accessed from the use of the `this` keyword but are provided here for simplicity.
+This properties can be accessed from the use of the `this` keyword with the exception of the slots and utils, but are provided here for simplicity .
 
-They can be accessed by Appending  the ***$*** character to the `styles, events, slots and attrs` data instances. 
+They can be accessed by Appending  the ***$*** character to the `signals and attrs` data instances. 
 for example...
 ```javascript
 const { log } = Hexax
 let app={ 
-  onMounted(){
-    log(this.$styles)
-    log(this.$slots)
+  postMount(){
+    log(this.$attrs)
+    log(this.$signals)
   }
 }
 
@@ -1254,13 +1267,13 @@ let app={
 Hexax also accepts the use of functions and class objects as valid widgets, but with slight edge  case.
 
 Function widget works as the scope of the build function, with no data state of it's own.
-The `Template` macro  is provided to help the functional widget  access  the hexax rich templating syntax.
+The `html` macro  is provided to help the functional widget  access  the hexax rich templating syntax.
 Here is a simple hexax functional widget using the Template component system.
 ```javascript
-const { Template }=Hexax
+const { html }=Hexax
 function FW(){
   
-  return Template`<p> Hello Hexax</p>`
+  return ()=>el('input)
 }
 
 ```
@@ -1270,7 +1283,7 @@ The Hexax style guides recommends against the use of arrow function widgets as a
 
 Class widgets are perfect and statefull widget encapsulation, in short, it was used in building the hexax builtin widgets.
 
-Hexax does not utilize the constructor function, like React  did, instead, hexax takes its defined method options as hexax options.
+Hexax does not utilize the `model` function, when working woth class based widgets, instead, hexax takes its defined props to this.model as hexax options.
 
 A hexax class widget must extend the base `Widget` class. 
 e.g.
@@ -1280,14 +1293,8 @@ const { Widget }= Hexax
 class myCW extends Widget{
   constructor(){
     super();
-    this.model.count=56
+    this.model.count=56//props assignement to this.model
   }
-  model(){
-    
-    return {
-      count:56
-    }
-  },
   template:`<button > {{ count }} </button>`
 }
 ```
@@ -1307,19 +1314,19 @@ Called Synchronously except in the case of an asynchronous widget, after all wid
 ##### preMount:
 <Promise Based> Called Asynchronously before inserting the widget UI into the dom.
     
-##### onMounted:
+##### postMount:
 <Promise Based> Called Asynchronously after inserting the widget UI build into the dom.
     
 ##### preUpdate: 
 <Promise Based> Called  Asynchronously before starting an update on any change on a statefull datas.
     
-##### onUpdated:
+##### postUpdate:
 <Promise Based> Called Asynchronously after updating the dom of changes the reactive datas.
     
 ##### preDestroy: 
 <Promise Based> Called Asynchronously before destroying the widget instances and unmounting from the dom.
     
-##### onDestroyed: 
+##### postDestroy: 
 <Promise based> Called Asynchronously after destroying all widget instances and unmounted from the dom
     
     
@@ -1339,20 +1346,20 @@ To perfom a data Observation within the widget instance datas, the 'observers' o
   
 Within the observe object option, hexax accepts only  object, with names that references the widget defined model instances datas
   
-Does not  accept the use of nested property accessor as metthod name e.g
+Can  accept nested property accessor as metthod name e.g
   
 ```javascript
   let app={
-    observer:{
-      '$data.value':()=>{
-        //this will be rejected
+    observers:{
+      'value._data':()=>{
+        
       }
     }
   }
 ```
-Hexax will raise an observer error on access to a nexted property while naming an `observes` property.
+Hexax will raise an observer error on access to a property that cannot be found on the model instance while naming an `observes` property.
   
-To set up an observer method for the property of `$data.value` inasmuch as the target  data is a primitive data, or would not require nexted property accessing.
+To set up an observer method for the property of `value._data` inasmuch as the target  data is a `dataRef` data, or would not require nexted property accessing.
   
 You can specifically set the method name to 'value'.
   here is an example.
@@ -1360,7 +1367,7 @@ You can specifically set the method name to 'value'.
   let app={
     model(){
       this.count=2
-      this.value=data(77)
+      this.value=dataRef(77)
     },
     observer:{
       count(newV, oldV){
@@ -1368,56 +1375,57 @@ You can specifically set the method name to 'value'.
         //with parameter values of the new assigned value and it's former value
       },
       value(){
-        //here is an observer method for the 'value.$data' model instance
+        //here is an observer method for the 'value._data' model instance
       }
     }
   }
 ```
 Observer methods gets triggered each time the select prop calls its setter function.
 
-For Observation of nexted object props, you can acomplish such tax within the onMounted LifeCycleHooks by using the `observer` macro.
+For Observation of nexted object props, you can acomplish such tax within the postMount or any hooks or handlers  by using the `this._observe` macro.
 
 ```javascript
 
-const { data, observe } = Hexax
+const { dataRef } = Hexax
 
 let app= {
   model(){
-    thus.obj=data( { num:56 , info : { name: 'Hexax Explorer', age :43 } } )//An object data
+    this.obj=dataRef( { num:56 , info : { name: 'Hexax Explorer', age :43 } } )//An object data
   },
-  onMounted(){
+  postMount(){
     
-    //We are targeting to watch the age property of obj.$data.info
-    observe('obj.$data.info.age' , ()=>{
+    //We are targeting to watch the age property of obj._data.info
+    thid._observe('obj._data.info.age' , ()=>{
      // a callback function
     })
     //observe accepts two arguments, the path to the reactive object to watch, and a callback function,
-    //Recommended to be an arrow function, so to be able to access the onMounted scope this keyword.
+    //Recommended to be an arrow function, so to be able to access the postMount scope this keyword.
     
   }
 }
 
 ```
 
-Precisely, you can watch more than one property using the `observe` component , by passing an arrow function that returns the value of the live properties you wish to observe.
+Precisely, you can watch more than one property using the `observe` component , by passing a getter function that returns the value of the live properties you wish to observe.
 
 ```javascript
-const { data , observe} = Hexax
+const { dataRef , observe} = Hexax
 
 let app= {
   model(){
-    this.obj=data( { num:56 , info : { name: 'Hexax Explorer', age :43 } } ) ,//An object data
+    this.obj=dataRef( { num:56 , info : { name: 'Hexax Explorer', age :43 } } ) ,//An object data
     this.count=45
   },
-  onMounted(){
+  postMount(){
     
-    //We are targeting to watch the age property of obj.$data.info
-    observe( ()=> this.obj.$data.info.age + this.count, (newV, oldV)=>{
+    //We are targeting to watch the age property of obj._data.info
+    observe( ()=> this.obj._data.info.age + this.count, (newV, oldV)=>{
      // a callback function
     })
-    //if both properties may not be concentenated, you may use an array  to  parse in the strings  of the props path
-    observe( ['obj.$data.info.age' ,'count'], (newV, oldV)=>{
+    //if both properties may not be concentenated, you may use an array  to  parse in the strings  of the props path, or getters
+    observe( ['obj._data.info.age' ,()=>this.count], ([ newAge, oldAge ], [ newCount, oldCount])=>{
      // a callback function
+      //Notice how we received arrays of two values , old an new from this callback parameter arguments
     })
     //NOTE:this must be omitted, and you must nit return it  from a function.
   }
@@ -1425,23 +1433,24 @@ let app= {
 ```
 Hexax watches the value of this properties and reacts when there values changes when reavaluated, instead of the data properties directly.
 
+### **_effectHook**
+
+
 ## **Global instanciciation**
 
 Hexax provides an effective way of injecting a global datas through out the scope of an initBuild and all it's child widget
 
 1. `build.property`: Used to define a global property  to all child widgets of this parent widget;
 
-Can be accessed as `$base.xxx`;
-global widget properties are encapsulated into a single data object, $base.
+global widget properties are encapsulated abd exposed to individual widgets model instanciciations and will be overiden by widget's own internally defined properties if conflicts occure.
 Example usage
 ```javascript
 const { initBuild }=Hexax
 let build=initBuild({
   //widget options
-  template:`<p>{{ $base.text }}</p>`
+  template:`<p>{{ text }}</p>`
 }).property('text','Hello Hexax')
-//build.property('text','cursor-pointer');
-accepts two parameters, a property name and the property data ref.
+//accepts two parameters, a property name and the property data ref.
 ```
 2. `build.handlers`: The hanlers prototype of initBuild sets global handlers for a widget
 3. `build.widget` Also the widget prototype of the initBuild instance is used to set a global widget for all widget that are child of this parent widget.
@@ -1509,21 +1518,8 @@ The single quote was used since the outer value was quoted using the double quot
 
 MeanWhile, you can use the javascript provided css style property semantics, by Capitalizing a letter whenever there occured a hyphen replaced space like in the last property of the style attribute value in the previous example, the `borderRadius`.
 
-It's hexax recommendation to define the styling data properties in a `styleClass` option.
-```javascript
-let app={
-  styleClass:{
-    headStyle:{
-      color:'#0a3039'
-    }
-  }
-}
-```
-The styleClass option is passed an object, the object must receive property values of an object type.
-This properties are exposed to the widget scope as `this.$styles.headStyle` or to the template as `$styles.headStyle`.
-You can simply define the style object using the `data` macro, and return it from the model method.
+You can simply define the style object using the `data` macro, and define it to a property in the model method.
 Whatever way you choose , both the reactivity and responsiveness are maintained.
-MeanWhile it's also provided to the context variable of the  build function as `context.styles`.  
 Also an array of style objects can be parsed to the style binding.
 ```html
 <element *style="[styleObj,{ margin:'10hx', background:'#0a3039' }, elementStyles ]" />
@@ -1550,23 +1546,27 @@ The above example will result in a button element as below.
 ```
 Since the `bg-dark` property has a falsy value, it was omitted.
 
-
+An array of class objects or arrays can also be received. see Below
+```html
+<button *class="[ classObjects ,{ largeBtn:true, 'bg-dark':false, btn: true,  }, otherModelRefs  ]" />
+```
 
 ### **Mustache Block Helpers***
 
 Hexax provides in  mustache tags configuration setup  while compiling mustache tag expressions.  
 Below is a simple example of using the block helpers.
 `{{ %foo >> model_based_expressions  }}`
-A template block helper is recognized by appending the `@` character before the block name and separating the block name from the actual expression using double greaterthan character `>>`  
+A template block helper is recognized by appending the `%` character before the block name and separating the block name from the actual expression using double greater-than character `>>`  
 Block helpers can be aswell passed modifiers just  like passing modifiers to directives.  
 `{{ %safe|mod|once >> stringValues }}`. Modifiers are separated using pipe `|`  just  like it's directive counterpart and can be chained aswell.  
 Blocks helpers can however be chained, separating each block with the  dot `.` character.  
 `{{ %safe.html|mod|once >> stringValues }}`
 
+
 #### Custom blocks
 
 Custom block helper can be generated  through a simple function which is to be registered on the blocks option before it can be used within the widget template.  
-Customization helps you integrate some useful and complex functionality that may not ve been provided by the default components and gives you the full power of javascript over you dynamicaly rendered contents
+Customization helps you integrate some useful and complex functionality that may not ve been provided by the builtin components and gives you the full power of javascript over you dynamicaly rendered contents
 See below
 ```javascript
 export default{
@@ -1574,22 +1574,27 @@ export default{
     this.name='hexax
   }
   blocks:{
-    capitalize(value, modifiers){
-      //receives the  resolved value and an  array of modifiers as Parameters
+    capitalize(valueBinding, modifiers){
+      //receives the  resolved array of values being passed and an  array of modifiers as Parameters
       return value.charAt(0).toUpperCase();//the returned value will be used during rendering
     }
   },//Usage in template
-  template:`<h1>Hello {{ @capitalize >> name  }}</h1>`
+  template:`<h1>Hello {{ %capitalize >> name  }}</h1>`
 }
 ```
 While building custom blocks, note it must return the actuall modified value  you want rendered.    
 
 While chaining blocks,mind how it's ordered,  since it matters.   
-For example `{{ @safe.@html|mod >> stringValues }}` results to a block,  consisting of an `html` block helper chained to a `safe` block.  
-In this case, since the `safe` block comes before the `html`  block, the later will be passed the return value of the former and used as it's value.  
-All modifiers provided are passed to each chained block.
-
+For example `{{ %safe.html|mod >> stringValues }}` results to a block,  consisting of an `html` block helper chained to a `safe` block.  
+In this case, since the `safe` block comes before the `html`  block, the later will be passed the return value of the former and used as it's value first value of the resulting valye array.     
+All modifiers provided are passed to each chained block.  
+You can aswell pass multiple Parameters by separating them with the `>>` character.
+```html
+<p> {{ %myBlock >> firstValue >> 890 }}</p>
+```
+This will be received within tge block Callback first Parameter as an array of two values;
 You can also typecheck the values been expected  by using conditional statements on the resolved value.  
+Blocks can be defined as a plain object, which exposes an enumerable `block` callback method;
 Reference the Hexax blocks helpers API for more information.
 
 ###  **Hexax Plugin  mechanism**
@@ -1623,7 +1628,7 @@ initBuild(app).install(my_plugin,{/*config options*/})//plugin installation  can
         .install(FuncPlugin)
 ```
 
-### **Widget custom event listening**
+### **Widget signals events listening**
 
 
 
@@ -1644,17 +1649,15 @@ params:
   self:<required>
 **Description:** A built in widget useful for rendering widgets dynamicaly.
 Accepts one required params ,  The `self` params, which describes a native/resolved custom element tag name or an internally registered widget name.
-If binded to a model property from the template or accessed using tge hyperscript `this`, will raise a hexax warn since the hexax model instances are proxied objects/data. Except the data was to be parsed using the `rawData` function. 
+If binded to a model property from the template or accessed using the hyperscript `this`, will raise a hexax warn since the hexax model instances are proxied objects/data. Except the data was to be parsed using the `rawData` function. 
 Watch the example below
 ```javascript
 import { rawData } from 'hexax'
 export default{
   model(){
-    return {
-      inModelWidget:rawData({
-        template:`<h1>Hello Hexax!</h1>`
-      })
-    }
+    this.inModelWidget:rawData({
+      template:`<h1>Hello Hexax!</h1>`
+    })
   },
   template:`
     <hx-build *self=inModelWidget />
@@ -1671,7 +1674,7 @@ Children passed to `hx-build` will be passed to the resolved elememt/widget, inc
 
 Global NameSpace: `Fragment`
 
-**Description:** `hx-fragment` is a built in widget that is used to  render a set of elements without having to wrap them within an enclasing tag.  
+**Description:** `hx-fragment` is a built in widget that is used to  render a set of elements without having to wrap them within an enclosing tag / element.  
 This is technically useful, expecially when rendering a slot content and don't want to get them wrapped within an enclosing wrapper element.
 ```html
 <ButtonCounter >
@@ -1696,17 +1699,17 @@ params:
 Description: This is built on top the `for` directive and simplifies the use of the `for` loop rendering.
 For example  
 ```javascript
-import { data  }  from 'hexax
+import { dataRef  }  from 'hexax
 export default{
   model(){
-    this.fruits=data({
+    this.fruits=dataRef({
       orange:{id:223, color:'yellow',shape:'circle',count:56},
       mango: {id:3570,color:'green',shape:'rect',count:911},
       pearl:{id:67,color:'navy-blue',shape:'rectangle',count:2},
     })
   },
   template:`
-  <hx-for *iterable=fruits.$data context=[ name, value ]>
+  <hx-for *iterable=fruits._data $fall="[ name, value ]" >
     <h1 >{{name}} </h1>
     <h3 >COLOR: {{value.color}}</h3>
     <h3 >SHAPE: {{value.shape}}</h3>
@@ -1797,49 +1800,49 @@ Arguments:
 Details:  
 Helpers function that provides the use of modifiers within the hyperscript Interface
 
-* `data()`:
+* `dataRef()`:
 
 Arguments:
   - DataValue: `<Any>` Data values to be sibcribed to and to a reactive data ref.  
   
   Interface:
 ```javascript
-function data( DataValue:<Any> ) : <DataRefObject>
+function dataRef( DataValue:<Any> ) : <Reactive__Ref_Object>
 ```
-* `nextTick()`:
+* `deferTick()`:
 
 Arguments:
   - Callback: `<Function>` A callback function to be called after the next dom update circle is completed.
   - TimeOut:`<TimeOutInstance>` An optional timeout instance
 Interface:
 ```javascript
-function nextTick( Callback:<Function> , TimeOut:<TimeOutInstance> ) : <void>
+function deferTick( Callback:<Function> , TimeOut:<TimeOutInstance> ) : <void>
 ```
 Details:  
-nextTick waits for the dom to rerender after mutating a model property before being called.  
+deferTick waits for the dom to rerender after mutating a model property before being called.  
 For  example
 ```javascript
-let { nextTick }=Hexax
+let { deferTick }=Hexax
 let app={
   model(){
     this.count=34 
   }
-  onMounted(){
+  postMount(){
     this.count+=34;
-    nextTick(()=>{
+    deferTick(()=>{
       //this callback  will wait till the about mutation is done with  it's dom rerendering before being triggered
     })
   }
 }
 ```
-* `Template<BackTicks>`:
+* `html<BackTicks>`:
 
 Arguments:
-  - Template: `<String>` Backtick based arguments generator.
+  - html: `<String>` Backtick based arguments generator.
   
 Interface:
 ```javascript
-function Template<BacktickString> : <HexaxDomInstance>
+function html<BacktickString> : <HexaxDomInstance>
 ```
 * `AsyncWidget()`:
 
@@ -1912,8 +1915,6 @@ Arguments :
 * 
 * `markup()`
 
-* `$observe()`
-* 
 * `extend()`
 
 * `$scarfold()`
@@ -1922,53 +1923,6 @@ Arguments :
 
 * `$expose()`
 
-* `data()`
-
-* `defineHandlers()`
-
-Arguments:
-  - `<Object>` An object definition of handlers as methods.  
-  
-Interface:
-```javascript
-function defineHandlers(Handlers:<Object>) : <void>
-```
-Details:  
-Can only be used effectively within the build function and the preBuild LifeCycleHook.  
-This macro is usefull expecially when writing a Function widget.
-
-It prototypes widget Handlers by registering provided method options into the state handlers record.
-
-* `registerWidgets()`
-
-Arguments:
-  - `<Object>` An object definition of widgets options.    
-Interface:
-```javascript
-function registerWidgets(Widget:<Object>) <Null>
-```
-
-Details:  
-Can only be used effectively within the build function and the preBuild LifeCycleHook.  
-This macro is usefull expecially when writing a Function widget.
-
-It prototypes the widget registration process.
-
-* `exposeDirectives()`
-
-Arguments:
-  - `<Object>` An object definition of valid custom Directives.  
-Interface:
-```javascript
-function exposeDirectives(Directives:<Object>) <Null>
-```
-Details:  
-Can only be used effectively within the build function and the preBuild LifeCycleHook.  
-This macro is usefull expecially when writing  widgets using  the Function widget.
-
-It prototypes widget custom directives by registering provided options into the state custom directives stack .
-
-* `hydrate()`
 
 * `postBuild()`
 
@@ -1982,17 +1936,17 @@ Details:
 A macro used in entailing the postBuild LifeCycleHooks within the build function or a function widget.  
 Accepts only a single parameter,a Callback method to be stalled as the postBuild hook.
 
-* `onMounted()`
+* `postMount()`
 
 Arguments:
   - `<Function>` a callback function  
 Interface:  
 ```javascript
-  function onMounted(Callback:<Function>) <Null>
+  function postMount(Callback:<Function>) <Null>
 ```
 Details:   
-A macro used in entailing the onMounted LifeCycleHooks within the build function or a function widget.  
-Accepts only a single parameter,a Callback method to be stalled as the onMounted hook.
+A macro used in entailing the postMount LifeCycleHooks within the build function or a function widget.  
+Accepts only a single parameter,a Callback method to be stalled as the postMount hook.
 
 * `preMount()`
 
@@ -2006,17 +1960,17 @@ Details:
 A macro used in entailing the preMount LifeCycleHooks within the build function or a function widget.  
 Accepts only a single parameter,a Callback method to be stalled as the preMount hook.
 
-* `onDestroyed()`
+* `postDestroy()`
 
 Arguments:
   - `<Function>` a callback function  
 Interface:  
 ```javascript
-  function onDestroyed(Callback:<Function>) <Null>
+  function postDestroy(Callback:<Function>) <Null>
 ```
 Details:   
-A macro used in entailing the onDestroyed LifeCycleHooks within the build function or a function widget.  
-Accepts only a single parameter,a Callback method to be stalled as the onDestroyed hook.
+A macro used in entailing the postDestroy LifeCycleHooks within the build function or a function widget.  
+Accepts only a single parameter,a Callback method to be stalled as the postDestroy hook.
 
 * `preDestroy()`
 
@@ -2042,17 +1996,17 @@ Details:
 A macro used in entailing the preUpdate LifeCycleHooks within the build function or a function widget.  
 Accepts only a single parameter,a Callback method to be stalled as the preUpdate hook.
 
-* `onUpdated()`
+* `postUpdate()`
 
 Arguments:
   - `<Function>` a callback function  
 Interface:  
 ```javascript
-  function onUpdated(Callback:<Function>) <Null>
+  function postUpdate(Callback:<Function>) <Null>
 ```
 Details:   
-A macro used in entailing the onUpdated LifeCycleHooks within the build function or a function widget.  
-Accepts only a single parameter,a Callback method to be stalled as the onUpdated hook.
+A macro used in entailing the postUpdate LifeCycleHooks within the build function or a function widget.  
+Accepts only a single parameter,a Callback method to be stalled as the postUpdate hook.
 
 
 
@@ -2090,6 +2044,9 @@ iterable rendering dirextive.
 
 14. `$$hx`
 
+15.  `$$transition`
+
+16.  `$$animation`
 
 #### **Widget options API**
 
@@ -2117,15 +2074,13 @@ Type : `Function` | `<Object>`
 
 Details:
 
-A method used in instanciating widget model datas. Must return an object of properties that are to be exposed to the widget and template scope as the Widget's model datas.
+A method used in instanciating widget model datas. Props are assigned to the `this` keyword and are to be exposed to the widget and template scope as the Widget's model datas.
 
 e.g.
 ```javascript
 let app={
   model(){
-    return {
-      count:2
-    }
+    this.count=2
   },
   //Usage
   template:`<h1> {{ count }} is the count value </h1>`
@@ -2235,12 +2190,12 @@ Details:
 
 Used to to define methods that should watch reactive properties when they were mutated.
 
-The methods names must match a model exposed property. Deep/nexted objects properties will raise an error warn.
+The methods names must match a model exposed property. Deep/nexted objects properties are accepted.
 Here is how to...
 ```javascript
 let app={
   model(){
-    this.count=data(0),
+    this.count=dataRef(0),
     this.message="Welcome to Hexax JS"
   },
   observers:{
@@ -2252,6 +2207,7 @@ let app={
     }
   }
 }
+for watching of complex data , use the `this._observe` utility macro
 ```
 To watch a nexted/deep property, or morethan one property of the same type at a time, use the  `this.observe` macro.
 
@@ -2291,12 +2247,12 @@ An object used in registering widgets that are to be used within the local widge
 ```javascript
 let app={
   widgets:{
-    headerWidget:{
+    HeaderWidget:{
       template:`<h1> Hexax Explorer</h1>`
     }
-  },
+  },//Usage in template
   template:`
-  <headerWidget />
+  <HeaderWidget />
   `
 }
 ```
@@ -2306,7 +2262,7 @@ Contact the widget registration guide for more details.
 
 ##### **LifeCycleHooks **
 
-10. ##### `onMounted`
+10. ##### `postMount`
 
 Type: `Function`
 
@@ -2315,14 +2271,14 @@ Details:
 An function/method, that is to be called asynchronously, when a widget mounting process has been completed.
 ```javascript
 let app={
-  onMounted(){
+  postMount(){
     //The this scope exposed here
   }
 }
 ```
 Do not use an arrow function for this option.
 
-11. ##### `onUpdated`
+11. ##### `postUpdate`
 
 Type: `Function`
 
@@ -2331,7 +2287,7 @@ Details:
 An function/method, that is to be called asynchronously, when a widget triggers an update on the widget inDom object, when a reactive property got mutated. 
 ```javascript
 let app={
-  onUpdated(){
+  postUpdate(){
     //The this scope exposed here
   }
 }
@@ -2404,16 +2360,16 @@ let app={
 ```
 Do not use an arrow function for this option.
 
-16. ##### `onDestroyed`
+16. ##### `postDestroy`
 
 Type: `Function`
 
 Details:
 
-An function/method, that is to be called asynchronously, after  a  widfet instance has been destroyed and removed from the dom.
+An function/method, that is to be called asynchronously, after  a  widget instance has been destroyed and removed from the dom.
 ```javascript
 let app={
-  onDestroyed(){
+  postDestroy(){
     //The this scope exposed here
   }
 }
@@ -2428,13 +2384,13 @@ Details:
 
 An function/method, that us used to encapsulate  the widget UI system.
 
-Should return a `HexaxDomInstance`  either  through the  hyperscript method,  or using the `hexax.Template` util.
+Should return a `HexaxDomInstance`  either  through the  hyperscript method,  or using the `hexax.html` util.
 
 Specialy provided for users coming from hyperscript background.
 e.g
 ```javascript
 let app={
-  build(params, { slots, events, attrs, styles }){
+  build(params, { slots, signals , attrs, utils }){
     //The this scope exposed here
     return el('h1', "Hexax Explorer")
   }
@@ -2451,18 +2407,22 @@ Type: `Object` | `<Object>`/`<Function>`
 
 Details:
 
-An Object  used to register custom directives.
+An Object option used to register custom directives.
 ```javascript
 let app={
   directives:{
     MyDir:{
       created(element, value, modifiers){
         //Directive created hook statement
-      }
+      },
+    },
+    autoFocus(element){
+      element.focus()
     }
   }, //Usage  of custom directives in templates
   template:`
-  <p  hx-MyDir='true' > Hexax Explorer</p>
+  <p  $$MyDir='true' > Hexax Explorer</p>
+  <input $$autoFocus >
   `
 }
 ```
@@ -2481,7 +2441,7 @@ properties  to be paased must be a valid widget's configuration setting option.
 let app={
   buildConfig:{
     debug:false,
-    inheritSlots:false
+    forwardSlot:false
   }
 }
 ```
@@ -2495,26 +2455,26 @@ Type: `Boolean` | default: `false`
 
 Details:  
 Used to silence all error and debug warns within an individual widget.  
-Every Hexax generated error will fall silently if set to a falsy value.
+Every Hexax generated error will fall silently if set to a falsy value with exceptions of errors generated from macros utilities in build function and through hyperscript.
 
-- `inheritAttrs`
+- `forwardAttrs`
 
 Type: `Boolean` | default: `true`
 
 Details:  
-This option is used to disable attribute inheritance when a widget has only a single root element.  
+This option is used to toggle attribute inheritance when a widget has only a single root element.  
 When an element has only one  root  html element, hexax will try parsing down the attributes received from the consumer that does not match with params to the element by default.  
 
-This functionality can be disabled by setting the `inheritAttrs` option to `false`
+This functionality can be disabled by setting the `forwardAttrs` option to `false`
 
-- `inheritSlots`
+- `forwardSlot`
 
 Type: `Boolean` | default: `true`
 
 Details:  
-When a widget has a single root element with no `innerHtml` content, hexax will try parsing any children elememt received from the consumer as it's `innerHtml` content by default.  
+When a widget has a single root element with no `innerHtml` content, hexax will try parsing any children elememt/default slots received from the consumer as it's `innerHtml` content by default.  
 
-This behavior can be stoped by setting the `inheritSlots` option to `false`.
+This behavior can be stoped by setting the `forwardSlot` option to `false`.
 
 - `fallThrogh` `<Deprecated>`
 
@@ -2575,7 +2535,7 @@ As you dive deeper into hexax, consider adopting best practices to ensure clean 
 - **Observer Methods:** Use observer methods for data changes that require specific customized reactions.
 
 ### **Conclusion**
-Congratulations! You've learned the basics of using Hexax to empower your creativity and build of web apps with speed. You now know how to define widgets, use template strings, handle methods and reactive data, bind attributes, apply directives, and render your UI widgets.
+Congratulations! You've learned the basics of using Hexax to empower your creativity and build of web apps with speed. You now know how to define widgets, use template strings, handle methods and reactive data, bind attributes, customize and apply directives, and render your UI widgets.
 
 Additionally, you've explored advanced features like params, custom elements, observers, template blocks helpers, plugins, slots, agents and some useful configuration options.
 
@@ -2585,6 +2545,6 @@ Hexax offers a powerful and flexible framework for developing dynamic and intera
 To further expand your knowledge and explore more advanced features of Hexax, check out the following resources:
 
 Official Hexax Documentation: https://hexax-docs.com
-Hexax GitHub Repository: https://github.com/prince9216/hexaxjs
+Hexax GitHub Repository: https://github.com/hexaxsoftwares/hexaxjs
 Hexax Community Forum: https://community.hexax.com
 These resources provide comprehensive documentation, examples, and a supportive community to help you make the most of Hexax in your projects. Happy coding!.
