@@ -1,5 +1,5 @@
 ## HexaxJs
-### Hexax : The Transparent Web Renderer for perfectionists
+### Hexax : The Transparent Web framework for perfectionists
 
 ### Welcome to hexax documentation
 
