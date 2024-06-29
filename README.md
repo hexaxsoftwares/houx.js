@@ -1,103 +1,117 @@
-## HexaxJs
-### Hexax : The Transparent Web framework for perfectionists
+## Houx.js
+### Houx : The Transparent Web Framework for Perfectionists 
 
-### Welcome to hexax documentation
+### Welcome to the houx documentation
 
 
-Hexax empowers creativity, speedy development while Building web apps.
+Houx empowers creative and productive development while Building web apps.
 
 
 ### 1. Introduction
 
-Hexax is a JavaScript framework designed with the target of enhancing creativity, speedy prototyping and efficient workflow while building web applications.  
-It provides you with a flexible and intuitive API for creating an interactive user interfaces leveraging a declarative syntax. 
+Houx is a sleek and powerful JavaScript framework designed with the target of enhancing productivity, speedy and efficient workflow while building web applications.  
+It provides you with a flexible and intuitive API for creating interactive user interfaces leveraging a declarative syntax. 
 
-Hexax is a framework where creativity meets efficiency.
+Houx is a framework where creativity meets efficiency.
 
 This guide isn't just about syntax and functions; it's a journey into a mindset that unleashes your creative potential and accelerates your web development skills.
 
-Hexax leverages reactive data and efficient rendering to help delivering high-performance applications.
+Houx leverages reactive data and efficient rendering to help delivering high-performance applications.
 
 This guide will take you through a detailed journey, covering installation, basic concepts, advanced features, and practical examples.
 
-Whether you're a newcomer to web development or seeking to expand your skills, Hexax serves as your guide to a higher level web UI development.
+Whether you're a newcomer to web development or seeking to expand your skills, Houx serves as your guide to a higher level web development.
 
 
-### 2. **Getting Started : installation and setting up your Hexax playground**
+### 2. **Getting Started : installation and setting up your Houx playground**
 
-Before delving into the intricacies, let's establish our hexax playground.  
+Before delving into the intricacies, let's establish our houx playground.  
 A basic understanding of HTML, CSS, and JavaScript is essential. If you're new to programming, take a moment to acquaint yourself with these fundamentals.
 
 #### **Installation Proccess:**
 
-Hexax is a dependency-free, browser-oriented, open-source javascript library. This means that using it is as simple as adding a `<script>` tag to your document head. No need for complicated build steps.
+Houx is a dependency-free, browser-oriented, open-source javascript library. This means that using it is as simple as adding a `<script>` tag to your document head. No need for complicated build steps.
 
-You can simply load Hexax by just including the following script tag in your main HTML file head tag and get going:
+You can simply load Houx by just including the following script tag in your main HTML file head tag and get going:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/hexaxsoftwares/Hexax-js@main/hexax.global.dev.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/houxsoftwares/Houx-js@main/houx.global.dev.js"></script>
 ```
-You might also prefer the esm browser module. Here is the cdn link to a hexax exported components module.
+You might also prefer the esm browser module. Here is the cdn link to a houx exported components module.
 ```html
-<script src="https://cdn.jsdelivr.net/gh/hexaxsoftwares/Hexax-js@main/hexax.esm-browser.dev.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/houxsoftwares/Houx-js@main/houx.esm-browser.dev.js"></script>
 ```
-Some discreet developers might prefer loading and hosting hexax locally in production.
+Some discreet developers might prefer loading and hosting houx locally in production.
 
-Then you can simply download the file from this jsdelivr Link . `https://cdn.jsdelivr.net/gh/hexaxsoftwares/Hexax-js@main/hexax.global.dev.js` and copy the file to your project directory, then link to it from your html head file .
+Then you can simply download the file from this jsdelivr Link . `https://cdn.jsdelivr.net/gh/houxsoftwares/Houx-js@main/houx.global.dev.js` and copy the file to your project directory, then link to it from your html head file .
 
 ```html 
-<script src='path/to/hexax.global.dev.js'></script>
+<script src='path/to/houx.global.dev.js'></script>
 ```
-You can aswell use hexax in the cli  by installing it via npm/yarn  
+You can aswell use houx in the cli  by installing it via npm/yarn  
 Make sure you have nodejs installed.  
 ###### Using npm.
 ```bash
-npm install hexaxjs-framework
+npm install houxjs-framework
 ```
 ###### Using yarn
 ```bash
-yarn add --save hexaxjs-framework
+yarn add --save houxjs-framework
 ```
-Once installed, hexax becomes your creative companion.
+Once installed, houx becomes your creative companion.
 
-## **Understanding hexax**
+## **Understanding houx**
 
-Once hexax is included in your project, the global namespace `Hexax` will be exposed and available within your script context scope if you are using the self/cdn hosting.  
-Regular imports of hexax modules from `'hexax'` will be available if using the cli version or exported module
+Once houx is included in your project, the global namespace `Houx` will be exposed and available within your script context scope if you are using the self/cdn hosting.  
+Regular imports of houx modules from `'houx'` will be available if using the cli version.  
+You can alse import houx exported modules from the houx esm-browser cdn/self hosted version.
 
-Destructuring while using the self/cdn hosting goes as below
+Destructuring from the global houx Object;
 ```javascript
-  const { initBuild, dataRef, el } = Hexax;
+  const { initBuild, dataRef, el } = Houx;
   ```
-Regular imports while using the cli/esm installation guide
+Regular imports while using the esm installation guide
 ```javascript
-import { initBuild, dataRef,  el } from 'hexax'
+import { initBuild, dataRef,  el } from 'houx'
 ```
-  
+Using Houx in nodejs
+```javascript
+const Houx=require('houx');
+
+```
+### **Basic Usage**
+
+Houx is an option based frameworks which provides you a way, similar to the Vue.js options API to define your componentised fragments and pages of your application, known as widgets in houx.
+
+You only need to provide required options to an object, while concetrating on your business logic, and letting Houx handke the complexity of your project structure.  
+A simple object can denote a component, fragment or a full page.
+Why do we need widgets ?
+
+
 ### **Introducing Widgets**
 
-Hexax widgets are independent entities encapsulating UI components.  
+Houx widgets are independent entities encapsulating UI components.  
 A widget can range from a full page, to a simple component block within your application.  
 Every widget has its own state, structure, and behavior and takes care of how it's model reactivity system is managed.  
 
 This can be confusing at the moment , but don't bother, this documentation is designed for both beginners and experienced developers alike.
 
 We define a widget with a simple plain javascript object:
-Hexax supports the use of both classes and functions as valid widgets for  simplicity and completeness. You can learn how to use them in their dedicated sections  
+Houx supports the use of both classes and functions as valid widgets for  simplicity and completeness. You can learn how to use them in their dedicated sections  
 
-Let's create your inaugural hexax widget.   
-Envision a widget as the fundamental building block of your web application or a way you are allowed to create a self defined tag that can only be used in hexax compiled environment.  
+Let's create your inaugural houx widget.   
+Envision a widget as the fundamental building block of your web application or a way you are allowed to create a self defined tag that can only be used in houx compiled environment.  
 Widgets helps you decomponentise your UI structure into smaller functions and components which helps reduce the complexity of project management.
 
 Consider the example below
 ```javascript
 let app={
   model(){
-    this.greeting="Hello Hexax" 
+    this.greeting="Hello Houx" 
   },
   template:`<h1> {{ greeting }} </h1>`
 }
-//this is a valid simple hexax widget
+//this is a valid simple houx widget
 ```
 
 In the example code above, we created an object containing widget options that makes up our widget build.
@@ -124,15 +138,15 @@ The model method does not utilize a return value, do returned content will be ig
 2. The ***template*** option: A string based option that is used to define your widget markup texts.  
 Its recommended to use backticks while parsing this option to leverage the use of multline system.
 
-You can parse any valid html markup to the template option, hexax only provides you with addition compile time semantics to help you build efficiently.
+You can parse any valid html markup to the template option, houx only provides you with addition compile time semantics to help you build efficiently.
 
 In the previous example, we've crafted a simple widget that conveys a greeting message.  
 The `model` function establishes the widget's initial data store, and the `template` option defines the UI structure using the string based markup texts.  
-Note how the model defined property via the inScope this keyword was to be accessed within the template tags directly by using the hexax interpolation syntax  
+Note how the model defined property via the inScope this keyword was to be accessed within the template tags directly by using the houx interpolation syntax  
 `{{ greeting }}`  
 > Note: The properties are accessed directly, you don't have to access them through `this`
 
-Without using the hexax based interpolation syntax, javascript provides you with a string interpolation system within the  backticks multline strings syntax.
+Without using the houx based interpolation syntax, javascript provides you with a string interpolation system within the  backticks multline strings syntax.
 But accessing `this` in the template option will rather point to the wrapping object.  
 Same foul occurs if you are using a class based widget type, it will point to the class object.  
 For example  
@@ -142,14 +156,14 @@ let app={
 }
 
 ```
-Hexax reactive dependency tracker will not be notified if you used a non model defined prop since the widget UI build gots updated whenever the model returned properties changes or got mutated.  
+Houx reactive dependency tracker will not be notified if you used a non model defined prop since the widget UI build gots updated whenever the model returned properties changes or got mutated.  
 Just know you have to declare all your initial values in model function, this also is useful in helping you reason about a widget as a self defined component.
 
 ### **Widgets as Art, Initial Entry point.**
 
-In hexax, you're not just building widgets; you're crafting an art. Each widget is like a brushstroke, contributing to the canvas of your application. Think about the composition, the flow, and the visual poetry you create through your widgets.
+In houx, you're not just building widgets; you're crafting an art. Each widget is like a brushstroke, contributing to the canvas of your application. Think about the composition, the flow, and the visual poetry you create through your widgets.
 
-When building with hexax, there must be an entry point for your app build. This is a fundamental concept.
+When building with houx, there must be an entry point for your app build. This is a fundamental concept.
 
 The `initBuild` component is used to create an initial entry point widget, other child widgets can be passed here as components, pages or building blocks to the `initBuild` widget.
 
@@ -158,10 +172,10 @@ This is an initial entrypoint widget of the app, we will learn how to use other 
 
 Study the code below.
 ```javascript
-const { initBuild } = Hexax;
+const { initBuild } = Houx;
 let build = initBuild({
   model() {
-    this.greeting='Hello Hexax
+    this.greeting='Hello Houx
   },
   template:`<h1> {{ greeting }} </h1>` // Craft your visual poetry!
 });
@@ -175,15 +189,15 @@ There should be a root dom node in the html dom, where an initBuild instance wou
 
 The innerHtml of the mount Node target will be used as a fallback widget template if the build and the template options are both not provided or both returns `null` or `undefined`.
 
-***Note:*** The in Dom template parsing caveat will be implemented when using the mount Root content as template in initBuild since hexax won't be able to take the responsibility of processing the innerHtml content before resolving.  
+***Note:*** The in Dom template parsing caveat will be implemented when using the mount Root content as template in initBuild since houx won't be able to take the responsibility of processing the innerHtml content before resolving.  
 
 
 ```javascript
 //syntax
-const { initBuild } = Hexax;
+const { initBuild } = Houx;
 let build = initBuild({
   model() {
-    this.greeting='Hello Hexax
+    this.greeting='Hello Houx
   },
   template:`<h1> {{ greeting }} </h1>` // Craft your visual poetry!
 });
@@ -196,8 +210,8 @@ But you can also have more than one `initBuild` in your project or in the same d
 
 ### **Template Syntax**
 
-Hexax introduces a powerful templating language for expressing your UI elements using simple html markup syntax.  
-Here is a well tested template language that provides you an efficient semantics of encapsulating complex logic into your Hexax template without foul or imposing perfomance loop holes.
+Houx introduces a powerful templating language for expressing your UI elements using simple html markup syntax.  
+Here is a well tested template language that provides you an efficient semantics of encapsulating complex logic into your Houx template without foul or imposing perfomance loop holes.
 
 Let's explore the templating features with some examples:
 
@@ -209,7 +223,7 @@ e.g.
 ```javascript
 let app={
   model(){
-    this.message="Hexax Explorer"
+    this.message="Houx Explorer"
   },
   template:`<h1>This is the {{ message }} message</h1>`
 }
@@ -217,13 +231,13 @@ let app={
 
 `{{` and `}}` denotes the opening and closing tag by default . Any text within this tags will be parsed as javascript expression with the model instances in scope.
 
-This mustache tags can only accepts single expressions, Which simply means that parsing of statements or more that one Expressions will raise a Hexax template Error.
+This mustache tags can only accepts single expressions, Which simply means that parsing of statements or more that one Expressions will raise a Houx template Error.
 Expressions are syntaxs that can be passed to a javascript function `return` keyword.  
 For instance, a method call `value()` or inscope variable reference  `count`.
 Statements are variable declarations using maybe the (`let|var|const`) keywords, reassignendts,  iterating using the `for` loop Statement, control flow using `if/else-if/else` or deleting an object property using the `delete` keyword.
 Jusr make sure any expression passed can be received by a function's `return Statement
 
-During template compilation, calling of a function that does not return a primitive value, will make hexax call its `prototype.toString()` method if it's callable.  
+During template compilation, calling of a function that does not return a primitive value, will make houx call its `prototype.toString()` method if it's callable.  
 If not, it will be parsed `JSON.stringify` if it's not null or undefined.
 `undefined` or nullish values will be transformed to an empty strong (`""`)
 
@@ -237,16 +251,16 @@ function,delete,for,if,else,else-if,const,var,let,class
 ```
 > Note: The mustache tags connot be used in attributes
 
-<!--### **Hexax UI Symphony: Templating as Expressions**-->
+<!--### **Houx UI Symphony: Templating as Expressions**-->
 
-Hexax templates are more than just HTML with placeholders. They are expressions of intent, a language to communicate with your UI.
+Houx templates are more than just HTML with placeholders. They are expressions of intent, a language to communicate with your UI.
 
 
 ```javascript
 
 let app ={
   model() {
-    this.name='Hexax Explorer',
+    this.name='Houx Explorer',
   },
   template:`
       <div>
@@ -259,12 +273,12 @@ let app ={
 ```
 In this example, an input field dynamically updates the `name` text based on user input. The `$$model` directive establishes a two-way binding between the input and the data.
 
-Hexax templates provide a concise and expressive way to define UI logic.
+Houx templates provide a concise and expressive way to define UI logic.
 
 Confused of what directives are , we ll learn of that in the next section.
 Just know directives are a kind of special attributes with compile-time hydration that provides useful modifications on our UI build.
 
-##### **Hexax Template parsing caveat**
+##### **Houx Template parsing caveat**
 
 View your templates as a dialogue with your application – a conversation that shapes the user experience using an efficient and dynamic implemention.
 
@@ -280,10 +294,10 @@ Omiting the immediately closing Syntax like , `<element attr-value >` or not inc
 for example...
 ```html
 <p class='alert alert-primary m-3 p-4' ><!--No closing tag provided--> 
-  Hello Hexax Text Node
+  Hello Houx Text Node
 <input placeholder="Write something...">
 ```
-In the above code, Both the `Hello Hexax Text Nodee` text and the input element will  all be included as children nodes of th `p` element since the `p` element expects a closing tag.
+In the above code, Both the `Hello Houx Text Nodee` text and the input element will  all be included as children nodes of th `p` element since the `p` element expects a closing tag.
 
 The immediate closing syntax, `<p />` helps close  the element without a closing tag.
 
@@ -291,7 +305,7 @@ In terms of void elements, like  the ` input, br, img etc` elements , they can b
 
 When parsing attributes, attributes names and value cases sensitivity are maintained except in cases where an `initBuild` mount node is used as template.
 
-If an attribute value does not contain a space or special characters that may conflict with html tags like the `<, >, = , ", '`, which may confuse the hexax attribute passer,  you can pass them without quoting them.
+If an attribute value does not contain a space or special characters that may conflict with html tags like the `<, >, = , ", '`, which may confuse the houx attribute passer,  you can pass them without quoting them.
 
 e.g.  
 `<element attr=my Value />` ×Bad  
@@ -305,7 +319,7 @@ the `Value` text path in the first example above will be compiled as a different
 `<element onclick=()=>count++ />` ×bad   
 In the ablove examples, the arrow **>** in the attribute will be misinterpreted as the end of the opening tag if they were not quoted.  
 `<element onclick="()=>count++" />` √great  
-For example `<element attr=myValue />` works perfectly fine, Hexax accepts non quoted attributes values once they follow the hexax attributes passing caveats.
+For example `<element attr=myValue />` works perfectly fine, Houx accepts non quoted attributes values once they follow the houx attributes passing caveats.
 
 Also when a binded attribute name matches your attribute value text, you can just pass the attribute while omiting the value part . 
 This works like the native javascript objects option mapping.
@@ -316,7 +330,7 @@ For example
 <element  name />`
 <!-- will result in -->
 <element name="" />
-<!--using binding, Hexax will force the attribute name into a model prop, will rather raise an exception when path is not defined on model-->
+<!--using binding, Houx will force the attribute name into a model prop, will rather raise an exception when path is not defined on model-->
 <element *message />
 <!--results in the following -->
 <element *message=message />
@@ -327,7 +341,7 @@ e.g.
 ```javascript
 let app={
   model(){
-    this.text='Hexax Explorer'
+    this.text='Houx Explorer'
   },
   template:` <h1 $$text /> `
 }
@@ -335,7 +349,7 @@ let app={
 In the above example code, `text` will be mapped as the value of the `$$text` directive and passed to the context of the model instances. 
 The above widget will  result in the following dom node
 ```html
-<h1 innerText="Hexax Explorer" ></h1>
+<h1 innerText="Houx Explorer" ></h1>
 ```
 You must ve been confused of the terms, directives and binding, don't worry, it's no big deal.  
 We will explain in details in our next section.
@@ -364,7 +378,7 @@ For example, `*class='color'` will bind the class attribute to the value of `col
 
 Same rules implies as with the template mustache interpolation tags.   Once an attribute name is preceded with an asterisks, its value will be treated as a javascript expression .
 
-Data binding in Hexax is not just connecting reactive variables with the template attribute; it's orchestrating a symphony of interactions. 
+Data binding in Houx is not just connecting reactive variables with the template attribute; it's orchestrating a symphony of interactions. 
 
 Envision your UI elements harmonizing with the underlying data. Your application is a symphony where each note resonates with a data point.
 
@@ -377,7 +391,7 @@ let app={
   },
   // ...
   template:`
-    <p *class="color + name" >Hello, Hexax!</p>
+    <p *class="color + name" >Hello, Houx!</p>
     `;
     
   ,
@@ -386,7 +400,7 @@ let app={
 
 This example binds the `class` attribute to the value of `color` concentenated with the name property resulting in the dom node as follows
 ```html
-<p class="bg-info myParagraph">Hello, Hexax!</p>
+<p class="bg-info myParagraph">Hello, Houx!</p>
 ```
 
 #### **Dynamic Attribute Names and Values**
@@ -399,7 +413,7 @@ Same rules applies as with the mustache interpolation and binding directives.
 Watch the example...
 
  ```javascript
- const { dataRef }=Hexax
+ const { dataRef }=Houx
 let app={
   model(){
     this.name='class',
@@ -413,14 +427,14 @@ let app={
 Using the `$$bind` directive binds the contents Attribute value not Attribute name.
 Which means, if you do not wish to bind the attribute value, you can omit the `$$bind` directive.
 
-### **Hexax directives**
+### **Houx directives**
 
-Hexax directives a special transformed attributes an modifiers that perfoms usefull manipulation on elements while working with Hexax.  
-Hexax provides directives that allow you to conditionally display elements, bind reactive datas to an input element during compilation, reference an element or skip the compilation of an element's children.
+Houx directives a special transformed attributes an modifiers that perfoms usefull manipulation on elements while working with Houx.  
+Houx provides directives that allow you to conditionally display elements, bind reactive datas to an input element during compilation, reference an element or skip the compilation of an element's children.
 
 Directive is a special attribute used in manipulating a node or widget before, during or after compilation.
 
-Hexax directives are not just instructions; they are artistic attributes guiding the flow of your application or widget build. See `$$if` as a creative decision, `$$for` as a rhythmic pattern, and `$$ref` as a dynamic palette.
+Houx directives are not just instructions; they are artistic attributes guiding the flow of your application or widget build. See `$$if` as a creative decision, `$$for` as a rhythmic pattern, and `$$ref` as a dynamic palette.
 
 Here are some commonly used directives:
 
@@ -435,7 +449,7 @@ Scopes to html elements nodes only and will be consumed by a root element when p
 
 #### **Conditional rendering Directives**
 
-To render elements/widget based on some evaluated result of an expression or value, Hexax provides you with some useful condition based directives.
+To render elements/widget based on some evaluated result of an expression or value, Houx provides you with some useful condition based directives.
 
 ##### $$if
 
@@ -450,12 +464,12 @@ this element will not render since the condition render result is falsy
 
 ##### $$else-if
 
-Checks if the previous element/widget  has a `$$if`/`$$else-if` directive, if not found, will raise an `Hexax Error`.
+Checks if the previous element/widget  has a `$$if`/`$$else-if` directive, if not found, will raise an `Houx Error`.
 
 The `$$else-if` directive ,if available on the next element or widget following a `$$if` or other `$$else-if` element/widget , will be processed if, the `$$if`,ir `$$else-if ` on the previous element/widget, evaluates to false
 Inoder to make it effective, should be passed to the next element or widget after the previous relative conditioned element/widget 
 
-If unable  to find a relative conditional directive on the previous element/widget, will raise a hexax conditional Directive Error.
+If unable  to find a relative conditional directive on the previous element/widget, will raise a houx conditional Directive Error.
 
 ##### $$else
 The `$$else` directive , displays its element if the previous `$$if` or `$$else-if` , if any, statements are falsy
@@ -467,11 +481,11 @@ Its always a gotcha to pass a $$if alongsode the $$for directive, if possible, a
 ##### $$for
 list rendering helps you render a widget or an element, from an iterable value , the resulting value will be available on the element, or widget rendering scope.
 
-To achieve this , hexax provides you with the `$$for` directive.
+To achieve this , houx provides you with the `$$for` directive.
 
 here is a minimal example on using '$$for' directive.
 ```javascript
-import { dataRef  }  from 'hexax
+import { dataRef  }  from 'houx
 let app={
   model(){
     this.fruits:dataRef({
@@ -495,7 +509,7 @@ let app={
 
 It also follows the common javascript  forloop structure.
 Destructuring of arrays and object are also allowed.
-Array destruct extends to Set,Array and the Hexax builtin Tuple.
+Array destruct extends to Set,Array and the Houx builtin Tuple.
 
 ###### Accepted constructs
 ```javascript
@@ -542,7 +556,7 @@ From the JavaScript official documentation, it's quoted
 
 Both the `for...of` and `for...in` can be used interchangeably.
 
-It's included in Hexax's support for completeness.`
+It's included in Houx's support for completeness.`
 
 If a single reference is passed, it references the value data. If the iterated data is a Number, it will reference the number count.  
 Can be enclosed within bracked or standalone.
@@ -572,11 +586,11 @@ template:`<input $$for="iterable" >`
 Data instances defined and exposed from the model method option can be two way binded efficiently using the '$$model' directive.
     e.g.
 ```javascript
-const { dataRef } = Hexax
+const { dataRef } = Houx
 
 let app={
   model(){
-    this.value=dataRef("Hexax Explorer")
+    this.value=dataRef("Houx Explorer")
   }
   template:`
     <input $$model='value._data'>
@@ -623,11 +637,11 @@ This directive uses the `element.innerText` method to populate an element's inne
 This is how to...
 
 ```javascript
-const { html } = Hexax
+const { html } = Houx
 
 let app={
   model(){
-    this.text:"Hexax Explorer"
+    this.text:"Houx Explorer"
   }
   template:`
     
@@ -647,38 +661,38 @@ let app={
   model(){
     this.value='m-5 primary btn'
   },
-  template:`<button $$bind:class='value' > Hello Hexax</button>`
+  template:`<button $$bind:class='value' > Hello Houx</button>`
 }
 ```
 The `$$bind` directive can be chained  with other attributes with exception of directives 
 
 Cannot chain more  than one attribute to `$$bind`.   
-Since `$$bind` is been used too frequently, hexax provides  a shortform of invorking  the binding directive using the  asterisks (`*`).  
+Since `$$bind` is been used too frequently, houx provides  a shortform of invorking  the binding directive using the  asterisks (`*`).  
 ```html
-<button $$bind:class='value' > Hello Hexax</button>
+<button $$bind:class='value' > Hello Houx</button>
 <!--can just  be written as  -->
-<button *class='value' > Hello Hexax</button>
+<button *class='value' > Hello Houx</button>
 ```
 `$$bind` can also be used to parse an object of elements  attributes and values without passing an argument to `$$bind`.
 ```html
 `<button $$bind="{ class:value+' btn', innerText:'click me'}" />
 ```
-This  works  as like the hexax spread syntax, you  can however declare  the object within the model  instance  and reference it  from the  binding attribute value. 
+This  works  as like the houx spread syntax, you  can however declare  the object within the model  instance  and reference it  from the  binding attribute value. 
 ```html
 <button $$bind=buttonProps />
 ```
-Or more preferably, you can use the hexax attribute spread syntax binding.  
+Or more preferably, you can use the houx attribute spread syntax binding.  
 ```html
 <button ...buttonProps />
 ```
 The spread syntax cannot be used on a none plain javascript object.  
-Hexax also provide way more useful directives and an API on how to build Custom directives on both widget and html elements
-Contact  the Hexax builtin directives API for more about Hexax directives.
+Houx also provide way more useful directives and an API on how to build Custom directives on both widget and html elements
+Contact  the Houx builtin directives API for more about Houx directives.
 
 ##### **Custom Directive**
 
-Hexax provides a declarative interface for building customized directives.
-This is useful when you want to incorparate useful and self defined functionality into a HexaxDomInstance .
+Houx provides a declarative interface for building customized directives.
+This is useful when you want to incorparate useful and self defined functionality into a HouxDomInstance .
 
 You can create a fully functional directive using a function or an object consisting of hooks callback.   
 directives must be registered using the directives option.
@@ -709,23 +723,23 @@ export default{
   `
 }
 ```
-Custom directives can also be used the same way as built in directives.  Beware of hexax builtin directives name while registering your custom in order not to conflict
+Custom directives can also be used the same way as built in directives.  Beware of houx builtin directives name while registering your custom in order not to conflict
 
 Read the directives API Docs for more Details on using directives.
 
 ### **Building Blocks: Components Based Architecture**
 
-hexax encourages a component-based architecture, allowing you to create modular and reusable UI elements. 
+houx encourages a component-based architecture, allowing you to create modular and reusable UI elements. 
 
 Let's create a simple header widget and compose it into a larger application structure:
 
 ```javascript
-const { initBuild } = Hexax;
+const { initBuild } = Houx;
 
 // Component
 let Header = {
   model() {
-    this.title= 'Hexax World';
+    this.title= 'Houx World';
   },
   template:`<h1>{{ title }}</h1>`
 };
@@ -753,8 +767,8 @@ This means widgets can be nexted down the thread as much as you wish, by composi
 
 Before a widget can be used in another widget as a tag , it must be registered in the `widgets` object option.
 Many widgets  as possible can be used within the `Header`  widget provided it's registered.
-***Note:*** During widget registration, be sure it followed the hexax widget naming rules. 
-Must not conflict with any built in hexax widgets.  
+***Note:*** During widget registration, be sure it followed the houx widget naming rules. 
+Must not conflict with any built in houx widgets.  
 Widgets registration names must pass atleast one of these tests .
 
 contains :
@@ -767,10 +781,10 @@ contains :
  1. Must not contain  html own tag  characters ( < , > , =, " , ')
  2. Must not start with a number or a hyphen
 
-If it posseses none of this requirments, hexax will raise a `Widget registration Warn`.
+If it posseses none of this requirments, houx will raise a `Widget registration Warn`.
 
 ### **Handlers**
-Hexax provide an intuitive way of defining stateful method Handlers.
+Houx provide an intuitive way of defining stateful method Handlers.
 
 Handlers helps you perfornm stateful logic or functions  on model datas.
 
@@ -794,7 +808,7 @@ let app={
 ```
 Example using hyperscript.
 ```javascript
-const { el ) = Hexax
+const { el ) = Houx
 
 let app={
   model(){
@@ -813,9 +827,9 @@ let app={
 
 Handlers defined here are automatically exposed to the template instances directly and can be accessed within both the template and attribute scope like in the examples above.
 
-For calling a handler, hexax provides you with the `$$on:handler` event caller, or the `@handler` shortcut pattern.
+For calling a handler, houx provides you with the `$$on:handler` event caller, or the `@handler` shortcut pattern.
 
-Hexax supports all non deprecated event calls through the `$$on:xxx` or `@xxx` event  triggering directives.
+Houx supports all non deprecated event calls through the `$$on:xxx` or `@xxx` event  triggering directives.
 
 You can also parse modifiers to your handlers when been called. They are to be separated using pipes character after the eventName
 
@@ -828,7 +842,7 @@ Modifiers can be chained
 
 For passing modifiers to handlers when using a hyperscript powered UI, you needs the `withModifiers` macro .
 ```javascript
-const { el, withModifiers }=Hexax
+const { el, withModifiers }=Houx
 let app={
   model(){
     this.count=0;
@@ -844,7 +858,7 @@ let app={
 ```
 Accepts a first argument of the handler, and an array of modifiers strings names.
 
-Here are Hexax supported event modifiers
+Here are Houx supported event modifiers
 
 1. **once:** Prevents the handler from being called more than once.
 2. **capture:** Sets the capture modifier to true.
@@ -857,23 +871,23 @@ Here are Hexax supported event modifiers
 
 Explore their usage to perform logic on model data:
 
-Events can be chained too, like when you wish to incorparate the same handler to more than one event, hexax provides you a stress saving  semantics that stops you from writing different attributes and directives for each of the events when they have to use the same handler and maybe share same modifiers.
+Events can be chained too, like when you wish to incorparate the same handler to more than one event, houx provides you a stress saving  semantics that stops you from writing different attributes and directives for each of the events when they have to use the same handler and maybe share same modifiers.
 `<button $$on:click.hover.keydown='increment' />`  Using the dot sepaeator, you can chain as many events as possible.   
 `<button $$on:click.hover|present|trusted|capture='increment' />`  They all share from the modifiers being passed.
 
 ### **Reacting to Changes: Crafting Dynamic Reactive mentality**
 
-In the world of Hexax, think of your application as a living, breathing entity. The reactive nature of Hexax means your UI responds dynamically to changes in data.
+In the world of Houx, think of your application as a living, breathing entity. The reactive nature of Houx means your UI responds dynamically to changes in data.
 
 Embrace this reactivity – it's not just a feature; it's a mindset. Your UI evolves as your data revolves.
 
-Hexax excels at reactivity making it easier in building dynamic widgets.
+Houx excels at reactivity making it easier in building dynamic widgets.
 
 Let's create a button that increments a counter each time it's clicked:
 Notice how the button counter displays responds to the user interaction
 
 ```javascript
-const { initBuild } = Hexax;
+const { initBuild } = Houx;
 
 let app= initBuild({
   model() {
@@ -902,12 +916,12 @@ Its returned datas are exposed to the template instances directly as `<propName>
 here is a minimal example
 
 ```javascript
-const { dataRef }=Hexax
+const { dataRef }=Houx
 let widget={
   model(){
     //initialized widget instances
     this.obj=dataRef({
-      message:"Exploring Hexax",
+      message:"Exploring Houx",
       count:0
     })
     this.num=dataRef(34)
@@ -944,7 +958,7 @@ let app={
 The values will be used in interpolating template strings instead of the default curly brace patterns within the present widget.
 
 
-hexax offers flexibility in rendering your UI widgets.
+houx offers flexibility in rendering your UI widgets.
 
 You have two options for rendering your UI widgets: using template strings or the `el` Hyperscript function through render .
 
@@ -953,7 +967,7 @@ Choose the rendering option that best suits your coding style and project requir
 #### **Native html templating system**
 
 Define your UI structure directly using template strings. Widgets has to be Registered through the `widgets` option for accessibility:  
-Consider it as a way hexax enables you create your own tag elements .
+Consider it as a way houx enables you create your own tag elements .
 
 ```javascript
 let app= {
@@ -1036,7 +1050,7 @@ Widgets do not need to be registered before been used, they only need to be in s
 
 ### **Advanced Usage**
 
-In addition to the basics, Hexax offers some advanced features that can enhance your development experience.
+In addition to the basics, Houx offers some advanced features that can enhance your development experience.
 
 ### **Params**
 You can pass Parameters  to your widgets to make them more dynamic and reusable. 
@@ -1083,7 +1097,7 @@ In cases where some kind of complex expression might be involved, its recommende
 
 Params will be exposed to the template instance as `$params.xxx` within the child widget
 
-Validations will raise a Hexax Error or warn , if failed or when a validator function returns false.
+Validations will raise a Houx Error or warn , if failed or when a validator function returns false.
 
 Params can aswell be passed an array of params names strings, this is useful when there is no use case of validations e.g
 
@@ -1109,7 +1123,7 @@ Type: `Function`
 
 ##### ***Custom dataTypes prototyping***
 
-Hexax supports the production of custom dataType using class Object.
+Houx supports the production of custom dataType using class Object.
 For example...
 ```javascript
 class PersonType{
@@ -1133,10 +1147,10 @@ Can be used same way as other normal dataType.
 
 ### ***Custom Nodes: Element free Styling***
 
-Hexax allows you to create custom elements by using the makeNativeElement module. You can register your custom elements by calling node.define(). This is useful when you want to encapsulate complex functionality into reusable components.
+Houx allows you to create custom elements by using the makeNativeElement module. You can register your custom elements by calling node.define(). This is useful when you want to encapsulate complex functionality into reusable components.
 for a custom element, use the `makeNativeElement` macro, then pass on normal widget options
 
-here is a minimal example on creating a hexax custom element
+here is a minimal example on creating a houx custom element
 ```javascript
 let node=makeNativeElement({
     /* accepts props, template, style and plugins options */
@@ -1178,7 +1192,7 @@ e.g
 <slot *name='dataProp'/><!-- dynamic slot naming -->
 ```
 
-To parse slots contents for slots elements, Hexax provides you with the `$$slot` directive on elements/widgets.
+To parse slots contents for slots elements, Houx provides you with the `$$slot` directive on elements/widgets.
 e.g
 ```html
         <Widget>
@@ -1195,15 +1209,15 @@ Slot elements can be passed default contents by providing inner cointent to it. 
 <slot name=header > <h2>A default slot content</h2></slot>
 ```
 
-#### **Hexax slots passing caveat**
+#### **Houx slots passing caveat**
 
-Slots works same as in other frameworks that uses the slot system, with slight differences in hexax.   
-If a child widget has only a single root element, Hexax will try to parse all default slots to its innerHtml if, there is no default slot provided, and it has no innerHtml content.
+Slots works same as in other frameworks that uses the slot system, with slight differences in houx.   
+If a child widget has only a single root element, Houx will try to parse all default slots to its innerHtml if, there is no default slot provided, and it has no innerHtml content.
 
 To disable this action, you can set the `forwardSlot` settings to false in your buildConfig settings option  as it defaults to true.
 
 All widget instances of the parent, are available, within the child widget scope, but not the other way round.  
-but if need be to access a child widget's data within the scope it's defined in the parent, hexax provides you with the `fallThrogh`  option in the child widget.
+but if need be to access a child widget's data within the scope it's defined in the parent, houx provides you with the `fallThrogh`  option in the child widget.
 A method with it;s `this` keyword  model public instance.  
 Access to model instances are to be exposed directly, the `this` keyword would be available in the scope,and so it's returned value will be exposed as a state within it's consumer scope  e.g
 
@@ -1253,7 +1267,7 @@ This properties can be accessed from the use of the `this` keyword with the exce
 They can be accessed by Appending  the ***$*** character to the `signals and attrs` data instances. 
 for example...
 ```javascript
-const { log } = Hexax
+const { log } = Houx
 let app={ 
   postMount(){
     log(this.$attrs)
@@ -1264,13 +1278,13 @@ let app={
 ```
 ### **Widget type system**
 
-Hexax also accepts the use of functions and class objects as valid widgets, but with slight edge  case.
+Houx also accepts the use of functions and class objects as valid widgets, but with slight edge  case.
 
 Function widget works as the scope of the build function, with no data state of it's own.
-The `html` macro  is provided to help the functional widget  access  the hexax rich templating syntax.
-Here is a simple hexax functional widget using the Template component system.
+The `html` macro  is provided to help the functional widget  access  the houx rich templating syntax.
+Here is a simple houx functional widget using the Template component system.
 ```javascript
-const { html }=Hexax
+const { html }=Houx
 function FW(){
   
   return ()=>el('input)
@@ -1279,16 +1293,16 @@ function FW(){
 ```
 Can be registered and used as other normal widgets.
 
-The Hexax style guides recommends against the use of arrow function widgets as an initBuild widget, nevertheless, function widget is a perfect hexax widget provided with hexax utilities. .
+The Houx style guides recommends against the use of arrow function widgets as an initBuild widget, nevertheless, function widget is a perfect houx widget provided with houx utilities. .
 
-Class widgets are perfect and statefull widget encapsulation, in short, it was used in building the hexax builtin widgets.
+Class widgets are perfect and statefull widget encapsulation, in short, it was used in building the houx builtin widgets.
 
-Hexax does not utilize the `model` function, when working woth class based widgets, instead, hexax takes its defined props to this.model as hexax options.
+Houx does not utilize the `model` function, when working woth class based widgets, instead, houx takes its defined props to this.model as houx options.
 
-A hexax class widget must extend the base `Widget` class. 
+A houx class widget must extend the base `Widget` class. 
 e.g.
 ```javascript
-const { Widget }= Hexax
+const { Widget }= Houx
 
 class myCW extends Widget{
   constructor(){
@@ -1299,11 +1313,11 @@ class myCW extends Widget{
 }
 ```
 
-Hexax recommends the use of object widget for declarative syntax
+Houx recommends the use of object widget for declarative syntax
 
 #### **LifeCycleHooks**
 
-Hexax provides you with some usefull callback functions that run at some specific stage of the life of a widget.
+Houx provides you with some usefull callback functions that run at some specific stage of the life of a widget.
     
 ##### preBuild: 
 Called Synchronously except in the case of an asynchronous widget, before the widget instances are instanciated or any build process  is even started.
@@ -1344,7 +1358,7 @@ Children are passed as children to hx-build
 ### **Data Observation**
 To perfom a data Observation within the widget instance datas, the 'observers' option can be used.
   
-Within the observe object option, hexax accepts only  object, with names that references the widget defined model instances datas
+Within the observe object option, houx accepts only  object, with names that references the widget defined model instances datas
   
 Can  accept nested property accessor as metthod name e.g
   
@@ -1357,7 +1371,7 @@ Can  accept nested property accessor as metthod name e.g
     }
   }
 ```
-Hexax will raise an observer error on access to a property that cannot be found on the model instance while naming an `observes` property.
+Houx will raise an observer error on access to a property that cannot be found on the model instance while naming an `observes` property.
   
 To set up an observer method for the property of `value._data` inasmuch as the target  data is a `dataRef` data, or would not require nexted property accessing.
   
@@ -1386,11 +1400,11 @@ For Observation of nexted object props, you can acomplish such tax within the po
 
 ```javascript
 
-const { dataRef } = Hexax
+const { dataRef } = Houx
 
 let app= {
   model(){
-    this.obj=dataRef( { num:56 , info : { name: 'Hexax Explorer', age :43 } } )//An object data
+    this.obj=dataRef( { num:56 , info : { name: 'Houx Explorer', age :43 } } )//An object data
   },
   postMount(){
     
@@ -1409,11 +1423,11 @@ let app= {
 Precisely, you can watch more than one property using the `observe` component , by passing a getter function that returns the value of the live properties you wish to observe.
 
 ```javascript
-const { dataRef , observe} = Hexax
+const { dataRef , observe} = Houx
 
 let app= {
   model(){
-    this.obj=dataRef( { num:56 , info : { name: 'Hexax Explorer', age :43 } } ) ,//An object data
+    this.obj=dataRef( { num:56 , info : { name: 'Houx Explorer', age :43 } } ) ,//An object data
     this.count=45
   },
   postMount(){
@@ -1431,25 +1445,25 @@ let app= {
   }
 }
 ```
-Hexax watches the value of this properties and reacts when there values changes when reavaluated, instead of the data properties directly.
+Houx watches the value of this properties and reacts when there values changes when reavaluated, instead of the data properties directly.
 
 ### **_effectHook**
 
 
 ## **Global instanciciation**
 
-Hexax provides an effective way of injecting a global datas through out the scope of an initBuild and all it's child widget
+Houx provides an effective way of injecting a global datas through out the scope of an initBuild and all it's child widget
 
 1. `build.property`: Used to define a global property  to all child widgets of this parent widget;
 
 global widget properties are encapsulated abd exposed to individual widgets model instanciciations and will be overiden by widget's own internally defined properties if conflicts occure.
 Example usage
 ```javascript
-const { initBuild }=Hexax
+const { initBuild }=Houx
 let build=initBuild({
   //widget options
   template:`<p>{{ text }}</p>`
-}).property('text','Hello Hexax')
+}).property('text','Hello Houx')
 //accepts two parameters, a property name and the property data ref.
 ```
 2. `build.handlers`: The hanlers prototype of initBuild sets global handlers for a widget
@@ -1458,11 +1472,11 @@ let build=initBuild({
 ### **Style and class guide**
 
 Styling and class management is such a complex task that changes on daily basis. 
-Hexax provides you with easy and reusable semantics that helps you create your widget with ease, no matter your project requirements or size.
+Houx provides you with easy and reusable semantics that helps you create your widget with ease, no matter your project requirements or size.
 
 ##### **styleSheet: Scoping css**
 
-Hexax provides you with a styleSheet option for defining styles for a widget.
+Houx provides you with a styleSheet option for defining styles for a widget.
 
 Styles defined here are scoped to the widget template only by default.
 The styleSheet option is passed the String multline literal as template option.
@@ -1505,7 +1519,7 @@ While the second sheet is scoped only to the widget template only.
 
 #### **Inline style binding**
 
-Hexax provides you with a helpful semantics that can help you pass styles within the template using the style Inline attribute.
+Houx provides you with a helpful semantics that can help you pass styles within the template using the style Inline attribute.
 
 A plain object can be psssed to the style attribute using the data binding syntax.
 
@@ -1524,18 +1538,18 @@ Also an array of style objects can be parsed to the style binding.
 ```html
 <element *style="[styleObj,{ margin:'10hx', background:'#0a3039' }, elementStyles ]" />
 ```
-Hexax will iterate through the array values and parse the resulting objects as styles  
+Houx will iterate through the array values and parse the resulting objects as styles  
 
 #### **Class binding**
 
-Class is a special attribute to an html element, so hexax provides useful semantics for encapsulating class names.
+Class is a special attribute to an html element, so houx provides useful semantics for encapsulating class names.
 
 A class can be passed an array or a plain object.
 for example...
 ```html
 <button *class="[ btn, m-5 , w-70 ]"> Click me </button>
 ```
-When a class binding receives an object, hexax evaluates the property values as a condition on passing the property keys as the class names.
+When a class binding receives an object, houx evaluates the property values as a condition on passing the property keys as the class names.
 e.g.
 ```html
 <button *class="{ largeBtn:true, 'bg-dark':false, btn: true,  }">Click me</button>
@@ -1553,7 +1567,7 @@ An array of class objects or arrays can also be received. see Below
 
 ### **Mustache Block Helpers***
 
-Hexax provides in  mustache tags configuration setup  while compiling mustache tag expressions.  
+Houx provides in  mustache tags configuration setup  while compiling mustache tag expressions.  
 Below is a simple example of using the block helpers.
 `{{ %foo >> model_based_expressions  }}`
 A template block helper is recognized by appending the `%` character before the block name and separating the block name from the actual expression using double greater-than character `>>`  
@@ -1571,7 +1585,7 @@ See below
 ```javascript
 export default{
   model(){
-    this.name='hexax
+    this.name='houx
   }
   blocks:{
     capitalize(valueBinding, modifiers){
@@ -1595,9 +1609,9 @@ You can aswell pass multiple Parameters by separating them with the `>>` charact
 This will be received within tge block Callback first Parameter as an array of two values;
 You can also typecheck the values been expected  by using conditional statements on the resolved value.  
 Blocks can be defined as a plain object, which exposes an enumerable `block` callback method;
-Reference the Hexax blocks helpers API for more information.
+Reference the Houx blocks helpers API for more information.
 
-###  **Hexax Plugin  mechanism**
+###  **Houx Plugin  mechanism**
 
 Plugin is an interface  that reduces repeating of some global implemention on a build and helps create codes that improves reusability.  
 There  are some use cases of plugins which we will explore in this document.   
@@ -1609,7 +1623,7 @@ A plugin is installed calling the install method on the `initBuild` instance.
 `initBuild(app).install(plungin)` method and can be chained.
 Watch the  example code below
 ```javascript
-import  { initBuild } from 'hexax'
+import  { initBuild } from 'houx'
 import buttonCounter from './widgets/buttonCounter.js
 const my_plugin={
   plugin(build, options){
@@ -1632,7 +1646,7 @@ initBuild(app).install(my_plugin,{/*config options*/})//plugin installation  can
 
 
 
-### ***Hexax Agents***
+### ***Houx Agents***
 
 
 
@@ -1649,14 +1663,14 @@ params:
   self:<required>
 **Description:** A built in widget useful for rendering widgets dynamicaly.
 Accepts one required params ,  The `self` params, which describes a native/resolved custom element tag name or an internally registered widget name.
-If binded to a model property from the template or accessed using the hyperscript `this`, will raise a hexax warn since the hexax model instances are proxied objects/data. Except the data was to be parsed using the `rawData` function. 
+If binded to a model property from the template or accessed using the hyperscript `this`, will raise a houx warn since the houx model instances are proxied objects/data. Except the data was to be parsed using the `rawData` function. 
 Watch the example below
 ```javascript
-import { rawData } from 'hexax'
+import { rawData } from 'houx'
 export default{
   model(){
     this.inModelWidget:rawData({
-      template:`<h1>Hello Hexax!</h1>`
+      template:`<h1>Hello Houx!</h1>`
     })
   },
   template:`
@@ -1666,7 +1680,7 @@ export default{
 ```
 > **Note**: Does not require binding if the name be  passed is not an in model instance property.
 
-The widget can be accessed from the template as `hx-build` but can be imported from hexax itself as `Build` while using the hyperscript building system.  
+The widget can be accessed from the template as `hx-build` but can be imported from houx itself as `Build` while using the hyperscript building system.  
 Other properties/attributes passed to the `hx-build`  widget ,except the self params, will be resolved as attributes/properties of the returned elememt .  
 Children passed to `hx-build` will be passed to the resolved elememt/widget, including the defined slots within the defined widget template.
 
@@ -1686,7 +1700,7 @@ This is technically useful, expecially when rendering a slot content and don't w
 </ButtonCounter>
 ```
 The `hx-fragment` expects/requires no params .  
-Available from the global hexax as `Build` if need be of compiling it using the `el` render and hyperscript functions
+Available from the global houx as `Build` if need be of compiling it using the `el` render and hyperscript functions
 
 3. ***`<hx-for />`:***
 
@@ -1699,7 +1713,7 @@ params:
 Description: This is built on top the `for` directive and simplifies the use of the `for` loop rendering.
 For example  
 ```javascript
-import { dataRef  }  from 'hexax
+import { dataRef  }  from 'houx
 export default{
   model(){
     this.fruits=dataRef({
@@ -1722,7 +1736,7 @@ Passed all children of the `hx-for` widget and ports it to a default slot which 
 The iterable is required an must  be parsed an iterable or Object data type.  
 Context expects an array of names to ve passed as context variables within the loop body.  
 
-Hexax namespaces harbours the `hx-for` widget as `For`.
+Houx namespaces harbours the `hx-for` widget as `For`.
   
 4. ***`<hx-if />`:***
 
@@ -1822,7 +1836,7 @@ Details:
 deferTick waits for the dom to rerender after mutating a model property before being called.  
 For  example
 ```javascript
-let { deferTick }=Hexax
+let { deferTick }=Houx
 let app={
   model(){
     this.count=34 
@@ -1842,7 +1856,7 @@ Arguments:
   
 Interface:
 ```javascript
-function html<BacktickString> : <HexaxDomInstance>
+function html<BacktickString> : <HouxDomInstance>
 ```
 * `AsyncWidget()`:
 
@@ -1857,7 +1871,7 @@ function AsyncWidget( Widget:<Object>|<Class>|<Function> ) : <AsynchronousWidget
 * `defineWidget()`:
 
 Arguments:  
-  - Widget: `<Object>|<Class>|<Function>` A valid hexax widget instance  
+  - Widget: `<Object>|<Class>|<Function>` A valid houx widget instance  
   
 Interface:
 ```javascript
@@ -1890,7 +1904,7 @@ Contact the custom element guide for deeper guide.
 * `el()`:
 
 Arguments: 
-  1. `<String>|<HexaxDomInstance>` >>required
+  1. `<String>|<HouxDomInstance>` >>required
   2. `<Object>|<Array>`
   3. `<Object>|<Array>`
   
@@ -2111,7 +2125,7 @@ let app={
       background-color:#0a3039
     }
   `,//Usage
-  template:`<button id='btn' class='beautify' > Hexax button styleSheet Example</button>`
+  template:`<button id='btn' class='beautify' > Houx button styleSheet Example</button>`
 }
 ```
 Using the styleSheet option activates style scoping to the widget markup by default, MeanWhile you can disable scope by prepending the  `@g` global style directive to an individual block.
@@ -2155,7 +2169,7 @@ Details:
 
 A naming option used to define a name for the widget, to be used  for  the widget when  no optional naming argument  is provided.
 
-Useful expecially, during the resolving process of the widget and helps Hexax in being more specific during debuging and error handlin.
+Useful expecially, during the resolving process of the widget and helps Houx in being more specific during debuging and error handlin.
 
 6. ##### `styleClass`
 
@@ -2176,7 +2190,7 @@ let app={
     }
   },//Usage
   template:`
-  <h1 *style=$styles.headStyle > Hexax Explorer</h1>
+  <h1 *style=$styles.headStyle > Houx Explorer</h1>
   `
 }
 ```
@@ -2196,7 +2210,7 @@ Here is how to...
 let app={
   model(){
     this.count=dataRef(0),
-    this.message="Welcome to Hexax JS"
+    this.message="Welcome to Houx JS"
   },
   observers:{
     count(){
@@ -2248,7 +2262,7 @@ An object used in registering widgets that are to be used within the local widge
 let app={
   widgets:{
     HeaderWidget:{
-      template:`<h1> Hexax Explorer</h1>`
+      template:`<h1> Houx Explorer</h1>`
     }
   },//Usage in template
   template:`
@@ -2378,13 +2392,13 @@ Do not use an arrow function for this option.
 
 17. ##### `build`
 
-Type: `Function` | `<HexaxDomInstance>`
+Type: `Function` | `<HouxDomInstance>`
 
 Details:
 
 An function/method, that us used to encapsulate  the widget UI system.
 
-Should return a `HexaxDomInstance`  either  through the  hyperscript method,  or using the `hexax.html` util.
+Should return a `HouxDomInstance`  either  through the  hyperscript method,  or using the `houx.html` util.
 
 Specialy provided for users coming from hyperscript background.
 e.g
@@ -2392,7 +2406,7 @@ e.g
 let app={
   build(params, { slots, signals , attrs, utils }){
     //The this scope exposed here
-    return el('h1', "Hexax Explorer")
+    return el('h1', "Houx Explorer")
   }
 }
 ```
@@ -2421,7 +2435,7 @@ let app={
     }
   }, //Usage  of custom directives in templates
   template:`
-  <p  $$MyDir='true' > Hexax Explorer</p>
+  <p  $$MyDir='true' > Houx Explorer</p>
   <input $$autoFocus >
   `
 }
@@ -2455,7 +2469,7 @@ Type: `Boolean` | default: `false`
 
 Details:  
 Used to silence all error and debug warns within an individual widget.  
-Every Hexax generated error will fall silently if set to a falsy value with exceptions of errors generated from macros utilities in build function and through hyperscript.
+Every Houx generated error will fall silently if set to a falsy value with exceptions of errors generated from macros utilities in build function and through hyperscript.
 
 - `forwardAttrs`
 
@@ -2463,7 +2477,7 @@ Type: `Boolean` | default: `true`
 
 Details:  
 This option is used to toggle attribute inheritance when a widget has only a single root element.  
-When an element has only one  root  html element, hexax will try parsing down the attributes received from the consumer that does not match with params to the element by default.  
+When an element has only one  root  html element, houx will try parsing down the attributes received from the consumer that does not match with params to the element by default.  
 
 This functionality can be disabled by setting the `forwardAttrs` option to `false`
 
@@ -2472,7 +2486,7 @@ This functionality can be disabled by setting the `forwardAttrs` option to `fals
 Type: `Boolean` | default: `true`
 
 Details:  
-When a widget has a single root element with no `innerHtml` content, hexax will try parsing any children elememt/default slots received from the consumer as it's `innerHtml` content by default.  
+When a widget has a single root element with no `innerHtml` content, houx will try parsing any children elememt/default slots received from the consumer as it's `innerHtml` content by default.  
 
 This behavior can be stoped by setting the `forwardSlot` option to `false`.
 
@@ -2483,7 +2497,7 @@ This behavior can be stoped by setting the `forwardSlot` option to `false`.
 Type: `Object` | `<String>`
 
 Details:  
-Hexax allows passing of model data props in a reversed manner , from a child widget to it's scope within the consumer parent's widget using the `fallThrogh` option.  
+Houx allows passing of model data props in a reversed manner , from a child widget to it's scope within the consumer parent's widget using the `fallThrogh` option.  
 
 Contact the slot guide for more Details.
 
@@ -2501,12 +2515,12 @@ Type: `Array` | `<String>`
 default: `["{{", "}}"]`
 
 Details:  
-Hexax allows the recomfiguration and customization  of the tempalate mustache tag using the delimiters options .  
+Houx allows the recomfiguration and customization  of the tempalate mustache tag using the delimiters options .  
 Accepts an array of two characters values string. e.g.
 ```javascript
 let app={
   model(){
-    this.text="Hexax Explorer"
+    this.text="Houx Explorer"
   },
   buildConfig:{
     delimiters:['[[', ']]'],//Usage
@@ -2527,7 +2541,7 @@ This functionality can be achieved by utilizing the `AsyncWidget` macro.
 
 ### **Best Practices**
 
-As you dive deeper into hexax, consider adopting best practices to ensure clean and maintainable code. Here are some recommendations:
+As you dive deeper into houx, consider adopting best practices to ensure clean and maintainable code. Here are some recommendations:
 
 - **Modular Components:** Break down your UI into small, reusable components.
 - **Effective Naming:** Use clear and meaningful names for model properties, widgets, block helpers, directives, plugins, agents, and handlers.
@@ -2535,16 +2549,16 @@ As you dive deeper into hexax, consider adopting best practices to ensure clean 
 - **Observer Methods:** Use observer methods for data changes that require specific customized reactions.
 
 ### **Conclusion**
-Congratulations! You've learned the basics of using Hexax to empower your creativity and build of web apps with speed. You now know how to define widgets, use template strings, handle methods and reactive data, bind attributes, customize and apply directives, and render your UI widgets.
+Congratulations! You've learned the basics of using Houx to empower your creativity and build of web apps with speed. You now know how to define widgets, use template strings, handle methods and reactive data, bind attributes, customize and apply directives, and render your UI widgets.
 
 Additionally, you've explored advanced features like params, custom elements, observers, template blocks helpers, plugins, slots, agents and some useful configuration options.
 
-Hexax offers a powerful and flexible framework for developing dynamic and interactive web applications. Remember to consult the official Hexax documentation and explore the additional resources for more in-depth information and examples.
+Houx offers a powerful and flexible framework for developing dynamic and interactive web applications. Remember to consult the official Houx documentation and explore the additional resources for more in-depth information and examples.
 
 ## **Additional Resources**
-To further expand your knowledge and explore more advanced features of Hexax, check out the following resources:
+To further expand your knowledge and explore more advanced features of Houx, check out the following resources:
 
-Official Hexax Documentation: https://hexax-docs.com
-Hexax GitHub Repository: https://github.com/hexaxsoftwares/hexaxjs
-Hexax Community Forum: https://community.hexax.com
-These resources provide comprehensive documentation, examples, and a supportive community to help you make the most of Hexax in your projects. Happy coding!.
+Official Houx Documentation: https://houx-docs.com
+Houx GitHub Repository: https://github.com/houxsoftwares/houxjs
+Houx Community Forum: https://community.houx.com
+These resources provide comprehensive documentation, examples, and a supportive community to help you make the most of Houx in your projects. Happy coding!.
