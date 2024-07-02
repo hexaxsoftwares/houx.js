@@ -9,10 +9,8 @@ Houx empowers creative and productive development while Building web apps.
 
 ### 1. Introduction
 
-Houx is a sleek and powerful JavaScript framework designed with the target of enhancing productivity, speedy and efficient workflow while building web applications.  
+Houx is a sleek and powerful JavaScript framework designed with the target of enhancing productive, speedy and efficient workflow while building web applications.  
 It provides you with a flexible and intuitive API for creating interactive user interfaces leveraging a declarative syntax. 
-
-Houx is a framework where creativity meets efficiency.
 
 This guide isn't just about syntax and functions; it's a journey into a mindset that unleashes your creative potential and accelerates your web development skills.
 
@@ -27,27 +25,71 @@ Whether you're a newcomer to web development or seeking to expand your skills, H
 
 Before delving into the intricacies, let's establish our houx playground.  
 A basic understanding of HTML, CSS, and JavaScript is essential. If you're new to programming, take a moment to acquaint yourself with these fundamentals.
+Dont't get intimidated with this demands since you do not need to be advanced with these concepts to get started with houx.
+But without a basic of html/javascript, it's not advisavle to start with  houx, you can go grab them, then come back later.
 
-#### **Installation Proccess:**
+#### **Installation Proccess: Quick Start**
 
-Houx is a dependency-free, browser-oriented, open-source javascript library. This means that using it is as simple as adding a `<script>` tag to your document head. No need for complicated build steps.
+Houx is a dependency-free, browser-oriented, open-source javascript library. This means that using it is as simple as adding a `<script>` tag to your document head if you do not want to undergo the complications build steps.
 
 You can simply load Houx by just including the following script tag in your main HTML file head tag and get going:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/houxsoftwares/Houx-js@main/houx.global.dev.js"></script>
+<head>
+  
+  <script src="https://cdn.jsdelivr.net/gh/hexaxsoftwares/houx.js@main/houx.global.dev.js"></script>
+  
+</head>
+<body>
+  <div id="root">
+    <button> Hello </button>
+  </div>
+  <script >
+    let { dataRef, initBuild } = Houx
+    
+    initBuild({}).mount("#root")
+    
+  </script>
+  
+</body>
+
 ```
-You might also prefer the esm browser module. Here is the cdn link to a houx exported components module.
+
+If you prefer the importation  of modules, then you have to point the import statement argument to the  houx exported components module.
+You ll ve to point
+```javascript
+  import { dataRef , initBuild } from "https://cdn.jsdelivr.net/gh/houxsoftwares/Houx-js@main/houx.esm-browser.dev.js"
+  
+  initBuild({}).mount("#root")
+```
+You looks tedious, but you can however tell the browser where to find your imports .
 ```html
-<script src="https://cdn.jsdelivr.net/gh/houxsoftwares/Houx-js@main/houx.esm-browser.dev.js"></script>
+<script type="importmap">
+  imports:{
+    'houx':"https://cdn.jsdelivr.net/gh/houxsoftwares/Houx-js@main/houx.esm-browser.dev.js"
+  }
+</script>
+<script type="module">
+  import { dataRef , initBuild } from "houx"
+  
+  initBuild({}).mount("#root")
+</script>
 ```
-Some discreet developers might prefer loading and hosting houx locally in production.
+Notice the `type="importmap"` used on the `script` element where we denote the import locations of the (`houx`) namespace.  
+Also we have to use `type="module"` on the script where we declare our build system/
+Use sparingly, considering browser support as these fearure is new and lack's support on major browsers at the moment.
+
+> Currently supported on Safari 16.40  +
+
+You can also prefer loading and hosting houx locally in your machine.
 
 Then you can simply download the file from this jsdelivr Link . `https://cdn.jsdelivr.net/gh/houxsoftwares/Houx-js@main/houx.global.dev.js` and copy the file to your project directory, then link to it from your html head file .
 
 ```html 
 <script src='path/to/houx.global.dev.js'></script>
 ```
+Notice we used jsdeliver in our examples, but you can also choose which content server of your preference, cdnjs/unpkg.  
+
 You can aswell use houx in the cli  by installing it via npm/yarn  
 Make sure you have nodejs installed.  
 ###### Using npm.
@@ -60,33 +102,23 @@ yarn add --save houxjs-framework
 ```
 Once installed, houx becomes your creative companion.
 
-## **Understanding houx**
+## **Understanding houx: Basic Knowledge**
 
-Once houx is included in your project, the global namespace `Houx` will be exposed and available within your script context scope if you are using the self/cdn hosting.  
-Regular imports of houx modules from `'houx'` will be available if using the cli version.  
-You can alse import houx exported modules from the houx esm-browser cdn/self hosted version.
+Houx is an option based frameworks which provides you a way, similar to and partly inspired by the Vue.js options API, where you define your componentised fragments and pages of your application, known as widgets.
 
-Destructuring from the global houx Object;
-```javascript
-  const { initBuild, dataRef, el } = Houx;
-  ```
-Regular imports while using the esm installation guide
-```javascript
-import { initBuild, dataRef,  el } from 'houx'
-```
-Using Houx in nodejs
-```javascript
-const Houx=require('houx');
-
-```
-### **Basic Usage**
-
-Houx is an option based frameworks which provides you a way, similar to the Vue.js options API to define your componentised fragments and pages of your application, known as widgets in houx.
-
-You only need to provide required options to an object, while concetrating on your business logic, and letting Houx handke the complexity of your project structure.  
+You only need to provide appropriate options/values to an object, while concetrating on your business logic, and letting Houx handle the complexity of your project structure and reactive rendering.  
 A simple object can denote a component, fragment or a full page.
-Why do we need widgets ?
 
+****Why do we need widgets ?***
+
+Imagine a situation where you are an artist, and you are given the task of building and molding a superman.
+You can't just produce the superman at a glance, you only have to break the project into smaller pieces of tasks and components, taking on each one after the other, and merging them into larger component frames.  
+
+That's exactly how you can reason about Houx widgets.
+For instance, in your superman project, you have the nail component merged into the toe, then others tons of toes merged with the feet which produces a nested components of descendants and ancestors.  
+This results in components consisting of other nested tasks and subcomponents under the hood.
+
+Houx widgets provides reusablity of widgets and tasks, resulting in faster and enhanced productivity.
 
 ### **Introducing Widgets**
 
