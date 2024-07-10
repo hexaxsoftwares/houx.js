@@ -780,7 +780,7 @@ const Houx=(function(global){
       }
       return true
     }
-    return false;
+    return isEQ(String(val1), String(val2));
   }
   function _$compiler_engine_hydrator(){
     global=createObj('Houx');
@@ -3464,7 +3464,7 @@ const Houx=(function(global){
     }
     return vnode;
   }
-  function installCD_(self, options){//custom directives installer
+  function injectCustomDirective(self, options){//custom directives installer
     if(hasProp(options,'directives')){
       for(let [key, value] of entries(options.directives)){
         if(!_validateType(value, [ Object, Function])){
@@ -3701,7 +3701,7 @@ const Houx=(function(global){
     methodsManager(options, self);
     resolveCustomFilters(self, options);
     RuntimeUtilitiesProvide(self, options);
-    installCD_(self, options);
+    injectCustomDirective(self, options);
     __Generate_Widget_Hash(self);
     return options;
   }
@@ -3774,7 +3774,9 @@ const Houx=(function(global){
         this.subscribers = new Set();
       }
       depend() {
-        if (self[$$$core].activeObserver) this.subscribers.add(self[$$$core].activeObserver);
+        if (self[$$$core].activeObserver) {
+          this.subscribers.add(self[$$$core].activeObserver);
+        }
       }
       notify() {
         self[$$$operands].PATCH_FLAG=1
