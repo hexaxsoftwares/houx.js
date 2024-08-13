@@ -1,4 +1,5 @@
   /**
+   * Prince Godswill *
   *@param This project, 'HOUX', is been sponsored by the HEXAX SOFTWARES FOUNDATION.
   *@param Visit 'www.houx.com/guide' for for more information on the houx project , documentation and houx's development process roadmap.
   *@param This is a web JIT development version of Houx
@@ -7,8 +8,9 @@
   */
 const Houx=(function(global){
   "use strict"
-  const log=console.log
-  const get_version=()=>'houx-0.1.12';//houx at it's earliest version
+  const log=console.log;
+  const version = "0.1.12";
+  const get_version=()=>'houx-'+version;//houx at it's earliest version
   const isEQ=(arg1, arg2)=>arg1===arg2;//checks if arg1 is equal to arg2
   const isArray=Array.isArray;
   const toString=Object.prototype.toString;
@@ -31,9 +33,9 @@ const Houx=(function(global){
   const define=Object.defineProperty, isEqualValue=Object.is;
   const hasProp=(obj, prop)=> prop  in obj;
   function _mapValue(obj, arg){
-    return isString(obj) ? new Set(obj.split(',')).has(arg) : isPObject(obj) ? hasProp(obj, arg) : isArray(obj) ? obj.includes(arg) : isSet(obj) || isMap(obj) ? obj.has(arg) : false;
+    return isString(obj) ? new Set(obj.split(',')).has(arg) : _validateType(arg, [Set, Tuple, Map ]) ? obj.has(arg) : isPObject(obj) ? hasProp(obj, arg) : isArray(obj) ? obj.includes(arg) :  false;
   }
-  const variableDeclarationRegex=/([\s\S]+[^=]*)[ ]?=[ ]?([\s\S]+)/m;
+  const variableDeclarationRegex=/([\s\S]+[^=]*)[ ]*=[ ]*([\s\S]+)/m;
   const invalidIdentifierCharRegex=/[='"!@#%^&*()+\-\[\]{};:\\|,.<\/? ]/;
   const isValidIdentifier=variable => isString(variable) && variable.at(0).match(/[a-zA-Z_$]/) && !variable.match(invalidIdentifierCharRegex);
   const constBlockContext="if_Block,for_Block,slots_Block,children_Block";
@@ -50,11 +52,12 @@ const Houx=(function(global){
   const isGT=(val, arg)=>val>arg;//checks if val is greater than arg
   const isLT=(val, arg)=>val<arg;//checks if val is less than arg
   const isGTE=(val, arg)=>val>=arg;//checks if val is greater than or equal to args
+  const nullObj=()=> Object.create(null);
   const isTrue=compute=>isEQ(compute, true);
   const isFalse=compute=>isEQ(compute, false);
   const isLTE=(val, arg)=>val<=arg;
   const $warner=`<<** Houx $Debug **>>.....>>>>>>>`;
-  const characters=/\!\"\#\%\&\'\(\)\*\+\,\.\/\;\<\=\>\@\[\\\]\^\`\{\|\}\~/
+  const characters=/\!\"\#\%\&\'\(\)\*\+\,\.\/\;\<\=\>\@\[\\\]\^\`\{\|\}\~ /
   function $Debug(msg,self, dictateW=false, txt=''){
     let shouldlog=true
     if(self && isHouxBuild(self)) shouldlog=self[$$$core].settings.debug && !self[$$$operands].initialized
@@ -119,7 +122,8 @@ const Houx=(function(global){
     markdown:String,
     fallThrough:Function,
     computedRefs:Object,
-    mixins:Array
+    mixins:Array,
+    onWatch:Function
   }
   const validWidgetOptions=keys(widgetOptionType).join(',');//valid widget options---
   const plainFunctionOptions="model,preBuild,postBuild,preMount,postMount,preUpdate,postUpdate,postDestroy,preDestroy,publish,fallThrough";
@@ -166,8 +170,8 @@ const Houx=(function(global){
   const dataStringTypes="string,function,object,array,boolean,number,symbol,set,map,bigint,set,map,weakmap,weakset,date,weakref,promise,proxy";//Valid javascript datatypes
   const isValidDataStringType=obj=>_mapValue(dataTypes, obj);//checks if a string value is a dataTypes return text
   const DataFunctionMap=[String, Function, Object, Array, Symbol, Number, Boolean]
-  const XtrucrDataCallableTypes=[Set,Map,WeakMap,WeakSet, Date,WeakRef,Promise,RegExp,Proxy,BigInt,ArrayBuffer];
-  const isBuiltInType=type=>_mapValue(DataFunctionMap, type) || _mapValue(XtrucrDataCallableTypes, type)
+  const XtructDataCallableTypes=[Set,Map,WeakMap,WeakSet, Date,WeakRef,Promise,RegExp,Proxy,BigInt,ArrayBuffer];
+  const isBuiltInType=type=>_mapValue(DataFunctionMap, type) || _mapValue(XtructDataCallableTypes, type)
   const Data_Flags="NodeList,PATCH_FLAGS,PATCH-TYPE-TUPLE"
   const hasUpperCase=str=>str.match(/[A-Z]/);
   const hasLowerCase=str=>str.match(/[a-z]/);
@@ -374,7 +378,19 @@ const Houx=(function(global){
   const widgetSpecialAttrProps = new Set([ $$rawChildrenData$$ , $$$$dir__ref$$$$ , dir$$__render, $$$fallThrough , $$slotName, $$$Events, $$$ModelUpdateKey ]);
   const isSpecProp = prop => widgetSpecialAttrProps.has(prop);
   const isBuiltinBlocks=block=>_mapValue("if,else,else:if,for,const", block);
-  let currentRunningBuildEffect = undefined ;
+  var previousRunningEffectBuild = undefined ;
+  var currentRunningEffectBuild = undefined ;
+  var ancestorRunningEffect = undefined ;
+  function installCurrentRunningEffect(self){
+    if(isHouxBuild(currentRunningEffectBuild)){
+      previousRunningEffectBuild = currentRunningEffectBuild
+      currentRunningEffectBuild = self;
+    }
+  }
+  function reinstatePreviousRunningEffect(){
+    if(previousRunningEffectBuild) currentRunningEffectBuild = previousRunningEffectBuild
+    else currentRunningEffectBuild = undefined;
+  }
   function createRenderFN(self, fn){
     if(!isPFunction(fn)){
       $Debug(`parameter 2 of "createRenderFN" macro expects a plain Function`);
@@ -906,7 +922,16 @@ const Houx=(function(global){
   function TupleConstructorManager(self, args){
     self[$$tupleStore]=[];
     self[$$tupleUnique]=new Set();
-    self.size=0;
+    let size=0
+    define(self, 'size', {
+      get(){
+        return size;
+      },
+      set(NS){
+        size=NS;
+        return true
+      }
+    })
     self[$$tupleIsFrozen]=false
     let [ value ] = args;
     if(len(args) && !_validateType(value, [Set, Array, Tuple ])) {
@@ -1188,7 +1213,7 @@ const Houx=(function(global){
     if(isFunction(type) ){
       if(new Set(DataFunctionMap).has(type)){
         return isEQ(getType(val), getType(type()))
-      }else if(new Set(XtrucrDataCallableTypes).has(type)){
+      }else if(new Set(XtructDataCallableTypes).has(type)){
         let res=false;
          try {
            res=isEQ(getType(val), getType(new type()))
@@ -1292,6 +1317,7 @@ const Houx=(function(global){
     id_ref=null
     $$properties=null
     PropFlags=null
+    compiler=null
     prototype_=null
     renderPipeline=null
     $$children=null
@@ -1299,6 +1325,10 @@ const Houx=(function(global){
     reactive_flags=null
     notifiers_record=null
     config=null
+    LabContext=null
+    renderID_Key=null
+    filesFilter=null
+    _is_VNodeClass=true
     filesFilter=null
     subscriptions=null
     hx__VNode=null
@@ -1332,6 +1362,8 @@ const Houx=(function(global){
       },
       GeneticProvider:undefined,
       Attribute_Collection:undefined,
+      VNodeClass:undefined,
+      factoryCompiler:pass,
       LifeCycleHooks:{
         init_hook:new Tuple(),
         created_hook:new Tuple(),
@@ -2026,7 +2058,7 @@ const Houx=(function(global){
     return _createFragment()
   }
   const isHouxWidgetVNode=vnode=>isHouxVNode(vnode) && vnode.is_mount_root && isHouxBuild(vnode.widget_instance) ;
-  const maybeHouxWidgetVNode=vnode=>isHouxVNode(vnode) && vnode.is_mount_root && isHouxBuild(vnode.widget_instance) || validHouxWidget(vnode.VNodeManager.GeneticProvider);
+  const maybeHouxWidgetVNode=vnode=>isHouxVNode(vnode) && vnode.is_mount_root && isHouxBuild(vnode.widget_instance) || validHouxWidget(vnode?.VNodeManager?.GeneticProvider);
   function dirExistenceCheck(attrs, dir){
     const escaped=hasSpecialCharacters(dir) ? escapeRegExp(dir) : dir
     const rawDirRegex=new RegExp(`^${escaped}[\\w|$:\\-]*$`);
@@ -2420,13 +2452,13 @@ const Houx=(function(global){
     const getValue = new Function('obj','$$$ctx','dexTransform', `
       with(obj){
         with($$$ctx){
-          return dexTransform ? dexTransform.traverse()  : ${str};
+          return dexTransform ? dexTransform.traverse()  : ${str.trim() || "undefined" };
         }
       }
     `);
     let value;
     try{
-      value = getValue(obj, isPObject(optional) ? optional : {}, dexTransform);
+      value = getValue.call(obj, obj, isPObject(optional) ? optional : {}, dexTransform);
     }catch(error){
       throw new  Error(error);
     }
@@ -2443,7 +2475,7 @@ const Houx=(function(global){
       }
     `)
     const [obj={}, $$$ctx={}]=metrics;
-    return traverse(obj, $$$ctx )(...sources);
+    return traverse.call(obj, obj, $$$ctx )(...sources);
   }
   function withFallThrough(fn){
     return new fallThrough(fn);
@@ -2451,7 +2483,7 @@ const Houx=(function(global){
   function _DynamicAttrNameResolver(self, attr, hx__VNode, isRerender, patchFlags, metrics){
     let iniAttr=attr;
     attr= fall_AttrName(attr) ;
-    const pattern=/\[(.*?)\]/g;
+    const pattern=/\[(.*?)\]/;
     if(pattern.test(attr)){
       const matches=attr.match(pattern);
       let name=''
@@ -2465,10 +2497,14 @@ const Houx=(function(global){
         
       }
     }
+    if(!isString(attr)){
+      $Debug(`Unexpected value at "${iniAttr}" as dynamically evaluated prop name binding is not a valId prop string`);
+      return iniAttr;
+    }
     if(hx__VNode) hx__VNode.PATCH_FLAGS.add('ELEMENT_ATTRIBUTES');
     return iniAttr.replace(pattern, function (match, space){
       return attr;
-    });;
+    });
   }
   const DebugFlags={
     slots:"compilation of slot element",
@@ -2537,7 +2573,7 @@ const Houx=(function(global){
   function set_Object_Value(obj, path, value, check=false){
     const processor=Function('obj','value','check','metrics',`
       try{
-        const [ isRef, get_Object_Value ] = metrics;
+        const [ isRef, get_Object_Value, debug ] = metrics;
         const initVal=get_Object_Value(obj, "${path}" );
         if(isRef(initVal)) obj.${path}._data=value;
         else obj.${path}=value;
@@ -2550,16 +2586,23 @@ const Houx=(function(global){
     return processor(obj, value, check, [isRef, get_Object_Value, $Debug]);
   }
   function get_Prop_Path(obj, prop) {
-    const stack = [{ object: obj, path: '' }];
+    const stack = [{ 
+      object: obj, 
+      path: '' 
+    }];
     while (isGT(len(stack)  ,0)) {
       const { object, path } = stack.pop();
-      for (const [key, value] of entries(object)) {
-        const currentPath = path ? `${path}.${key}` : key;
+      for (const [key, value] of getIterator(object)) {
+        const currentPath = path ? `${path}${ isPObject(object) ? '.' : '[' }${key}${isArray(object) ? ']' : ''}` : key;
+        prop = isNumber(key) ? ( isNaN(Number(prop) ) ? prop : Number(prop ) ): prop ;
         if (isEQ(key, prop)) return currentPath;
-        if (isPObject(value)) stack.push({ object: value, path: currentPath });
+        if (_validateType(value, [Object, Array ])) stack.push({ 
+          object: value, 
+          path: currentPath 
+        });
       }
     }
-    return '';
+    return null;
   }
   function _toCamelCase(str) {
     return str.replace(/-+([a-zA-Z])/g, (match, letter) => letter.toUpperCase());
@@ -2696,7 +2739,7 @@ const Houx=(function(global){
     return key;
   }
   function isOnListener(key){
-    return /^on[A-Z]+\w+$/.test(key);
+    return exists(key) && isString(key) && /^on[A-Z]+\w+$/.test(key);
   }
   function directive_sep(key){
     return key.includes(':') ? key.split(':') : [key]
@@ -2713,7 +2756,6 @@ const Houx=(function(global){
       subtree: true 
     })
   }
-  
   function element_Attribute_Manager(props, element, self, hx__VNode, metrics, patchFlags){
     let { key, is_hyperscript, attr, isRerender, illegal, patch } = metrics ;
     let hasBind=false;
@@ -2834,6 +2876,9 @@ const Houx=(function(global){
     else if(isEQ('scoped', name)) $$dir_SCOPED(self, direct.value, element, hx__VNode, modifiers);
     else if(isEQ('ref', name)) $$dir_REF(self, direct.value, element, hx__VNode, modifiers);
     else if(isEQ('model', name)) $$dir_MODEL(self, direct.value, element, hx__VNode, modifiers, metrics);
+    else if(isEQ(name, 'transition')) $$dir_TRANSITION(self, attr, element, hx__VNode, key, modifiers)
+    else if(isEQ(name, 'animation')) $dir_ANIMATION(self, attr, element, hx__VNode, key, modifiers)
+    else if(isEQ(name, 'clone')) $$dir_CLONE(self, attr, element, hx__VNode, key, modifiers)
     // else if(isEQ('fall', name)) $$dir_FALL(self, direct.value, element, hx__VNode,modifiers );
   }
   function BooleanAttributesManager(vnode, key, attr, metrics, patch, hx__VNode){
@@ -3130,7 +3175,7 @@ const Houx=(function(global){
     }
     return node;
   }
-  function $$dir_CLONE(self, item, vnode, hx__VNode, modifiers, metrics){
+  function $$dir_CLONE(self, item, vnode, hx__VNode, key, modifiers, metrics){
     const is_hyperscript=hx__VNode.is_hyperscript;
     if(!object_Has_Path(self.$$publicModel, item)){
       $Debug(`value "${item}" property value was accessed during render, but not initialized on model or is undefined\n\nat at\n ..."${name} directive on ${isWidget ? '$$clone' : vnode.localName} `,self, true);
@@ -3153,19 +3198,54 @@ const Houx=(function(global){
     let propPath=item;
     if(isRef(ref)){
       if(isReadonlyRef(ref)){
-        $Debug(`Path provided to the $$ref directive path "${item}" resolves to a readonly vale`, self, true);
+        $Debug(`Path provided to the $$clone directive path "${item}" resolves to a readonly ref value\n\nFailed to mutate a readonly ref......at ......."${name}"`, self, true);
         return;
       }else propPath= item+"._data"
     }
-    if(node && isWidget) {
-      node.$attributes[$$$$dir__ref$$$$]=propPath;
-    }else if(node) hx__VNode.compiler_options['dir--ref']=propPath;
+    // self.$$publicModel._deferTick(()=>{
+      
+    // log(vnode.outerHTML, (hx__VNode.compiler_options.Node()))
+    // self[$$$operands].initialized=false;
+    // const NewNode=hx__VNode.compiler_options.Node();
+    // self[$$$operands].initialized=true;
+    // set_Object_Value(self.$$publicModel, propPath, NewNode, true);
+    // })
   }
-  function $$dir_ANIMATION(self, item, node, hx__VNode, modifiers){
-    
+  function $$dir_ANIMATION(self, value, node, hx__VNode, key, modifiers, metrics={}){
+    const $orgKey=metrics[activeFlagInstanceKey];
+    const is_hyperscript=hx__VNode.is_hyperscript;
+    const item=value;
+    let subscribers;
+    const runBinding= ()=> _$runModelBind(self, value, hx__VNode, !modifiers.has('bind'))
+    if(!is_hyperscript) {
+      [ subscribers, value ] = effectDependencyTracking(self, function(){
+        return runBinding()
+      } )
+    }else value= runBinding();
+    value=refUnwrap(value)
+    animateElementVnode(self, node, {
+      hx__VNode,
+      modifiers,
+      item : value,
+    });
   }
-  function $$dir_TRANSITION(self, item, node, hx__VNode, modifiers){
-    
+  function $$dir_TRANSITION(self, value, node, hx__VNode, key, modifiers, metrics={}){
+    const $orgKey=metrics[activeFlagInstanceKey];
+    const is_hyperscript=hx__VNode.is_hyperscript;
+    const item=value;
+    let subscribers;
+    const runBinding= ()=> _$runModelBind(self, value, hx__VNode, !modifiers.has('bind'))
+    if(!is_hyperscript) {
+      [ subscribers, value ] = effectDependencyTracking(self, function(){
+        return runBinding()
+      } )
+    }else value= runBinding();
+    value=refUnwrap(value)
+    transitElementVnode(self, node, {
+      hx__VNode,
+      modifiers,
+      item : value,
+    });
   }
   function $$dir_REF(self, item, node, hx__VNode, modifiers, metrics){
     const $orgKey=metrics[activeFlagInstanceKey];
@@ -3294,10 +3374,21 @@ const Houx=(function(global){
     else if(isEQ(name, 'ref')) $$dir_REF(self,  item, vnode, hx__VNode, modifiers, metrics);
     else if(isEQ(name, 'slot')) $$dir_SLOT(self, item, vnode, hx__VNode, modifiers);
     else  if(isEQ(name, 'scoped')) vnode=$$dir_SCOPED(self, item, vnode, hx__VNode, modifiers, metrics);
-    else  if(isEQ(name, 'fall')) vnode=$$dir_FALL(self, item, vnode, hx__VNode, modifiers, modifiers);
+    else  if(isEQ(name, 'fall')) vnode=$$dir_FALL(self, item, vnode, hx__VNode, modifiers, metrics);
     else if(isEQ(name, 'model')) $$dir_MODEL(self, item, vnode, hx__VNode, modifiers, metrics);
     else if(isEQ(name, 'on')) vnode=$$dir_ON(self, attr, vnode, hx__VNode, key, modifiers);
+    else if(isEQ(name, 'transition')) $$dir_TRANSITION(self, attr, vnode, hx__VNode, key, modifiers)
+    else if(isEQ(name, 'animation')) $$dir_ANIMATION(self, attr, vnode, hx__VNode, key, modifiers)
+    else if(isEQ(name, 'clone')) $$dir_CLONE(self, attr, vnode, hx__VNode, key, modifiers)
     return vnode;
+  }
+  function animateElementVnode(self, vnode, binding){
+    const { item, hx__VNode, modifiers } = binding;
+
+  }
+  function transitElementVnode(self, vnode, binding){
+    const { item, hx__VNode, modifiers } = binding;
+  
   }
   function get_Model_Event(vnode ){
     const tag=vnode.localName;
@@ -3648,7 +3739,7 @@ const Houx=(function(global){
       if(isTrue(useModel)){
         computedRefsCompile(self, value.transformer(key));
       }else{
-        $Debug(`The computed macro is only allowed to be used within the body of the Build method option or within the <script "houx:build"> scope or in a function based widgets\n\nUse the "computedRefs" option instead`, self, true);
+        $Debug(`The computed macro is not allowed in the model option\n\nOnly allowed to be used within the body of the Build method option, in a function based widget or within the <script "houx:build"> SFW build system scope\n\nUse the "computedRefs" option instead`, self, true);
         return;
       }
     }else if(isReadonlyRef(value)){
@@ -3958,8 +4049,8 @@ const Houx=(function(global){
     else if(trimmed.includes(':') && !trimmed.startsWith('@') && !trimmed.startsWith(':')) return _Manage_Hash_Class(trimmed, ':')
     return modified;
   };
+  const selectorPattern = /([^\r\n{]+)\s*{/g;
   function _styleSheet_hydration(self, styles){
-    const selectorPattern = /([^\r\n{]+)\s*{/g;
     return styles.replace(selectorPattern, (match, text)=>{
       return _hydrateHashToSelector(text, `[data-hx_hash_=${self[$$$ownProperties].hx_hash_}]`)+'{';
     });
@@ -4888,6 +4979,14 @@ const Houx=(function(global){
     }
     return true;
   }
+  function traverseMixins_Inheritance(self, options){
+    if(!hasOwn(options, 'mixins') && !len(options.mixins)) return;
+    for(const [ index, mx ] of entries(options.mixins)){
+      if(isPFunction(mx) ){
+        
+      }
+    }
+  }
   function getHouxBuildInstance(self, options){
     if(!hasOwn(options, $buildHx_VNodeKey) && !isHouxVNode(options[$buildHx_VNodeKey])) return;
     self[$$$ownProperties].hx__VNode=options[$buildHx_VNodeKey];
@@ -4941,7 +5040,6 @@ const Houx=(function(global){
   }
   function trackTemplateSource(self, selector, fall, hx__VNode){
     fall = fall || {};
-    log(fall)
     let render = pass;
     if(isString(self[$$$core].build)){
       render = (inst, update)=> _HouxTemplateParser(self[$$$core].build, inst, false, hx__VNode, fall);
@@ -5015,14 +5113,17 @@ const Houx=(function(global){
         }else $Debug(err, self);
         return ;
       }
-      mapGarbargeHooks(self)
+      mapGarbargeHooks(self);
       if(isModelInstance(renderer) && !isFunctionBasedBuild(self)) {
         const options = self[$$$core].opts
         self[$$$core].build=hasOwn(options, "template") ? options.template : null ;
-        log(context)
-        return trackTemplateSource(self, selector, context && hasOwn(context, 'self') ? {
+        const templateRender= trackTemplateSource(self, selector, context && hasOwn(context, 'self') ? {
             props:self.$$publicModel.props
-          }: null)(context ? context.self : self );
+          } : null)(context?.self || self );
+        if(isBuiltInBuildWidget(self)) { 
+          self[$$$core].build=`<hx:build>${self[$$$core].build}</hx:build>`;
+        }
+        return templateRender
       }
       if(!isPFunction(responseRender) && !isAFunction(self[$$$core].build) ){
         $Debug(`Error during the procession of the build function/functional widget\n\nfailed to return a render function when returning the build method\n \n This may conflict with the processing of returnable DOM  nodes`, self, true, DebugFlags.build);
@@ -5038,12 +5139,11 @@ const Houx=(function(global){
       };
     }else {
       if(!isBuiltInBuildWidget(self)) widgetSlotsManager(self, self[$$$core].opts)
-      render=trackTemplateSource(self, selector, context && hasOwn(context, 'self') ? { 
+      render=trackTemplateSource(self, selector,context?.self ? { 
         props:self.$$publicModel.props 
       } : null );
     }
-    const inst=context ? context.self : self;
-    return self[$$$core].render(inst);
+    return self[$$$core].render(context?.self || self);
   }
   function inDomCaveatRemodeling(self){
     const setRegex=/^[A-Z]+/
@@ -5673,7 +5773,7 @@ const Houx=(function(global){
     for(const [ key, item ] of entries(PropFlags)){
       if(!(shouldUpdateProp(key) )) continue;
       let { dependencies, accessor, evaluatedValue, initialDependencies, resolvedPropName } = item;
-      const response=AttrubuteEqualityDiffing(self, vnode, {
+      const response=AttributeEqualityDiffing(self, vnode, {
         value:evaluatedValue(),
         key:resolvedPropName(),
         index
@@ -5695,7 +5795,7 @@ const Houx=(function(global){
       })
     }
   }
-  function AttrubuteEqualityDiffing(self, hx__VNode, shapeProps, metrics){
+  function AttributeEqualityDiffing(self, hx__VNode, shapeProps, metrics){
     const { index, key, value, observer, is_hyperscript } = metrics;
     const initialValue=is_hyperscript ? shapeProps[index] : shapeProps;
     const valueX=initialValue.value;
@@ -5729,7 +5829,7 @@ const Houx=(function(global){
       let index = 0;
       const shapeProps = virtualElement.VNodeManager.patchFlags.shapeProps;
       for(let [key, prop] of entries(props)){
-        if( shouldUpdateProp( key ) && AttrubuteEqualityDiffing(self, virtualElement, shapeProps, { 
+        if( shouldUpdateProp( key ) && AttributeEqualityDiffing(self, virtualElement, shapeProps, { 
           index, 
           key, 
           value:prop,
@@ -5763,27 +5863,28 @@ const Houx=(function(global){
   const isConditionalHx_Vnode=node=>isConditionalVnode(node, 'if') || isConditionalVnode(node, 'else-if') || isConditionalVnode(node, 'else') ;
   function virtualBuildFilterExchange(self, node, vnode, parent){
     self[$$$operands].initialized=false;
-    const NewNode=node.compiler_options.Node();
+    const NewNode=vnode.compiler_options.Node();
     self[$$$operands].initialized=true;
     const getPosixVNode=node.VNodeManager.posixVNode
-    getPosixVNode.$element.replaceWith(NewNode.$element);
+    inDOMElementNodesRemover(self, node);
+    getPosixVNode.$element.after(NewNode.$element);
     parent.NodeList.replace(node, NewNode);
   }
-  function heuristicsVNodeDiffing(node, vnode){
+  function heuristicsVNodeEqualityDiffing(node, vnode){
     if((maybeHouxWidgetVNode(node) && !maybeHouxWidgetVNode(vnode) ) || ( !maybeHouxWidgetVNode(node) && maybeHouxWidgetVNode(vnode))) return false;
     else if(!isSameNodeType(node.$element, vnode.$element) && (!IS_DOCUMENT_FRAGMENT_NODE(node.$element) && !IS_DOCUMENT_FRAGMENT_NODE(vnode.$element))) return false;
     else if(maybeHouxWidgetVNode(node) && maybeHouxWidgetVNode(vnode)){
       const nodeWidget=node.VNodeManager.GeneticProvider;
       const vnodeWidget=vnode.VNodeManager.GeneticProvider;
-      return isEqualValue(nodeWidget, vnodeWidget);
+      return isEqualValue(nodeWidget, vnodeWidget) && (isObject(nodeWidget) ? deepEqualityCheck(nodeWidget, vnodeWidget) : isEQ( nodeWidget, vnodeWidget ) );
     }
     return true;
   }
   function Render_Effect_Reactive_Transform(self, virtualElement, virtualBuild, observer, parent){
     const is_hyperscript=isHouxBuild(self) ? self[$$$core].map.is_hyperscript : false ;
     if(!isHouxVNode(virtualElement) && !isHouxVNode(virtualBuild)) return;
-    else if(!heuristicsVNodeDiffing(virtualElement, virtualBuild)) {
-      // virtualBuildFilterExchange(self, virtualElement, virtualBuild, parent );
+    else if(!heuristicsVNodeEqualityDiffing(virtualElement, virtualBuild)) {
+      virtualBuildFilterExchange(self, virtualElement, virtualBuild, parent );
       return 
     }else if(!isHouxFragmentVnode(virtualElement)){
       effectCleanupFlush(self, virtualElement, virtualBuild, null, observer, true );
@@ -5795,7 +5896,6 @@ const Houx=(function(global){
         effectCleanupFlush(self, node, virtualNode, virtualElement, observer);
       }
     }
-    
     AttributeAndPropsReactiveManager(self, virtualElement, virtualBuild, [is_hyperscript, observer] );
   }
   function effectCleanupFlush(self, node, virtualNode, virtualElement, observer, ignore){
@@ -5923,7 +6023,7 @@ const Houx=(function(global){
     if(isRenderlessVNode(node) && !isRenderlessVNode(virtualBuild)){//add a newly created node and make it render
       observer.effectFlush.add(function(){
         self[$$$operands].initialized=false;
-        const NewNode=node.compiler_options.Node();
+        const NewNode=virtualBuild.compiler_options.Node();
         NewNode.conditional_record=virtualBuild.conditional_record;
         self[$$$operands].initialized=true;
         const ind=vnode.NodeList.indexOf(node);
@@ -6205,6 +6305,23 @@ const Houx=(function(global){
       
     }
   }
+  function getFieldType(field){
+    if(!isFormField(field)){
+      $Debug(`isFieldTypeOf  argument 1 not a form Input field`);
+      return false
+    }
+    return field
+  }
+  function isFieldTypeOf(field, type){
+    if(!isFormField(field)){
+      $Debug(`isFieldTypeOf  argument 1 not a form Input field`);
+      return false
+    }else if(!isString(type) && !isFormFieldType(_to_kebab_case(type))){
+      $Debug(`Input at argument 2 of isFieldTypeOf macro is not a valid houx form field type`);
+      return false;
+    }
+    return isEQ(getFieldType(field), _to_kebab_case(type))
+  }
   function createFormModel(){
     return preventX(new Form(...arguments))
   }
@@ -6300,6 +6417,9 @@ const Houx=(function(global){
     else if(isEQ(name, 'html') || isEQ(name, 'text')) $$dir_HTML(self, param, widget, hx__VNode, isEQ(name, 'text'), modifiers);
     else if(isEQ(name, 'raw')) pass;
     else if(isEQ(name, 'fall')) $$dir_FALL(self, param, widget, hx__VNode, modifiers);
+    else if(isEQ(name, 'transition')) $$dir_TRANSITION(self, attr, widget, hx__VNode, key, modifiers)
+    else if(isEQ(name, 'animation')) $$dir_ANIMATION(self, attr, widget, hx__VNode, key, modifiers)
+    else if(isEQ(name, 'clone')) $$dir_CLONE(self, attr, widget, hx__VNode, key, modifiers)
     else if(isHouxDirective(name)) pass;
   }
   function dynamicPropRemover(obj, propName){
@@ -6333,9 +6453,8 @@ const Houx=(function(global){
       if(!isString(instance) && !validHouxWidget(instance)){
         $Debug(`Instance value received at build builtin widget is not a valid houx widget Instance`, self, true);
         return undefined;
-      }
-      if( validHouxWidget(instance)) {
-        build[$$$register].widgets[instance.name || 'FactoryRender']=instance;
+      }else if( validHouxWidget(instance) && !hasOwn(self[$$$register].widgets, instance.name || "FactoryRender")) {
+        self[$$$register].widgets[instance.name || 'FactoryRender']=instance;
       }
       function factoryRender(params, { attrs, useModel }){
         const props=dynamicPropRemover( build[$$$ownProperties].hx__VNode?.VNodeManager.Attribute_Collection||{}, 'self');
@@ -6357,7 +6476,7 @@ const Houx=(function(global){
         `
         factoryRender.parentContext={
           self,
-          hx__VNode:build[$$$ownProperties].hx,
+          hx__VNode:build[$$$ownProperties].hx__VNode,
           is_hyperscript
         }
       }
@@ -6633,6 +6752,16 @@ const Houx=(function(global){
    const { hasDir, getDir, getKey } = dirExistenceCheck(attributes, "$$raw");
     if(isTrue(hasDir) ) define(attributes, $$rawChildrenData$$,{value:_escapeDecoder(node.innerHTML), enumerable, configurable});
   }
+  function transpileHouxDelimiterTemplateBlocks(self, html){
+    let [ open, close ]= self[$$$core].settings.delimiters;
+    open=hasSpecialCharacters(open) ? escapeRegExp(open) : open ;
+    close=hasSpecialCharacters(close) ? escapeRegExp(close) : close ;
+    const pattern=new RegExp(`${open}(\\/)?\\:\\:([\\S]+)[ ]*(.*?)[ ]*(\\/)?${close}`, 'g');
+    if(!pattern.test(html)) return html;
+    return html.replace(pattern, function(match, ct, name, value, imcl ){
+      return `<${ct?.trim() ? "/" : "" }::${name}${ value?.trim() ? ' exp="'+value?.trim()+'"' : "" }${ imcl?.trim() ? "/" : ""}>`;
+    });
+  }
   function connectAncestorsProps(self, Vnode, hx__VNode, NodeList){
     if(!isHouxVNode(Vnode) && isHouxVNode(hx__VNode)) return;
     if(Vnode.render_tracked && hx__VNode){
@@ -6679,9 +6808,11 @@ const Houx=(function(global){
   const attrRegex=/([^=\s]*)\s*?=\s*?(?:(["'])(.*?)\2|([^"'\s>]+))/;
   const attributesRegex = /([^=\s]+)\s*=\s*(?:(["'])(.*?)\2|([^"'\s>]+))?|(\S+)(?:\s*=\s*(?:(["'])(.*?)\6|(\S+)))?/g;
   function RunMustacheExcape(self, html){
-    const [ open, close ]= self[$$$core].settings.delimiters;
+    let [ open, close ]= self[$$$core].settings.delimiters;
+    // open=hasSpecialCharacters(open) ? escapeRegExp(open) : open ;
+    // close=hasSpecialCharacters(close) ? escapeRegExp(close) : close ;
     const pattern=new RegExp(`${open}(.*?)${close}`, 'g');
-    return html.replace(pattern, (match, value )=>{
+    return transpileHouxDelimiterTemplateBlocks(self, html).replace(pattern, (match, value )=>{
       return `${open}${ _escapeDecoder(value) }${close}`;
     });
   }
@@ -6724,7 +6855,7 @@ const Houx=(function(global){
   }
   function _HouxTemplateParser(html, self, parent, hx__VNode, fall, isRerender=false, config={} ){
     if(!html) return null;
-    if(self && isHouxBuild(self)) html=RunMustacheExcape(self, html);
+    if(self && isHouxBuild(self))  html=RunMustacheExcape(self, html );
     html=openingTagsHydration( self , html).replace(closingTagsRegex, (match, tag)=> {
       tag = isBlockTag(tag) ? "section" : tag ;
       return IsDomparserTag(tag) ? `</hx$$--${tag}-$hx>` : `</${tag}>` ;
@@ -6808,8 +6939,8 @@ const Houx=(function(global){
     let data;
     const ctx=[children, exp ]
     if(isEQ(blockN, 'if')) template = blockIFPreprocessor(...args(), ctx);
-    else if(isEQ(blockN, 'else:if')) blockElseIfPreprocessor(...args(), ctx, config );
     else if(isEQ(blockN, 'else')) blockElsePreprocessor(...args(), ctx, config, "::else");
+    else if(isEQ(blockN, 'else:if')) blockElseIfPreprocessor(...args(), ctx, config );
     else if(isEQ(blockN, 'for')) template = blockForProcessor(...args(), ctx);
     else if(isEQ(blockN, 'const')) blockConstPreprocessor(...args(), ctx, config);
     return !isArray(template) ? (_validateType(template, [Set, Tuple]) ? [...arrSet(template)] : [template] ) : template ;
@@ -6959,8 +7090,8 @@ const Houx=(function(global){
       if(vnode) NodeList.add(vnode);
     }
   }
-  function customBlocksTraverse(self, nodeSpace, node, blockN, isRerender,metrics){
-    const [ hx__VNode, NodeList, tagName, context, fall ] = metrics ;
+  function customBlocksTraverse(self, nodeSpace, node, blockN, isRerender, metrics){
+    let [ hx__VNode, NodeList, tagName, context, fall ] = metrics ;
     const children=node.innerHTML;
     const [ subscribers, data ]=effectDependencyTracking(self, ()=>{
       return _$runModelBind(self, nodeSpace.blockProps.expression, hx__VNode);
@@ -6969,7 +7100,7 @@ const Houx=(function(global){
       if(!isPObject(ctx)){
         $Debug(`context data passed to factoryRender expects a plain object`, self);
       }
-      fall=assign(fall||{}, ctx);
+      fall=smartDextCtxMerging(fall||{}, ctx);
       return _HouxTemplateParser(children, self, true, hx__VNode, fall, isRerender);
     }
     const template = factoryRender()
@@ -7442,6 +7573,8 @@ const Houx=(function(global){
   global.isNativeElement = isNativeElement ;
   global._createWidgetElement = _createWidgetElement ;
   global.fromRef = fromRef ;
+  global.isFieldTypeOf = isFieldTypeOf ;
+  global.getFieldType = getFieldType ;
   global.toRef = toRef ;
   global._to_kebab_case = _to_kebab_case ;
   global.Ref = Ref ;
@@ -7459,6 +7592,7 @@ const Houx=(function(global){
   global._GenerateRoot = _GenerateRoot ;
   global.withFallThrough = withFallThrough ;
   global.lazy = lazy ;
+  global.version = version ;
   global.deepEqualityCheck = deepEqualityCheck ;
   global.isShallowReadOnlyRef = isShallowReadOnlyRef ;
   global.isComputedRef = isComputedRef ;
