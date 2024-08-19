@@ -60,16 +60,16 @@ const Houx=(function(global){
   const characters=/\!\"\#\%\&\'\(\)\*\+\,\.\/\;\<\=\>\@\[\\\]\^\`\{\|\}\~ /
   function $Debug(msg,self, dictateW=false, txt=''){
     let shouldlog=true
-    if(self && isHouxBuild(self)) shouldlog=self[$$$core].settings.debug && !self[$$$operands].initialized
+    if(isHouxBuild(self)) shouldlog=self[$$$core].settings.debug && !self[$$$operands].initialized
     if(shouldlog ) {
       if(dictateW) console.warn(`${$warner}\n\nEncountered a problem ${txt} \n\n at  at  \n <${self && isHouxBuild(self) ? self[$$$ownProperties].name : 'UnknownWidget' }> widget`);//houx warming debugger
       console.error(`${$warner}\n\n${msg}`);//houx warming debugger
-      $warn(msg.stack ? msg.stack : msg)
+      $warn(msg.stack ? msg.stack : msg, self)
     }
   }
   function $warn(msg, self){
     let shouldlog=true
-    if(self) shouldlog=self[$$$core].settings.debug;
+    if(isHouxBuild(self)) shouldlog=self[$$$core].settings.debug;
     if(shouldlog) console.warn(`${$warner}\n\n${msg}`);//houx warming debugger
   }
   const isIterator=iterator=>iterator && !isArray(iterator) && isPFunction(iterator[Symbol.iterator]);
@@ -123,10 +123,12 @@ const Houx=(function(global){
     fallThrough:Function,
     computedRefs:Object,
     mixins:Array,
-    onWatch:Function
+    onTracked:Function,
+    onEffect:Function,
+    onCatch:Function
   }
   const validWidgetOptions=keys(widgetOptionType).join(',');//valid widget options---
-  const plainFunctionOptions="model,preBuild,postBuild,preMount,postMount,preUpdate,postUpdate,postDestroy,preDestroy,publish,fallThrough";
+  const plainFunctionOptions="model,preBuild,postBuild,preMount,postMount,preUpdate,postUpdate,postDestroy,preDestroy,publish,fallThrough,onEffect,onTracked,onCatch";
   const nonAFuncMethod=fnName=> _mapValue(plainFunctionOptions, fnName);
   const nodeJSOnlyOption="markdownSrc,styleSheetSrc,templateSrc";
   const isNodeJSOnlyOption=opt=>_mapValue(nodeJSOnlyOption, opt);
@@ -334,6 +336,9 @@ const Houx=(function(global){
   const isFunctionBasedBuild=build=>isHouxBuild(build) && isEQ(build[$$$ownProperties].widgetType, 'function-based');
   const isObjectBasedBuild=build=>isHouxBuild(build) && isEQ(build[$$$ownProperties].widgetType, 'object-based');
   const isFallThrough = fall => fall instanceof fallThrough;
+  const $$tupleStore=Symbol()
+  const $$tupleUnique=Symbol()
+  const $$tupleIsFrozen=Symbol()
   const $$dexTransformKey=Symbol();
   const genericKeyProp=Symbol();
   const $$rawChildrenData$$=Symbol('[[[$$rawChildrenData$$]]]');
@@ -360,10 +365,10 @@ const Houx=(function(global){
   const isBuiltinWidgetBuild=self=> isHouxBuild(self) && hasOwn(self[$$$ownProperties], 'builtin_widget');
   const isBuiltinWidgetAndType=( self, type ) => isBuiltinWidgetBuild(self) && isEQ(self[$$$ownProperties].builtin_widget, type )
   const isBuiltInPortalWidget=self=> isBuiltinWidgetAndType(self, 'hx:portal')
-  const isBuiltInAnimationWidget=self=>isBuiltinWidgetAndType(self, 'hx:animation')
+  const isBuiltInMotionWidget=self=>isBuiltinWidgetAndType(self, 'hx:motion')
   const isBuiltInMemoWidget=self=>isBuiltinWidgetAndType(self, 'hx:memo')
   const isBuiltInFragmentWidget=self=>isBuiltinWidgetAndType(self, 'hx:fragment')
-  const isBuiltInTransitionWidget=self=>isBuiltInSuspenseWidget(self, 'hx:transition')
+  const isBuiltInSelfWidget=self=>isBuiltInSuspenseWidget(self, 'hx:self')
   const isBuiltInBuildWidget=self=>isBuiltinWidgetAndType(self, 'hx:build')
   const isBuiltInSuspenseWidget=self=>isBuiltinWidgetAndType(self, 'hx:suspense')
   const isBuiltinWidget =widget=> hasOwn(widget, $$BuiltinWidgetKey);
@@ -378,19 +383,6 @@ const Houx=(function(global){
   const widgetSpecialAttrProps = new Set([ $$rawChildrenData$$ , $$$$dir__ref$$$$ , dir$$__render, $$$fallThrough , $$slotName, $$$Events, $$$ModelUpdateKey ]);
   const isSpecProp = prop => widgetSpecialAttrProps.has(prop);
   const isBuiltinBlocks=block=>_mapValue("if,else,else:if,for,const", block);
-  var previousRunningEffectBuild = undefined ;
-  var currentRunningEffectBuild = undefined ;
-  var ancestorRunningEffect = undefined ;
-  function installCurrentRunningEffect(self){
-    if(isHouxBuild(currentRunningEffectBuild)){
-      previousRunningEffectBuild = currentRunningEffectBuild
-      currentRunningEffectBuild = self;
-    }
-  }
-  function reinstatePreviousRunningEffect(){
-    if(previousRunningEffectBuild) currentRunningEffectBuild = previousRunningEffectBuild
-    else currentRunningEffectBuild = undefined;
-  }
   function createRenderFN(self, fn){
     if(!isPFunction(fn)){
       $Debug(`parameter 2 of "createRenderFN" macro expects a plain Function`);
@@ -421,23 +413,10 @@ const Houx=(function(global){
     }
     fn=new Proxy(fn, {
       apply(target, thisArgs, args){
-        return Reflect.apply(...arguments);
+        return  Reflect.apply(...arguments);
       }
     })
     return fn
-  }
-  function deferWatch(getter){
-    if(!isPFunction(getter)){
-      $Debug(`deferWatch expects a getter function`);
-      return 
-    }
-  }
-  function pushEffect(){
-    if(len(arguments)){
-      $warn(`_pushEffect expects no formal arguments`, this )
-    }
-    this[$$$operands].dependency.notify();
-    return this.$$publicModel._deferTick();
   }
   function isElementType(element, type){
     if(isEQ(type, 'text')) return IS_TEXT_NODE(element);
@@ -665,7 +644,9 @@ const Houx=(function(global){
     
     const descriptor=callback()
   }
-  const isTuple=tp=>tp instanceof Tuple;
+  function isTuple(tp){
+    return tp instanceof Tuple;
+  }
   const arrSet=setData=>isSet( setData ) ? [...setData] : isTuple(setData) ? setData.list() : setData ;
   function setValueIndex(setData , value){
     if(!isSet(setData) && !len(setData) && !setData.has(value)) return NaN;
@@ -680,7 +661,8 @@ const Houx=(function(global){
   const mapMutationMethods="set,delete,clear";
   const tupleMutationMethods=setMutationMethods+",shift,unshift,splice,pop,shift"
   function getAgentMutators(data, prop, model){
-    data=refUnwrap(data)
+    const value=data;
+    data=refUnwrap(data);
     let mutateArgs= isArray(data) ? arrayMutationMethods : isSet(data) ? setMutationMethods : isMap(data) ? mapMutationMethods : isTuple(data) ? tupleMutationMethods : isPObject(data) ? "define,set,delete" : isPrimitive(data) ? "set" : "set";
     const mutation_object=createObj('mutatations');
     for(let name of mutateArgs.split(',').values()){
@@ -695,8 +677,8 @@ const Houx=(function(global){
           }
         }
         let assV=rv;
-        if(model && prop) {
-          if(!isEQ(name, 'define')) assV=set_Object_Value(isHouxBuild(model) ? model.$$publicModel : model , prop, isEQ(name, 'set') && !isMap(data) && len(arguments) ? arg : data  );
+        if((model || !isPrimitive(value) ) && prop ) {
+          if(!isEQ(name, 'define')) assV=set_Object_Value(isHouxBuild(model) ? model.$$publicModel : !isPrimitive(value) ? value : model , prop, isEQ(name, 'set') && !isMap(data) && len(arguments) ? arg : data  );
         }
         return  isEQ(name, 'set') && !isMap(data) ? assV : rv;
       }
@@ -705,15 +687,21 @@ const Houx=(function(global){
           return Reflect.apply(...arguments);
         }
       })
+      mutate = Function('fn', `
+        return function ${name}(value){
+          return fn(...arguments);
+        }
+      `)(mutate);
       mutation_object[name]=mutate;
     }
     return mutation_object;
   }
   function useAgent(dataOrModel, data){
-    if(isModelInstance(dataOrModel) && !data){
-      $Debug(`data property is missing\n\n........."useAgent"`);
+    data = () => data || undefined
+    if(isEQ(len(arguments), 1) &&  isModelInstance(dataOrModel)){
+      $Debug(`data value is missing\n\n........."useAgent"`);
       return [data, pass];
-    }else if(isModelInstance(dataOrModel) && !isChar(data)){
+    }else if(isModelInstance(dataOrModel) && !isChar(data())){
       $Debug(`data property at positional argument 2 of "useAgent" expects a string/symbol`);
       return [data, pass];
     }else if(isHouxBuild(this) && !isChar(dataOrModel)){
@@ -722,47 +710,53 @@ const Houx=(function(global){
     }
     const model= isHouxBuild(this) ? this : isModelInstance(dataOrModel) ? dataOrModel : null;
     let ModelInstance= model && isHouxBuild(model) ? model.$$publicModel : model ? model : null;
-    const prop=isHouxBuild(this) ? dataOrModel : isModelInstance(dataOrModel) ? data : dataOrModel;
+    let prop=isHouxBuild(this) ? dataOrModel : isModelInstance(dataOrModel) ? data() : isRef(dataOrModel) ? '_data' : dataOrModel;
     if(model && !object_Has_Path(ModelInstance, prop)){
       $Debug(`"${prop}" property is not a valid model property`, );
       return[data, pass];
     }
-    data = model ? _$runModelBind(isHouxBuild(model) ? model.$$publicModel : model, prop ) : dataOrModel;
-    const mutateArgs= getAgentMutators(data, prop , model);
+    data = ()=> model ? _$runModelBind(isHouxBuild(model) ? model.$$publicModel : model, prop ) : dataOrModel;
+    const mutateArgs= getAgentMutators(data(), prop , model);
+    let defineCount = 0;
+    const unwrappedGetter= ()=>refUnwrap(data())
     function mutate(mutation){
-      if(isPFunction(mutation)){
+      if(isPFunction(mutation) && isLT(defineCount, 1)){
+        defineCount++;
+        define(mutateArgs, 'value', {
+          get(){
+            return unwrappedGetter();
+          }
+        })
+      }
+      if(isPFunction(mutation) ){
         try{
-          define(mutateArgs, 'value', {
-            get(){
-              return data;
-            }
-          })
           mutation(mutateArgs)
         }catch(err){
           $Debug(`Encountered an error during the call of the mutate callback\n\n${err}`);
           return ;
         }
-      }else{
-        if(model) set_Object_Value( ModelInstance , prop, mutation  );
+      }else if(!isPFunction(mutation)){
+        set_Object_Value( model ? ModelInstance : !isPrimitive(data()) ? data() : {} , prop, mutation  );
       }
     }
-    return [ data, mutate ] ;
+    return [ unwrappedGetter , mutate ] ;
   }
   function Mutate(props){
     if(!isPObject(props)){
       $Debug(`"_mutate" parameter 1 argument expects a plain Object`,this, true);
-      return 
+      return false
     }
     for (const [prop, value] of entries(props)){
       if(!object_Has_Path(this.$$publicModel, prop)){
         $Debug(`"${prop}" not found in model instance\n\n..............at......"_mutate"`, this, true);
-        return
+        return false
       }
       const [ propValue, mutate ] = this.$$publicModel._useAgent(prop);
       mutate(({set})=>{
         set(value);
       });
     }
+    return true;
   }
   const getIterator=obj=>_validateType(obj, [Set, Map, Array,Tuple ]) ? obj.entries() : isPObject(obj) ? entries(obj) : isIterator(obj) ? obj : [] ;
   const refGenreId=Symbol("[[[GenreIDType]]]");
@@ -786,6 +780,9 @@ const Houx=(function(global){
     if(isLazyRender(value)) value=lazyUnwrap(value);
     if(!isRef(value)) return value;
     return value._data;
+  }
+  function unRef(ref){
+    return refUnwrap(ref);
   }
   function fromRef(ref){
     return refUnwrap(ref);
@@ -911,14 +908,11 @@ const Houx=(function(global){
   }
   function isFrozenWarn(isFrozen, action, type){
     if(isFrozen){
-      $Debug(`cannot perfom ${action} on ${type}\n\ninstance may have been frozen or sealed`);
+      $Debug(`cannot perfom ${action} on ${type}\n\ninstance may have been frozen or sealed from future possible mutations`);
       return false;
     }
     return true
   }
-  const $$tupleStore=Symbol()
-  const $$tupleUnique=Symbol()
-  const $$tupleIsFrozen=Symbol()
   function TupleConstructorManager(self, args){
     self[$$tupleStore]=[];
     self[$$tupleUnique]=new Set();
@@ -1070,6 +1064,57 @@ const Houx=(function(global){
   Tuple.prototype.list=function list(){
     return this[$$tupleStore];
   }
+  const effectTuple= new Tuple()
+  var previousRunningEffectBuild = undefined ;
+  var currentRunningEffectBuild = undefined ;
+  var ancestorRunningEffect = undefined ;
+  function installCurrentRunningEffect(self){
+    effectTuple.add(self);
+    if(isHouxBuild(currentRunningEffectBuild)){
+      previousRunningEffectBuild = currentRunningEffectBuild;
+    }
+    currentRunningEffectBuild = self;
+  }
+  function reinstatePreviousRunningEffect(){
+    if(previousRunningEffectBuild) {
+      currentRunningEffectBuild = previousRunningEffectBuild
+      
+    }else currentRunningEffectBuild = undefined;
+  }
+  function getCurrentRunningEffect(binding){
+    const self=currentRunningEffectBuild;
+    const { name } = binding;
+    if(!isHouxBuild(self)){
+      $Debug(`${name} utility function cannot be called outside of a build or widget function body\n"${name}" may ve ben called in an asynchronous thread or outside of the build/widget based function`);
+      return false;
+    }
+    return self;
+  }
+  function createAgent(value, prop){
+    const self=getCurrentRunningEffect({
+      name:'createAgent'
+    })
+    if(!self) return [ pass, pass ];
+    if(isGT(len(arguments), 1) && (!isString(prop) || !exists(prop))){
+      $Debug(`createAgent at argument 2 expects an valid property name or is an empty value `, self);
+      return [ pass, pass ];
+    }
+    const parameters = exists(prop) ? [ value, prop ] : [ value ] ;
+    return useAgent(stateRef(...parameters));
+  }
+  function deferWatch(getter){
+    if(!isPFunction(getter)){
+      $Debug(`deferWatch expects a getter function`);
+      return 
+    }
+  }
+  function pushEffect(){
+    if(len(arguments)){
+      $warn(`_pushEffect expects no formal arguments`, this )
+    }
+    this[$$$operands].dependency.notify();
+    return this.$$publicModel._deferTick();
+  }
   function isSameNodeType(node1, node2){
     if(!node1 instanceof Element && !node2 instanceof Element) return false;
     else if(!isEQ(node1.nodeType, node2.nodeType)) return false;
@@ -1096,6 +1141,35 @@ const Houx=(function(global){
       return;
     }
     return vnode.compiler_options.Node()
+  }
+  function makeCloneVerson(value, deep=true){
+    let cValue
+    if(isPrimitive(value) ) return value;
+    else if(_validateType(value, [Array, Set, Tuple, Object])){
+      cValue= isArray(value) ? [] : isSet(value) ? new Set() : isTuple(value) ? new Tuple() : isObject(value) ? new value.__proto__.constructor() : undefined;
+      let index = 0
+      for(let [ prop, item] of getIterator(value)){
+        item =  makeCloneVerson(item, deep) ;
+        if(_validateType(value, [Set, Tuple])) cValue.add(item);
+        else if(isArray(value)) cValue.push(item);
+        else if(isObject(value)){
+          cValue[prop]=item;
+        }
+        index ++
+      }
+      return cValue;
+    }else if(isFunction(value)){
+      if(isClass(value)){
+        cValue=new Proxy(value, {
+          apply(){
+            return Reflect.apply(...arguments)
+          }
+        })
+      }else{
+        
+      }
+      return cValue
+    }
   }
   function deepEqualityCheck(val1, val2){
     val1=refUnwrap(val1)
@@ -1309,6 +1383,7 @@ const Houx=(function(global){
     constructor(type, props, children, configOptions){
       this.$$type=type
       this.$$properties=props
+      children = lazyUnwrap(children)
       this.$$children= exists(children) && !isArray(children) ? [ children ] : exists(children) ? children : null
     }
     $$type=null
@@ -1850,9 +1925,9 @@ const Houx=(function(global){
           const { value, modifiers } = hook[lifeCiycleBinding] || {}
           hook.call(self.$$publicModel, element && isNativeElement(element) ? hx__VNode : self, value, modifiers);
         }catch(err){
-          $warn(err.stack)
+          // $warn(err.stack)
           $Debug("Unresolved problem during the call of the "+Name.slice(0, -5) +" hook of custom "+hook.dirName||""+" directive\n",  self, true);
-          $Debug(err);
+          $Debug(err, self);
           return element;
         }
       }
@@ -1927,6 +2002,9 @@ const Houx=(function(global){
       if(ctx) this.LabContext=ctx;
       if(ssc) {
         this.LabContext=smartDextCtxMerging(this.LabContext, ssc);
+      };
+      if(validHouxWidget(type) || isWidgetResolver(type)){
+        this.VNodeManager.rawChildren=()=> children
       }
       const frameDirectives="$$for,$$if,$$else-if,$$else";
       let element;
@@ -2053,7 +2131,7 @@ const Houx=(function(global){
     return new spreadRenderFragment(NodeList)
   }
   function createRenderlessVNode(self, ...compiler_options){
-    let [type, props, children, inst, hx__VNode ]=compiler_options;
+    let [type, props, children, instance, hx__VNode ]=compiler_options;
     // hx__VNode.widget_instance=true;
     return _createFragment()
   }
@@ -2156,7 +2234,7 @@ const Houx=(function(global){
     if(hx__VNode)  hx__VNode._vnode_key=_generateUUID(7)+"::"+len(siblings)-1;
     if(isString(type) && !is_hyperscript){
       children=children(self, hx__VNode);
-      const slotRender=function(inst, VNode, fall, isRerender=false){
+      const slotRender=function(instance, VNode, fall, isRerender=false){
         const config={
           contextScope:'slots_Block',
           slots_Block:true,
@@ -2165,7 +2243,7 @@ const Houx=(function(global){
           },
           ctx:{}
         }
-        return isString(children) ? _HouxTemplateParser(children, inst, true, VNode, fall, isRerender, config ) : isPFunction(children)  ? children(inst, VNode, fall, isRerender) : children;
+        return isString(children) ? _HouxTemplateParser(children, instance, true, VNode, fall, isRerender, config ) : isPFunction(children)  ? children(instance, VNode, fall, isRerender) : children;
       }
       
       const widget=ResolveWidget(self, hx__VNode, {type, props, $children:slotRender }, IS_RENDERLESS, children)//reso;ving a widget data object
@@ -2180,6 +2258,7 @@ const Houx=(function(global){
         if (instance_Has_Widget(self, type.name) ){
           let widget=normalize_Widget(self, type.name);
           hx__VNode.VNodeManager.GeneticProvider=widget;
+          // widget = new Proxy(widget, {});
           widget= isPFunction(widget) ? widget.bind(self.$$publicModel) : isClass(widget) ? widget : Object.create(widget);//binding or creating a new object model
           if(!widget.name) widget.name=type.name
           if(type.$attributes) define(widget, '$attributes', {value:type.$attributes, enumerable, writable})
@@ -2191,6 +2270,7 @@ const Houx=(function(global){
         }
       }
       hx__VNode.VNodeManager.GeneticProvider=type;
+      // type = new Proxy(type, {});
       if(IS_RENDERLESS) return createRenderlessVNode(self, ...arguments);
       const widget =$compilerEngine(self, type, type, hx__VNode, children );
       if(hx__VNode) {
@@ -3451,7 +3531,7 @@ const Houx=(function(global){
     if( validHouxWidget( type ) ) {
       type = isPObject( type ) ? assign( {} , type ) : type ;
       if( props ) define( type , '$attributes' , { value : props , enumerable , writable } ) ;
-      childrenOrProps = exists(childrenOrProps) && !isArray( childrenOrProps ) ? [ childrenOrProps ] : childrenOrProps ;
+      childrenOrProps = exists(childrenOrProps) && !isArray( childrenOrProps ) && !isLazyRender(childrenOrProps) ? [ childrenOrProps ] : childrenOrProps ;
       if( exists(childrenOrProps )) {
         try{
           define( type , '$children' , { value : childrenOrProps , enumerable , writable , configurable } );
@@ -3527,41 +3607,27 @@ const Houx=(function(global){
       this[$$BuiltinWidgetKey]='hx:fragment'
     }
     name='Fragment'
-    build(params, { slots } ){
-      return ()=> [ slots.default() ]
+    buildConfig={
+      debug:false
     }
   }
-  class Transition extends Widget {
+  class Self extends Widget {
     constructor(){ 
       super()
-      this[$$BuiltinWidgetKey]='hx:transition'
+      this[$$BuiltinWidgetKey]='hx:self'
     }
-    name='Transition'
+    name='Self'
     params={ 
       onStart:Function,
       onEnd:Function
     }
-    build(params, { slots, defineSignals }){
-      defineSignals(['onStart', 'onEnd'])
-      return  ()=> el('section', { class:'slide'}, slots.default())
-    }
-    styleSheet=`
-    .slide{
-      background-color:#0a3039;
-      transition-property:all;
-      transition-duration:3s;
-    }
-    `
   }
-  class Animation extends Widget {
+  class Motion extends Widget {
     constructor(){
       super()
-      this[$$BuiltinWidgetKey]='hx:animation'
+      this[$$BuiltinWidgetKey]='hx:motion'
     }
-    name='Animation'
-    build(params, { slots }){
-      return ()=> [ slots.default() ]
-    }
+    name='Motion'
     
   }
   class Suspense extends Widget{
@@ -3570,9 +3636,6 @@ const Houx=(function(global){
       this[$$BuiltinWidgetKey]='hx:suspense'
     }
     name='Suspense'
-    build(params){
-      return this;
-    }
   }
   class Memo extends Widget {
     constructor(){
@@ -3580,9 +3643,6 @@ const Houx=(function(global){
       this[$$BuiltinWidgetKey]='hx:memo'
     }
     name='Memo'
-    build(params, {slots}){
-      return ()=> [ slots.default() ]
-    }
   }
   class Portal extends Widget {
     constructor(){
@@ -3615,64 +3675,102 @@ const Houx=(function(global){
   const BUILT_IN_WIDGETS={ 
     'hx:fragment':Fragment, 
     'hx:build':Build, 
-    'hx:transition':Transition, 
-    'hx:animation':Animation, 
+    'hx:self':Self, 
+    'hx:motion':Motion, 
     'hx:memo':Memo, 
     'hx:portal':Portal,
     'hx:suspense':Suspense,
     'hx:provider':Provider
   }
-  const allowedComposers="postBuild,preMount,postMount,preUpdate,postUpdate,preDestroy,postDestroy,setupConfig,defineSignals,mapSlots,makePublish,useTransform,createExpose,injectParams";
+  function refVariableTransform(self, binding, metrics){
+    const { value, prop, descriptor } = binding;
+    const data=dataRef(value);
+    if(exists(prop) ) useModel({
+      [prop]:data
+    })
+    else data.effectTrigger(()=>{
+      generateDependencySubscriptions(self, ()=>data)
+      self.$$publicModel._pushEffect();
+    })
+    return exists(prop) ? self.$$publicModel[prop] : data ;
+  }
+  const allowedComposers="postBuild,preMount,postMount,preUpdate,postUpdate,preDestroy,postDestroy,setupConfig,defineSignals,mapSlots,makePublish,useTransform,createExpose,injectParams,stateRef,onEffect,onTracked,onCatch";
   function composersArgValidator(arg, type, metrics={}){
     const { name }=metrics
     if(!_validateType(arg, type)){
-      $Debug(`composer Hook "${metrics}" got an unexpected value\n\nexpects a .......... `);
+      $Debug(`composer Hook "${name}" got an unexpected value\n\nexpects a .......... `);
       return false;
     }
   }
   const garbageKey=Symbol();
   function injectParams(params){
-    if( (!len(arguments) && isNull(params)) && isFalse(composersArgValidator(params, [Array, Object], { name: "injectParams"}))) return this.$$publicModel.$params;
-    paramsManager(this, {
-      $attributes:this[$$$core]?.opts?.$attributes || {},
+    const self=getCurrentRunningEffect({
+      name:'injectParams'
+    })
+    if( !self && (!len(arguments) && isNull(params)) && isFalse(composersArgValidator(params, [Array, Object], { name: "injectParams"}))) return self.$$publicModel.$params;
+    paramsManager(self, {
+      $attributes:self[$$$core]?.opts?.$attributes || {},
       params
     }, true);
-    return this.$$publicModel.$params
+    return self.$$publicModel.$params
+  }
+  function stateRef(value, prop, descriptor){//settibg of variable based ref in build fn
+    const self=getCurrentRunningEffect({
+      name:'stateRef'
+    })
+    if(!self) return undefined;
+    if(isGT(len(arguments), 3)){
+      $Debug(`stateRef expects not more than 3 arguments`, self);
+      return;
+    }
+    if( (!len(arguments) && isFalse(composersArgValidator(prop, String, { name: 'stateRef'}))) ) return ;
+    return refVariableTransform(self, { value, prop, descriptor})
   }
   function mapSlots(slots){
-    if( (!len(arguments) && isNull(slots)) && isFalse(composersArgValidator(slots, Array, { name: "mapSlots"}))) {
-      defineFallbackSlotsRef(this, {slots:[]}, this[$$$core].slots)
-      return this[$$$core].slots;
+    const self=getCurrentRunningEffect({
+      name:'mapSlots'
+    })
+    if( !self && (!len(arguments) && isNull(slots)) && isFalse(composersArgValidator(slots, Array, { name: "mapSlots"}))) {
+      defineFallbackSlotsRef(self, {slots:[]}, self[$$$core].slots)
+      return self[$$$core].slots;
     }
     for(const [index, sl ] of slots.entries()){
       if(!isString(sl)) {
-        $Debug(`mapSlots() composer macro array value ecpects a String value\n\nat array index ..........${index}`, this, true);
+        $Debug(`mapSlots() composer macro array value ecpects a String value\n\nat array index ..........${index}`, self, true);
         continue;
       }
     }
-    defineFallbackSlotsRef(this, { slots }, [], this[$$$core].slots );
-    
-    return this[$$$core].slots;
+    defineFallbackSlotsRef(self, { slots }, [], self[$$$core].slots );
+    return self[$$$core].slots;
   }
   function defineSignals(signals){
-    if((!len(arguments) && isNull(signals)) && isFalse(composersArgValidator(signals, Array, {name:"defineSignals"}))) return this.$$publicModel.$signals;
-    $construct_With_Signals(this, { signals }, true);
-    for(const [key, value] of entries((this[$$$core].opts.$attributes||{})[$$$Events]||{})){
+    const self=getCurrentRunningEffect({
+      name:'defineSignals'
+    })
+    if(!self && (!len(arguments) && isNull(signals)) && isFalse(composersArgValidator(signals, Array, {name:"defineSignals"}))) return self.$$publicModel.$signals;
+    $construct_With_Signals(self, { signals }, true);
+    for(const [key, value] of entries((self[$$$core].opts.$attributes||{})[$$$Events]||{})){
       const transformKey=_toCamelCase(`on-${key}`);
-      if(hasOwn(this.$$publicModel.$attrs, transformKey) && hasOwn(this.$$publicModel.$signals, key)){
-        delete this.$$publicModel.$attrs[transformKey];
+      if(hasOwn(self.$$publicModel.$attrs, transformKey) && hasOwn(self.$$publicModel.$signals, key)){
+        delete self.$$publicModel.$attrs[transformKey];
       }
     }
-    return this.$$publicModel.$signals
+    return self.$$publicModel.$signals
   }
   function setupConfig(config){
-    if((!len(arguments) && isNull(config)) && isFalse(composersArgValidator(config, Object, {name:"setupConfig"}))) return
-    setConfig(this, { buildConfig: config });
+    const self=getCurrentRunningEffect({
+      name:'setupConfig'
+    })
+    if(!self && (!len(arguments) && isNull(config)) && isFalse(composersArgValidator(config, Object, {name:"setupConfig"}))) return
+    setConfig(self, { buildConfig: config });
     return void 0
   }
   function makePublish(publish){
-    if((!len(arguments) && isNull(publish)) && isFalse(composersArgValidator(publish, Object, {name:"makePublish"} ))) return false;
-    mapPublicationsTraverse(this, { 
+    const self=getCurrentRunningEffect({
+      name:"makePublish"
+    })
+    if(!self && (!len(arguments) && isNull(publish)) && isFalse(composersArgValidator(publish, Object, {name:"makePublish"} ))) return false;
+    mapPublicationsTraverse(self, { 
       publish(){
         return publish;
       }
@@ -3680,56 +3778,107 @@ const Houx=(function(global){
     return true;
   }
   function useTransform(transform){
-    if((!len(arguments) && isNull(transform)) && isFalse(composersArgValidator(transform, [Array, Object], {name:"useTransform"}))) return
-    return transformPublicationPrefix(this, { transform });
+    const self=getCurrentRunningEffect({
+      name:'useTransform'
+    })
+    if(!self && (!len(arguments) && isNull(transform)) && isFalse(composersArgValidator(transform, [Array, Object], {name:"useTransform"}))) return
+    return transformPublicationPrefix(self, { transform });
   }
   function createExpose(fallThrough){
-    if((!len(arguments) && isNull(fallThrough)) && isFalse(composersArgValidator(fallThrough, Function, {name:'createExpose'}))) return false;
-    if(!hasOwn(this[$$$core].opts, "fallThrough")){
-      this[$$$core].opts.fallThrough=function expose(){
+    const self=getCurrentRunningEffect({
+      name:'createExpose'
+    })
+    if(!self && (!len(arguments) && isNull(fallThrough)) && isFalse(composersArgValidator(fallThrough, Function, {name:'createExpose'}))) return false;
+    if(!hasOwn(self[$$$core].opts, "fallThrough")){
+      self[$$$core].opts.fallThrough=function expose(){
         return fallThrough()
       }
     }
     return true;
   }
   function postBuild(callback){
-    if(isFalse(composersArgValidator(callback, Function, { name:"postBuild"}))) return;
-    this[$$$compiler][garbageKey].postBuild.add(callback);
+    const self=getCurrentRunningEffect({
+      name:'postBuild'
+    })
+    if(!self && isFalse(composersArgValidator(callback, Function, { name:"postBuild"}))) return;
+    self[$$$compiler][garbageKey].postBuild.add(callback);
   }
   function preMount(callback){
-    if(isFalse(composersArgValidator(callback, Function, { name:"preMount"}))) return
-    this[$$$compiler][garbageKey].preMount.add(callback);
+    const self=getCurrentRunningEffect({
+      name:'preMount'
+    })
+    if(!self && isFalse(composersArgValidator(callback, Function, { name:"preMount"}))) return
+    self[$$$compiler][garbageKey].preMount.add(callback);
   }
   function postMount(callback){
-    if(isFalse(composersArgValidator(callback, Function, { name:"postMount"}))) return
-    this[$$$compiler][garbageKey].postMount.add(callback);
+    const self=getCurrentRunningEffect({
+      name:'postMount'
+    })
+    if(!self && isFalse(composersArgValidator(callback, Function, { name:"postMount"}))) return
+    self[$$$compiler][garbageKey].postMount.add(callback);
   }
   function preUpdate(callback){
-    if(isFalse(composersArgValidator(callback, Function, { name:"preUpdate"}))) return
-    this[$$$compiler][garbageKey].preUpdate.add(callback);
+    const self=getCurrentRunningEffect({
+      name:'preUpdate'
+    })
+    if(!self && isFalse(composersArgValidator(callback, Function, { name:"preUpdate"}))) return
+    self[$$$compiler][garbageKey].preUpdate.add(callback);
+  }
+  function onEffect(callback){
+    const self=getCurrentRunningEffect({
+      name:'onEffect'
+    })
+    if(!self && isFalse(composersArgValidator(callback, Function, { name:"onEffect"}))) return
+    self[$$$compiler][garbageKey].onEffect.add(callback);
+  }
+  function onCatch(callback){
+    const self=getCurrentRunningEffect({
+      name:'onCatch'
+    })
+    if(!self && isFalse(composersArgValidator(callback, Function, { name:"onCatch"}))) return
+    self[$$$compiler][garbageKey].onCatch.add(callback);
+  }
+  function onTracked(callback){
+    const self=getCurrentRunningEffect({
+      name:'onTracked'
+    })
+    if(!self && isFalse(composersArgValidator(callback, Function, { name:"onTracked"}))) return
+    self[$$$compiler][garbageKey].onTracked.add(callback);
   }
   function postUpdate(callback){
-    if(isFalse(composersArgValidator(callback, Function, { name:"postUpdate"}))) return
-    this[$$$compiler][garbageKey].postUpdate.add(callback);
+    const self=getCurrentRunningEffect({
+      name:'postUpdate'
+    })
+    if(!self && isFalse(composersArgValidator(callback, Function, { name:"postUpdate"}))) return
+    self[$$$compiler][garbageKey].postUpdate.add(callback);
   }
   function preDestroy(callback){
-    if(isFalse(composersArgValidator(callback, Function, { name:"preDestroy"}))) return;
-    this[$$$compiler][garbageKey].preDestroy.add(callback);
+    const self=getCurrentRunningEffect({
+      name:'preDestroy'
+    })
+    if(!self && isFalse(composersArgValidator(callback, Function, { name:"preDestroy"}))) return;
+    self[$$$compiler][garbageKey].preDestroy.add(callback);
   }
   function postDestroy(callback){
-    if(isFalse(composersArgValidator(callback, Function, { name:"postDestroy"}))) return;
-    this[$$$compiler][garbageKey].postDestroy.add(callback);
+    const self=getCurrentRunningEffect({
+      name:'postDestroy'
+    })
+    if(!self && isFalse(composersArgValidator(callback, Function, { name:"postDestroy"}))) return;
+    self[$$$compiler][garbageKey].postDestroy.add(callback);
     
   }
-  const resolvableMacros="postDestroy,preDestroy,postMount,preMount,preUpdate,postUpdate,postBuild,resolveHook"
+  const resolvableMacros="postDestroy,preDestroy,postMount,preMount,preUpdate,postUpdate,postBuild,resolveHook,onEffect,onTracked,onCatch"
   function resolveHook(hook, ...args){
-    if(isFalse(composersArgValidator(hook, Function, { name:"resolveHook"}))) return
-    if(!isAFunction(hook)) hook=hook.bind(this.$$publicModel);
+    const self=getCurrentRunningEffect({
+      name:'resolveHook'
+    })
+    if(!self && isFalse(composersArgValidator(hook, Function, { name:"resolveHook"}))) return
+    if(!isAFunction(hook)) hook=hook.bind(self.$$publicModel);
     const macros=createObj("Composers");
     for(const hookName of resolvableMacros.split(",").values()){
-      macros[hookName]=this[$$$core].utils[hookName];
+      macros[hookName]=self[$$$core].utils[hookName];
     }
-    return hook.call(this.$$publicModel, macros,  ...args );
+    return hook.call(self.$$publicModel, macros,  ...args );
   }
   function directiveKeyInfo(self, key , dirName){
     
@@ -3778,7 +3927,7 @@ const Houx=(function(global){
         opts.model.call(modelData, self.$$publicModel.$params, self.$$publicModel.$attrs) ;
       }catch(err){
         $Debug(`There is an error when running the model function\n\n${err}`,self, true);
-        $warn(err)
+        $warn(err, self)
       }
     }
     entries(modelData).forEach(([key, value])=>{
@@ -4076,7 +4225,7 @@ const Houx=(function(global){
     }
   }
   function resolveSlotsFilter(self, vnode){
-    let slotElementsList=vnode?.$element ? vnode.$element.querySelectorAll('slot') : [];
+    let slotElementsList=vnode?.$element && isFunction(vnode.$element.querySelectorAll) ? vnode.$element?.querySelectorAll('slot') : [];
     if( IS_ELEMENT_NODE(vnode.$element) && isEQ(vnode.$element.localName, 'slot')){
       slotElementsList=[ vnode.$element , ...slotElementsList ];
     }
@@ -4215,27 +4364,12 @@ const Houx=(function(global){
     })
   }
   const contextComposersMacro={
-    postDestroy,
-    preDestroy,
-    postUpdate,
-    preUpdate,
-    postMount,
-    preMount,
-    postBuild,
-    useTransform,
-    makePublish,
-    setupConfig,
-    createExpose,
-    defineSignals,
-    mapSlots,
-    injectParams,
-    resolveHook,
-    useModel
+    
   }
   function RuntimeUtilitiesProvide( self , opts ) {
     if(isTrue(true)){
       for(const [key, composer] of entries(contextComposersMacro)){
-        define( self[$$$core].utils , key , { value : composer.bind( self ) , enumerable } ) ;
+        // define( self[$$$core].utils , key , { value : composer.bind( self ) , enumerable } ) ;
       }
     }
     defineGetter( self.$$publicModel , "_observe" , EffectObserver.bind( self ) ) ;
@@ -4246,15 +4380,19 @@ const Houx=(function(global){
     defineGetter( self.$$publicModel , "_pushEffect" , pushEffect.bind( self ) ) ;
   }
   function useModel( props ) {
+    let self = isHouxBuild(this) ? this : getCurrentRunningEffect({
+      name:"useModel"
+    })
+    if(!self) return undefined
     if( props && !isPObject( props ) ) {
-      $Debug( `argument at position 1 of the "useModel" utils macro expects a plain object` , this , true ) ;
+      $Debug( `argument at position 1 of the "useModel" utils macro expects a plain object` , self , true ) ;
       return ;
-    } else if( !props ) return this.$$publicModel ;
+    } else if( !props ) return self.$$publicModel ;
     for( let [ key , value ] of entries( props ) ) {
-      if( !object_Has_Path( this.$$publicModel , key ) && !isProxySkipped( key ) && !isEQ( key , '$params' ) ) populateModelData( this , key , value , '$$publicModel' , null , true ) ;
-      else if(object_Has_Path( this.$$publicModel , key ) && !isProxySkipped( key ) && !isEQ( key , "$params") ) this._mutate( { [ key ] : value } ) ;
+      if( !object_Has_Path( self.$$publicModel , key ) && !isProxySkipped( key ) && !isEQ( key , '$params' ) ) populateModelData( self , key , value , '$$publicModel' , null , true ) ;
+      else if(object_Has_Path( self.$$publicModel , key ) && !isProxySkipped( key ) && !isEQ( key , "$params") ) self._mutate( { [ key ] : value } ) ;
     }
-    return this.$$publicModel ;
+    return self.$$publicModel ;
   }
   function checkObserversValidations(self, propOrGetter, callback){
     const errArgs=()=>[ self, true, 'During the call of the "effect" macro'];
@@ -4436,9 +4574,9 @@ const Houx=(function(global){
       update() {
         const oldValue = this.value;
         this.value = this.getter();
-        if (this.self[$$$operands].PATCH_FLAG ){
+        if (this.self[$$$operands].PATCH_FLAG && self[$$$operands].onRenderTracked){
           deferEventCircleThread(this.self, ()=>{
-            this.callback(this.value, oldValue);
+            deferTick(()=>this.callback(this.value, oldValue));
           })
         }
       }
@@ -4468,6 +4606,11 @@ const Houx=(function(global){
   }
   function trackDependency(self, dependency) {
     if (self[$$$core].activeObserver) dependency.depend();//call the depend
+  }
+  function pausePlayEffectScope(self, action){
+    if(isEQ(action, 'pause')){
+      self[$$$operands].PATCH_FLAG=0
+    }
   }
   function _Proxy_Setup(self, obj, deep=false ){
     const dependency = new self[$$$core].Dependency();
@@ -4560,7 +4703,7 @@ const Houx=(function(global){
     if(isTrue(enumerable)) descriptor.enumerable=enumerable
     return define(obj, prop, descriptor)
   }
-  function createCordinateProps(self, opts){
+  function instancerdinateProps(self, opts){
     self.$$publicModel=new Model();
     opts=opts || {};
     defineGetter(self, $$$ownProperties, createObj('OwnProperties',{ 
@@ -4622,12 +4765,28 @@ const Houx=(function(global){
       slotRendererNotified:false,
       whenMountedHooks:new Tuple(),
       hoistedNodelist:new Tuple(),
-      composedSlots:createObj('composedSlots')
+      composedSlots:createObj('composedSlots'),
+      compilerFlags:{},
+      rawChildren:()=> undefined
     }));
     defineGetter(self.$$publicModel, '$signals', new Signals());
     getHouxBuildInstance(self, opts);
   }
-  function triggerSlotsElementsEffect(self, renderedSlotsList){
+  function maintainCompilerFlag_flag(self, effect){
+    let flag=0;
+    define(self[$$$compiler].compilerFlags, 'flags', {
+      get(){
+        return flag
+      },
+      set(newFlag){
+        flag = newFlag;
+        effect(self, flag)
+        flag=0
+        return true;
+      }
+    })
+  }
+  function triggerSlotsElementsEffect(self, renderedSlotsList, rawChildren){
     const observer = { 
       mutated:false, 
       willMutate:false, 
@@ -4635,7 +4794,7 @@ const Houx=(function(global){
       effectFlush:new Tuple(),
       active:false
     } ;
-    const data_set=slotsGeneticProvider(self, self[$$$core].opts, true, true);
+    const data_set=slotsGeneticProvider(self, self[$$$core].opts, true, true, rawChildren);
     const slotsCore=_induceSlotContents(self, self[$$$core].opts, data_set, createObj("renderedSlotsList"));
     let index=0;
     for(const [key, node] of entries(renderedSlotsList)){
@@ -4659,14 +4818,14 @@ const Houx=(function(global){
       index++
     }
   }
-  function slotsTransformRender(self, observer){
+  function slotsTransformRender(self, observer, rawChildren){
     const notified=self[$$$compiler].slotRendererNotified;
     if(isTrue(notified)) return;
     self[$$$compiler].slotRendererNotified=(true);
     const renderedSlotsList=self[$$$core].slotsFactory.renderedSlotsList
     if(!len(renderedSlotsList)) return;
     self.$$publicModel._deferTick(function(){
-      triggerSlotsElementsEffect(self, renderedSlotsList);
+      triggerSlotsElementsEffect(self, renderedSlotsList, rawChildren);
     }).then(()=>{
       self[$$$compiler].slotRendererNotified= (false);
     })
@@ -4724,7 +4883,7 @@ const Houx=(function(global){
             $Debug(`Unexpected "${getType(slot)}" data type passed to renderSlots  instance\n at   ... ^ "${name}" slot"\n\nexpecting a houx valid  DOM instance value`,self, true);
             return;
           }
-          slot=createInitialRenderBuild(patchFlags, !isArray(slot) ? [ slot ] : slot , hx__VNode);
+          slot=createInitialRenderBuild(patchFlags, !isArray(slot) && !isLazyRender(slot) ? [ slot ] : slot , hx__VNode);
           if(IS_ELEMENT_NODE(slot.$element) && isEQ(slot.$element.localName,'template')){
             slot=new HouxFragmentVNode(patchFlags, slotContent.NodeList);
           }
@@ -4774,9 +4933,12 @@ const Houx=(function(global){
       value : self[$$$ownProperties].hx_hash_ + self[$$$operands].PATCH_FLAG  , 
       enumerable
     } ) ;
+    if(isBuiltinWidgetBuild(self)) maintainCompilerFlag_flag(self, (instance)=>{
+      self.$$publicModel._pushEffect();
+    })
   }
   function $ensureLifeCircleHooks(self, options){
-    const hooks="preBuild,postBuild,postMount,preMount,postUpdate,preUpdate,preDestroy,postDestroy"
+    const hooks="preBuild,postBuild,postMount,preMount,postUpdate,preUpdate,preDestroy,postDestroy,onTracked,onEffect,onCatch"
     const dirHKAlibi={ 
       init_hook:'preBuild',
       mounted_hook:'postMount',
@@ -4826,12 +4988,13 @@ const Houx=(function(global){
     delete options.$attributes[$$$$dir__ref$$$$];
   }
   const ppK=Symbol()
-  function slotsGeneticProvider(self, options, isRerender=false, inSlot){
+  function slotsGeneticProvider(self, options, isRerender=false, inSlot, rawChildren){
     if(!options.$children) return;
     const hx__VNode= options.$children?.hx__VNode;
     const patchFlags = inSlot ? options[ppK] : options.$children?.patchFlags;
     const is_hyperscript = patchFlags ? patchFlags[$$$core].map.is_hyperscript : false;
-    const childrenRender= inSlot && !hasOwn(options.$children, 'NodeList') ? options?.$children : options.$children?.NodeList;
+    let childrenRender= inSlot && !hasOwn(options.$children, 'NodeList') ? options?.$children : options.$children?.NodeList;
+    if(is_hyperscript) childrenRender = rawChildren;
     if(!inSlot && !isRerender) options[ppK]=patchFlags
     const fallThrough=self[$$$core].fallThrough ;
     let children=isPFunction(childrenRender) ? childrenRender(patchFlags, hx__VNode, fallThrough, isRerender) : childrenRender ;
@@ -4993,7 +5156,7 @@ const Houx=(function(global){
     delete options[$buildHx_VNodeKey];
   }
   function _Houx_Build( options ) {
-    createCordinateProps( this , options ) ; //create properties;
+    instancerdinateProps( this , options ) ; //create properties;
     sanitizedOptions( this , options ) ;//sanitize received options
     $ensureLifeCircleHooks( this , options ) ;
     setConfig(this, options ); 
@@ -5006,7 +5169,6 @@ const Houx=(function(global){
       build=_preCompile_StyleSheet(options, self, build);
       RuntimeRefDir(self, options);
       defineLateGlobalProps(self, build);
-      if(isFalse(self[$$$operands].initialized)) callbackHookWithCatch(self, self[$$$operands]._LIFECIRCLEHOOKS.postBuild, 'postBuild');
       return build;
     }
     resolveBuildLab(this, options);
@@ -5042,12 +5204,12 @@ const Houx=(function(global){
     fall = fall || {};
     let render = pass;
     if(isString(self[$$$core].build)){
-      render = (inst, update)=> _HouxTemplateParser(self[$$$core].build, inst, false, hx__VNode, fall);
+      render = (instance, update)=> _HouxTemplateParser(self[$$$core].build, instance, false, hx__VNode, fall);
       self[$$$core].render=render;
     }else if(isNull(self[$$$core].build) && selector){
       inDomCaveatRemodeling(self);
       self[$$$core].build=_GenerateRoot(selector, self)?.innerHTML || ''
-      render = (inst, update)=> _HouxTemplateParser( self[$$$core].build, inst, false, hx__VNode, fall);
+      render = (instance, update)=> _HouxTemplateParser( self[$$$core].build, instance, false, hx__VNode, fall);
       self[$$$core].render=render;
     }
     self[$$$core].map.is_hyperscript=false
@@ -5061,7 +5223,10 @@ const Houx=(function(global){
       postDestroy:new Tuple(),
       preDestroy:new Tuple(),
       preUpdate:new Tuple(),
-      preMount:new Tuple()
+      preMount:new Tuple(),
+      onEffect:new Tuple(),
+      onTracked:new Tuple(),
+      onCatch:new Tuple()
     }
   }
   function mapGarbargeHooks(self){
@@ -5088,22 +5253,40 @@ const Houx=(function(global){
     self[$$$core].build=normalizer(self.$$publicModel.$params.self._data, self);
     if(hasOwn(self[$$$core].build, 'template')) self[$$$core].opts.template=self[$$$core].build.template;
     delete self[$$$core].opts[$buildWidgetNormalizerKey];
+    self[$$$compiler].parentContext=self[$$$core].build.parentContext;;
     return self[$$$core].build.parentContext;
+  }
+  function tramsformBuiltinTradeOFF(self){
+    const normalizer=self[$$$core].opts[$buildWidgetNormalizerKey];
+    const { template, is_hyperscript } = normalizer;
+    let build = template;
+    // log(template, is_hyperscript, lazyUnwrap(template))
+    if(is_hyperscript){
+      build = function render(params, ctx ){
+        return ()=> lazyUnwrap(template)
+      }
+    }
+    const context = assign({}, normalizer);
+    delete context.template;
+    delete normalizer[$buildWidgetNormalizerKey];
+    self[$$$compiler].parentContext=context;
+    self[$$$core].build=build;
+    return context
   }
   function handleBuildGenerator(self, selector, build){
     let context;
-    if(isBuiltInBuildWidget(self)) {
-      context = traverseBuildWidgetTemplate(self);
-      self[$$$compiler].parentContext=context;
-    }
+    if(isBuiltInBuildWidget(self)) context = traverseBuildWidgetTemplate(self);
+    else if(isBuiltinWidgetBuild(self)) context = tramsformBuiltinTradeOFF(self);
     let render;
     if(isFunction(self[$$$core].build)){
       let responseRender;
       let renderer;
       createGarbageCollector(self)
       try{
-        if(!isBuiltInBuildWidget(self)) widgetSlotsManager(self, self[$$$core].opts)
+        if(!isBuiltInBuildWidget(self) && !isBuiltinWidgetBuild(self)) widgetSlotsManager(self, self[$$$core].opts)
+        installCurrentRunningEffect(self);
         renderer = self[$$$core].build.call(self.$$publicModel, self.$$publicModel.$params, getComposersContext(self));
+        reinstatePreviousRunningEffect()
         responseRender=renderer;
         if(isAFunction(self[$$$core].build) && !isPFunction(renderer) ) responseRender=()=>renderer;
       }catch(err){
@@ -5133,8 +5316,8 @@ const Houx=(function(global){
         return false;
       }
       self[$$$core].map.is_hyperscript=true;
-      self[$$$core].render= function factoryRender(inst, update=false){
-        let response=responseRender()
+      self[$$$core].render= function factoryRender(instance, update=false){
+        let response=lazyUnwrap(responseRender());
         return !isArray(response) ? [ response ] : response ;
       };
     }else {
@@ -5209,16 +5392,18 @@ const Houx=(function(global){
       
     }
   }
-  function createPortalEntryDisplay(self, opts){
-    const defaultContent=self[$$$core].slots.default();
+  function createPortalEntryDisplay(self, build){
+    if(!isBuiltInPortalWidget(self)) return;
     const target=self.$$publicModel.$params.target._data;
     const portalElement=target ? _GenerateRoot(target) : undefined
     if(!portalElement){
-      $Debug(`unable to generate portal element\n\nTarget not existing in the current document model`, self);
+      $Debug(`unable to generate portal element\n\nTarget not existing in the current document model`, self, true);
+      return;
+    }else if(!IS_ELEMENT_NODE(portalElement) && !IS_DOCUMENT_FRAGMENT_NODE(portalElement) && !IS_DOCUMENT_NODE(portalElement)){
+      $Debug(`mounting target for Portal widget is not a valid element`, self, true);
       return;
     }
-    const content=defaultContent.$element;
-    portalElement.append(content);
+    return portalElement
   }
   function widgetSlotsManager(self, options){
     runtimeSlotsFallThrough( self , options ) ;
@@ -5232,7 +5417,6 @@ const Houx=(function(global){
         })
       }
     }
-    if(isBuiltInPortalWidget(self)) createPortalEntryDisplay(self, options);
   }
   function prefixManagement( self ) {
     const options = self[$$$core].opts ;
@@ -5291,7 +5475,7 @@ const Houx=(function(global){
       })
     }
   }
-  function callUpdatedHook(self, obs){
+  function callUpdatedHook(self, obs, ){
     for( let fn of obs.updated_hooks.values()){
       fn()
     }
@@ -5310,18 +5494,9 @@ const Houx=(function(global){
       configurable, 
       writable
     });
-    _Data_Hydrations(this, this[$$$core].opts)
-    prefixManagement(this);
-    let initialBuild=handleBuildGenerator(this, nodeSelector);
-    defineGetter(this, 'build', Render_Template(this, initialBuild, false) );
-    this.$$publicModel._deferTick(()=>{
-      _Reactive_Renderer( this.$$publicModel , (newV, oldV, ref)=>{
-        _EffectDependencyNotifier(this);
-        _ReconciliationTransformTrigger(this, { newV, oldV, ref },  nodeSelector );
-      }, this, true);
-    })
-    this[$$$operands].onRenderTracked=(true)
-    if(IS_ELEMENT_NODE(domRoot)) domRoot.innerHTML='';
+    const fakePortal = activateWatchObserverPlugin(this, nodeSelector);
+    if(isBuiltInPortalWidget(this)) domRoot = fakePortal
+    else if(IS_ELEMENT_NODE(domRoot)) domRoot.innerHTML='';
     if(this[$$$ownProperties].isInitialBuild && !IS_ELEMENT_NODE(domRoot)){
       $Debug('initial entry Point mount root expects an element node', this, true);
       return this
@@ -5329,27 +5504,50 @@ const Houx=(function(global){
       $Debug(`A Houx widget has already been mounted on this element, cannot mount more than one Widget on a single root element`, this, true, "When trying to mount this initialBuild widget to the DOM");
       return this;
     }
+    adapterDOMMountingProduction(this, domRoot)
+    return this;
+  }
+  function activateWatchObserverPlugin(self, nodeSelector){
+    _Data_Hydrations(self, self[$$$core].opts)
+    prefixManagement(self);
+    let initialBuild=handleBuildGenerator(self, nodeSelector);
+    defineGetter(self, 'build', Render_Template(self, initialBuild, false) );
+    _Reactive_Adapter_Plugin( self.$$publicModel ,async function adapter(newV, oldV, ref){
+      _EffectDependencyNotifier(self);
+      _ReconciliationTransformTrigger(self, { newV, oldV, ref },  nodeSelector );
+    }, self, true);
+    callbackHookWithCatch(self, self[$$$operands]._LIFECIRCLEHOOKS.onTracked, 'onTracked');
+    callbackHookWithCatch(self, self[$$$operands]._LIFECIRCLEHOOKS.postBuild, 'postBuild');
+    deferTick(()=>self[$$$operands].onRenderTracked=true);
+    self[$$$operands].initialized = true ;
+    return createPortalEntryDisplay(self, self.build)
+  }
+  function adapterDOMMountingProduction(self, domRoot){
     const MoutRootToken={
       IS_HOUX_MOUNTROOT:true,
       __mountRootToken:'hx__'+_generateUUID(5),
     }
-    if(isTrue(this[$$$operands].initialized)) callbackHookWithCatch(this, this[$$$operands]._LIFECIRCLEHOOKS.preMount, 'preMount');
-    if(isInDomNode(domRoot) && IS_ELEMENT_NODE(domRoot) ) {
-      domRoot.innerHTML='';
-      domRoot.append(this.build?.$element || '');
-      if(this[$$$ownProperties].isInitialBuild) this.property('$root', this.build);
-    }else domRoot=this.build?.$element;
-    if(domRoot?.isHoux_Fragment && !domRoot?.trigger_Effect_Run ) define(domRoot, 'trigger_Effect_Run', {
-      value: Widget_Effect_Trigger.bind(this)
-    });
-    whenMounted(this, this.build, ()=>{
-      for(const fn of this[$$$compiler].whenMountedHooks.values()){
-        callbackHookWithCatch(this, fn, '')
+    callbackHookWithCatch(self, self[$$$operands]._LIFECIRCLEHOOKS.preMount, 'preMount');
+    domRoot = activateBuildMount(self, domRoot);
+    whenMounted(self, self.build, ()=>{
+      for(const fn of self[$$$compiler].whenMountedHooks.values()){
+        callbackHookWithCatch(self, fn, '')
       }
-      callbackHookWithCatch(this, this[$$$operands]._LIFECIRCLEHOOKS.postMount, 'postMount');
+      callbackHookWithCatch(self, self[$$$operands]._LIFECIRCLEHOOKS.postMount, 'postMount');
     });
-    this[$$$operands].hasMountProto=true;
-    return this;
+    self[$$$operands].hasMountProto=true;
+  }
+  function activateBuildMount(self, domRoot){
+    if(isBuiltInPortalWidget(self)) return domRoot;
+    if(isInDomNode(domRoot) && IS_ELEMENT_NODE(domRoot) ) {
+        domRoot.innerHTML='';
+        domRoot.append(self.build?.$element || '');
+      if(self[$$$ownProperties].isInitialBuild) self.property('$root', self.build);
+    }else domRoot=self.build?.$element;
+    if(domRoot?.isHoux_Fragment && !domRoot?.trigger_Effect_Run ) define(domRoot, 'trigger_Effect_Run', {
+      value: Widget_Effect_Trigger.bind(self)
+    });
+    return domRoot
   }
   function widget(name, widget){
     if(!isString(name) || !validHouxWidget(widget)){
@@ -5416,7 +5614,7 @@ const Houx=(function(global){
       return this;
     }
     if(isEQ(len(arguments),2)){
-      this[$$$core].$globals.register.filters[name]=func;
+      this[$$$core].$globals.register.filters[name]=filter;
     }
     return this ;
   }
@@ -5426,7 +5624,7 @@ const Houx=(function(global){
       return this;
     }
     if(isEQ(len(arguments),2)){
-      this[$$$core].$globals.register.blocks[name]=func;
+      this[$$$core].$globals.register.blocks[name]=block;
     }
     return this ;
   }
@@ -5457,7 +5655,6 @@ const Houx=(function(global){
       delete this.$$publicModel;
       delete this.build;
       Object.setProtypeOf(this, null)
-      return true;
     }catch(err){
       $Debug(`widget destroy failed`, this, true);
       $Debug(err);
@@ -5515,13 +5712,13 @@ const Houx=(function(global){
     }
     this[$$$core].$globals.controller.add(options);
     optionsRegistery(this, options);
-    let { setupOptions , controllerPlugin } = options;
-    if(hasOwn(options, 'controllerPlugin') && !isPFunction(controllerPlugin)) {
-      $Debug(`controllerPlugin option of .controller() method expects a function/method type`, this, true);
+    let { setupOptions , pluginAdapter } = options;
+    if(hasOwn(options, 'pluginAdapter') && !isPFunction(pluginAdapter)) {
+      $Debug(`pluginAdapter option of .controller() method expects a function/method type`, this, true);
       return this;
     }
-    if(!exists(controllerPlugin) && !isPFunction(controllerPlugin)) controllerPlugin = pass
-    controllerPlugin( this , optionsHookTransform );
+    if(!exists(pluginAdapter) && !isPFunction(pluginAdapter)) pluginAdapter = pass
+    pluginAdapter( this , optionsHookTransform );
     return this
   }
   function configOptions(buildConfig={}){
@@ -5643,6 +5840,7 @@ const Houx=(function(global){
   function createInitialRenderBuild(self, vnodes, update=false){
     const NodeList=new Tuple();
     for(let [index, node ] of vnodes.entries()){
+      node = lazyUnwrap(node)
       if(!isChildrenNode(node)){
         $Debug(`unrecognised element passed to render`, self, true);
         continue;
@@ -5661,6 +5859,7 @@ const Houx=(function(global){
             $Debug(`unrecognised element passed to render`, self, true);
             continue;
           }
+          child=lazyUnwrap(child);
           child =renderVNodeClassElement(self, child, update)
           NodeList.add(child);
         }
@@ -5683,15 +5882,15 @@ const Houx=(function(global){
     return build
   }
   function Render_Template( self , initBuild , update = false ) {
-    const instance = isBuiltInBuildWidget(self) && self[$$$compiler].parentContext ? self[$$$compiler].parentContext.self : self;
+    const instance = (isBuiltInBuildWidget(self) || isBuiltinWidgetBuild(self)) && self[$$$compiler].parentContext ? self[$$$compiler].parentContext.self : self;
     initBuild = isFunction(initBuild) ? initBuild( instance , update ) : initBuild  ;
+    // if(isBuiltinWidgetBuild(self)) log(initBuild, vb(self).ownProperties)
     if(isArray(initBuild)) initBuild= createInitialRenderBuild(instance, initBuild, update)
     initBuild = posixVNodeTransform(self, initBuild)
     if(!initBuild || !initBuild.$element ){
       initBuild=self[$$$core].posixVNode;
     }
     initBuild = self[$$$compiler].templateProcessor( instance , initBuild, update ) ;
-    self[$$$operands].initialized = true ;
     return initBuild ;
   }
   function deferTick( fn ) {
@@ -5704,22 +5903,21 @@ const Houx=(function(global){
       resolve( deferEventCircleThread( self , fn , isHouxBuild( self ) ) ) ;
     } ) ;
   }
-  async function _Reactive_Renderer(data, callback, self, deep=false){
+  function _Reactive_Adapter_Plugin(data, callback, self, deep=false){
     const observers=[];
-    let observe=(getter, callback)=>{
+    const observe=(getter, callback)=>{
       const observer = new self[$$$core].Observer( getter, callback, self);
       observers.push(observer);
       observer.update();
     }
-    if(self[$$$operands].PATCH_FLAG){
+    if(self[$$$operands].PATCH_FLAG ){
       observe(()=>data[$$$ReactiveProxyKey], (newV, oldV)=>{
         try{
           callback(newV, oldV, $$$ReactiveProxyKey);
           self[$$$operands].PATCH_FLAG=0
         }catch(err){
-          $Debug(`Encountered a Problem during DOM rendering batch\n\n`, self, true);
-          $Debug(err);
-          return false;
+          $Debug(`Encountered a Problem during DOM rendering reactive trigger\n\n`, self, true);
+          $warn(err, self);
         }
       })
     }
@@ -5729,8 +5927,13 @@ const Houx=(function(global){
     
   }
   function triggerHydration(self, observer){
+    callbackHookWithCatch(self, self[$$$operands]._LIFECIRCLEHOOKS.onEffect, 'onEffect');
     if(isHouxVNode(self.build)) {
-      Render_Effect_Reactive_Transform( self , self.build , Render_Template( self , self[$$$core].render , true ) , observer ) ;
+      let buildTemplate = isBuiltinWidgetBuild(self) ? self[$$$compiler].rawChildren : self[$$$core].render;
+      if(isBuiltinWidgetBuild(self) && isPFunction(buildTemplate)){ 
+        buildTemplate = buildTemplate()
+      }
+      Render_Effect_Reactive_Transform( self , self.build , Render_Template( self , buildTemplate , true ) , observer ) ;
       self.$$publicModel._deferTick(function() {
         if(len(observer.effectFlush)){
           callbackHookWithCatch(self, self[$$$operands]._LIFECIRCLEHOOKS.preUpdate, 'preUpdate');
@@ -5861,7 +6064,7 @@ const Houx=(function(global){
     }
   }
   const isConditionalHx_Vnode=node=>isConditionalVnode(node, 'if') || isConditionalVnode(node, 'else-if') || isConditionalVnode(node, 'else') ;
-  function virtualBuildFilterExchange(self, node, vnode, parent){
+  function virtualBuildFilterExchange(self, node, vnode, parent, observer){
     self[$$$operands].initialized=false;
     const NewNode=vnode.compiler_options.Node();
     self[$$$operands].initialized=true;
@@ -5884,7 +6087,7 @@ const Houx=(function(global){
     const is_hyperscript=isHouxBuild(self) ? self[$$$core].map.is_hyperscript : false ;
     if(!isHouxVNode(virtualElement) && !isHouxVNode(virtualBuild)) return;
     else if(!heuristicsVNodeEqualityDiffing(virtualElement, virtualBuild)) {
-      virtualBuildFilterExchange(self, virtualElement, virtualBuild, parent );
+      virtualBuildFilterExchange(self, virtualElement, virtualBuild, parent, observer );
       return 
     }else if(!isHouxFragmentVnode(virtualElement)){
       effectCleanupFlush(self, virtualElement, virtualBuild, null, observer, true );
@@ -5903,14 +6106,14 @@ const Houx=(function(global){
       if(!virtualNode && isGT(len(virtualElement?.NodeList, len(virtualNode?.NodeList)))) pass;//vhecking if indom is greater than memo
       else if(isHouxTextVNode(node) ) RerenderingTextsContents(self, node, virtualNode, observer, virtualElement);
       else if(isConditionalHx_Vnode(node) || isRenderlessVNode(node)) cond_Directive_Rerenderer(self, node, virtualElement, virtualNode, observer);
-      else if(maybeHouxWidgetVNode(node)) Widget_Effect_Trigger(self, node, virtualElement, observer);
+      else if(maybeHouxWidgetVNode(node)) Widget_Effect_Trigger(self, node, virtualElement, observer, virtualNode);
       else if(isTrue(node.isWidgetWrapper)) LoopWrapperRehydration(self, node, virtualElement, virtualNode, observer);
       else if(!ignore) Render_Effect_Reactive_Transform( self, node, virtualNode, observer );
     }else if(isCustomElement(node)){
         
     }
   }
-  function Widget_Effect_Trigger(self, node, virtualElement, observer){
+  function Widget_Effect_Trigger(self, node, virtualElement, observer, virtualNode){
     const props=assign({}, isFunction(node.compiler_options?.props) ? node.compiler_options.props() : node.compiler_options.args ? node.compiler_options.args.props : {} );
     const PropFlags = node.VNodeManager.patchFlags.PropFlags;
     const attrsObject={ $attributes:{} }
@@ -5927,17 +6130,21 @@ const Houx=(function(global){
         key
       })
     }
-    const inst=node.widget_instance;
+    const instance=node.widget_instance;
     for(const [ key, val ] of entries(attrsObject)){
-      if(object_Has_Path(inst.$$publicModel.$params, key) && !deepEqualityCheck(refUnwrap(get_Object_Value(inst.$$publicModel.$params, key)), refUnwrap(val)) ) {
+      if(object_Has_Path(instance.$$publicModel.$params, key) && !deepEqualityCheck(refUnwrap(get_Object_Value(instance.$$publicModel.$params, key)), refUnwrap(val)) ) {
         observer.effectFlush.add(function(){
-          useReadonlyBypass(inst.$$publicModel.$params, key, refUnwrap(val), bypassSymbol );
+          useReadonlyBypass(instance.$$publicModel.$params, key, refUnwrap(val), bypassSymbol );
           observer.mutated=true
           observer.active=false
         })
       }
     }
-    inst[$$$compiler].slotsTransformRender(inst, observer);
+    if(isBuiltinWidgetBuild(instance)) {
+      instance[$$$compiler].rawChildren=virtualNode.VNodeManager.rawChildren
+      instance[$$$compiler].compilerFlags.flags++;//call internal reactiver of 'instance' widget.
+    }
+    instance[$$$compiler].slotsTransformRender(instance, observer, virtualNode.VNodeManager.rawChildren);
   }
   function RerenderingTextsContents(self, node, vnode, observer, parent){
     const value=node.compiler_options.value;
@@ -6356,6 +6563,7 @@ const Houx=(function(global){
         hx__VNode.NodeList.add(vnode);
       }else if(isSpreadFragment(children)){
         for(const child of children[spreadFragmentKey].values()){
+          child = lazyUnwrap(child)
           element=_initiateChildNodes(self, child, hx__VNode,  element)
         }
       }
@@ -6461,7 +6669,7 @@ const Houx=(function(global){
         if(is_hyperscript) return defineElement({
           type:instance, 
           props,
-          children:rawChildren
+          children:lazyUnwrap(rawChildren)
         });
         return useModel({
           props
@@ -6485,6 +6693,14 @@ const Houx=(function(global){
     widget[$buildWidgetNormalizerKey]=instanceNormalizer;
     return widget
   }
+  function looseEffectTraverseBuild(self, widget, rawChildren, Binding){
+    const normalizer=createObj("Normalizer",{
+      template:rawChildren,
+      ...Binding
+    });
+    widget[$buildWidgetNormalizerKey]=normalizer
+    return widget
+  }
   function installTransformersArgumentations(self, child){
     const root= isTrue(self[$$$ownProperties].isInitialBuild) ? self : self[$$$core]._root;
     defineGetter(child[$$$core], '_root', root ) ;
@@ -6500,6 +6716,7 @@ const Houx=(function(global){
     }
     let widget=normalize_Widget(self, value.type);
     hx__VNode.VNodeManager.GeneticProvider=widget;
+    // widget = new Proxy(widget, {});
     if(IS_RENDERLESS) return;
     widget=isObject(widget) ? assign({},widget) : widget ;
     if(!widget.name) widget.name=value.type;
@@ -6525,7 +6742,7 @@ const Houx=(function(global){
     return $compilerEngine(self, widget, value, hx__VNode, rawChildren);//$compilerEngine the widget flags, passed the widget to _Houx_Build, sets global widgets from  its parents if any, installs all GLOBAL_WIDGETS_AND_PLUGINS, mounts the widget to a fragment and return the domRoot'
   }
   function $compilerEngine ( self , widget , value , hx__VNode, rawChildren ) {
-    const is_hyperscript=self[$$$ownProperties].is_hyperscript;
+    const is_hyperscript=self[$$$ownProperties].is_hyperscript || hx__VNode.is_hyperscript;
     if( widget.$attributes ) value.$attributes = assign( value.$attributes || {} , widget.$attributes || {} ) ;
     widget = defineWidget( widget ) ; 
     widget = set_Widget_Flag( self , widget , value , hx__VNode ) ;//setting the widget flag
@@ -6534,6 +6751,12 @@ const Houx=(function(global){
     }
     if(builtinValidWidget(widget, 'hx:build')){
       widget = builtinBuildWidgetGenerator(self, widget, rawChildren)
+    }else if(isBuiltinWidget(widget)){
+      widget = looseEffectTraverseBuild( self, widget, rawChildren, {
+        is_hyperscript,
+        hx__VNode,
+        self
+      })
     }
     if(isHouxVNode(hx__VNode)) widget[$buildHx_VNodeKey]=hx__VNode ;
     if(!hx__VNode.VNodeManager.Attribute_Collection){
@@ -7404,8 +7627,8 @@ const Houx=(function(global){
     return new VNodeClass(...arguments);
   }
   function renderVNodeClassElement ( self, vnodeClass ) {
-    const { $$type, $$properties, $$children } = vnodeClass
-    const Node = ( inst ) => _createVirtualElement( $$type , $$properties , $$children , inst , true ) ;
+    const { $$type, $$properties, $$children } = vnodeClass;
+    const Node = ( instance ) => _createVirtualElement( $$type , $$properties , $$children , instance , true ) ;
     const vnode = Node( self ) ;
     vnode.compiler_options = assign( vnode.compiler_options , { 
       props : () => $$properties , 
@@ -7496,7 +7719,6 @@ const Houx=(function(global){
   global._HouxHttpRequestModule = _HouxHttpRequestModule ;
   global._styleSheet_hydration = _styleSheet_hydration ;
   global.isRef = isRef ;
-  global._compileToStaticTemplateScarfold = _compileToStaticTemplateScarfold ;
   global.scarfold = scarfold ;
   global.defineElement = defineElement ;
   global.get_version = get_version ;//dev
@@ -7513,24 +7735,41 @@ const Houx=(function(global){
   global._initiateChildNodes = _initiateChildNodes ;
   global._$runModelBind = _$runModelBind ;
   global.Memo = Memo ;
+  global.postUpdate = postUpdate ;
   global.Suspense = Suspense ;
   global._Run_With_Modifiers = _Run_With_Modifiers ;
   global.initSSRBuild = initSSRBuild ;
   global.$log = log ;//dev
   global._Resolver = _Resolver ;
   global._DirectiveResolver = _DirectiveResolver ;
+  global.preMount = preMount ;
   global.Portal = Portal ;
+  global.postDestroy = postDestroy ;
   global.Anchor = Anchor ;
   global.Display = Display ;
   global.renderFor = renderFor ;
   global.Build = Build ;
-  global.Transition = Transition ;
+  global.Self = Self ;
   global.asyncWidget = asyncWidget ;
+  global.preUpdate = preUpdate ;
   global.isShallowRef = isShallowRef ;
-  global.Animation = Animation ;
+  global.Motion = Motion ;
   global.Provider = Provider ;
+  global.postMount = postMount ;
+  global.postBuild = postBuild ;
+  global.useTransform = useTransform ;
+  global.unRef = unRef ;
+  global.makePublish = makePublish ;
+  global.setConfig = setupConfig ;
+  global.createExpose = createExpose ;
+  global.mapSlots = mapSlots ;
+  global.injectParams = injectParams ;
+  global.resolveHooks = resolveHook ;
+  global.useModel = useModel ;
+  global.stateRef = stateRef ;
   global._createVirtualElement = _createVirtualElement ;
   global.isReadonlyRef = isReadonlyRef ;
+  global.preDestroy = preDestroy ;
   global.markdown = markdown ;
   global._validateType = _validateType ;
   global.FormField = FormField ;
@@ -7541,7 +7780,10 @@ const Houx=(function(global){
   global._generateUUID = _generateUUID ;
   global.Type = Type ;
   global.defineWidget = defineWidget ;
+  global.onCatch = onCatch ;
   global.createFormModel = createFormModel ;
+  global.onEffect = onEffect ;
+  global.onTracked = onTracked ;
   global.html = html ;
   global.deferWatch = deferWatch ;
   global.readonly = readonly ;
@@ -7553,6 +7795,7 @@ const Houx=(function(global){
   global.createHouxElement = createHouxElement ;
   global.memMove = memMove ;
   global.RegisterInjector = RegisterInjector ;
+  global.defineSignals = defineSignals ;
   global.Widget = Widget ;
   global.len = len ;
   global.markRaw = markRaw ;
@@ -7587,6 +7830,7 @@ const Houx=(function(global){
   global._createFragment = _createFragment ; //dev
   global.$Debug = $Debug ; //dev
   global.Fragment = Fragment ;
+  global.createAgent = createAgent ;
   global.isShallowReactiveRef = isShallowReactiveRef ;
   global.Tuple = Tuple ;
   global._GenerateRoot = _GenerateRoot ;
