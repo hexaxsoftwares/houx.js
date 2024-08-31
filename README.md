@@ -2,49 +2,52 @@
 ## Houx.js
 #### The Transparent Web Framework for Perfectionists 
 
-Welcome to Houx.js, the modern sleek and robust web framework that empowers creative and productive development while Building web apps.
+Welcome to Houx, the modern sleek and robust web framework that empowers creative and productive development while Building web apps.
+
 
 ### Overview
+**Houx** (pronounced as `horse : hâïrš`), derived from the French word for `holly`, which symbolizes an evergreen tree and progressive commitment to innovation. Houx is a next-generation JavaScript framework, partly inspired by the elegance and success of Vue.js, designed to streamline the creation of dynamic, reactive, and component-based web applications with unparalleled ease.
 
-**Houx** pronounced as (`horse : hâïrš`), french word for `holly` which means `an evergreen tree`, is a sophisticated modern JavaScript framework partly inspired by the success of Vue.js, designed to streamline the development of dynamic, reactive, and component-based web applications.  
-With its intuitive API and elegant architecture, Houx empowers developers to build interactive and complex UIs with simplicity and ease.  
-Houx as a robust and revolutionary JavaScript framework that's changing the way we build web applications takes the best of modern web development and combines it with innovative features and a simplified architecture.
+With its intuitive API and clean architecture, Houx empowers developers to craft interactive and complex UIs with simplicity, making it the framework of choice for modern web development.
 
+### **Why Houx?**
 
-**Some Key Features and Capabilities:**
+**Houx** isn’t just another framework—it's a revolution. Combining the best practices of modern web development with innovative features, Houx redefines how we build web applications, delivering high performance, modularity, and an unmatched developer experience.
 
-- 🧊 **Component-driven architecture**: Build reusable and modular components with ease known as Houx Widgets.
+**Some Key Features and Capabilities at a glance:**
+
+- 🧊 **Component-driven architecture**: Craft reusable, modular components with ease through **Houx Widgets**.
 - 🕋 **Declarative templating**: Write clean and concise templates with Houx intuitive templating syntax.
 - 🛣️ **Two-way data binding**: Keep your data in sync with automatic updates.
-- 📶 **Powerful state management system**: Manage your application's state with ease with a lightweight builtin state management API.
+- 📶 **Powerful state management system**: Manage your application's state with ease with a lightweight built-in statefull API.
 - 🌐 **Extensive ecosystem**: Leverage a growing community of developers and a wealth of plugins and tools.
-- 📝 **Easy to learn**: Houx has a gentle learning curve, making it perfect for developers of all skill levels.
-- ⚡ **High-performance**: Houx is optimized for speed and efficiency, ensuring fast and seamless user experiences.
+- 📝 **Gentle learning curve**: Easy to learn, making it perfect for developers of all skill levels, from novices to experts.
+- ⚡ **Optimized-performance**: Houx is optimized for speed and efficiency, ensuring fast and seamless user experiences.
 - 🚀 **Flexible and adaptable**: Designed to fit your needs. You can Seamlessly integrate with other libraries , frameworks and existing projects, or use it standalone for new projects..
 - 📲 **Virtual DOM**: Optimize performance with a virtual DOM that minimizes DOM mutations and ensures accuracy during DOM reconciliation transform.
 - 🎯 **Smart Updates**: Update components only when necessary, reducing unnecessary re-renders.
 - 🤽 **Context API**: Share data and functionality between widgets with a simple and efficient API.
 - 🧩 **Community-driven**: Join a growing community of developers and contributors.
 - 🔖 **Directives**: Extend HTML with custom behaviorial attributes.
-- 🪐 **Lifecycle Hooks**: Execute code at specific points in a component's and element's lifecycle.
+- 🪐 **Lifecycle Hooks**: Execute code at precise and specific points in a component's and element's lifecycle.
 
 **Building web applications has never been easier**
 
- With a strong focus on maintainability, modularity, reusability, and simplicity, Houx makes it easy to build complex web applications without sacrificing performance.
+ Houx focuses on maintainability, modularity, and reusability without sacrificing performance. Its strong foundation allows you to build complex web applications that are easy to maintain and extend.
 
 
 🌐 **Rich Ecosystem**
 
-Houx has a rich ecosystem of tools and libraries that help you build and maintain your application with ease. From a powerful templating engine to a robust routing system, Houx provides everything you need to build fast, efficient, and scalable web applications.
+Houx offers a rich ecosystem of tools and libraries to support every phase of your application’s lifecycle. From a powerful templating engine to a robust routing system, Houx provides everything you need to build fast, efficient, and scalable web applications.
 
 🚇 **Convention over Configuration**
 
-Houx follows the convention over configuration approach, which means you can focus on building your application without worrying about the underlying plumbing.
+Houx adheres to the principle of **convention over configuration**, letting you focus on what truly matters—building your application—while the framework handles the underlying details and plumbing.
 
 
 🎗️ **Just the UI**
 
-Houx is only concerned with the view layer. It doesn't dictate how you manage your state or handle backend logic. This makes it easy to integrate with other libraries and frameworks, such as Redux or GraphQL.
+Houx is designed to be focused on the view layer, making it easy to integrate with other backend logic or state management libraries, such as Redux or GraphQL, without any fuss.
 
 📲 **Virtual DOM**
 
@@ -52,30 +55,32 @@ Houx is optimized for performance and scalability, with a virtual DOM that minim
 
 ⚛️ **JSX**
  
- Support for JSX, giving you more freedom over the rendering style that best suites your project requirements, use case or coding style.
+ Enjoy the freedom of JSX support, allowing you to choose the rendering style that best suits your project's needs and your personal coding preferences.
 
 💫 **TypeScript Support**
 
-An exclusive out of the box support for typescript which optimizes development process and improves debuging.
+Out-of-the-box TypeScript support optimizes the development process and enhances debugging, making Houx the ideal choice for modern, large-scale projects.
+
+
+
+
 
 💪 **Getting Started**
 
-There are several ways through which you can simply get started with Houx depending on your available setup requirements and use case.
-If you wish to experience the full power of Houx, we recommend installing the official scaffolding tool , HouxKit.
-You can install the houxkit through npm or yarn depending on the availating node manager on your machine.  
-The command below installs the houx kit using the npm package installer.
+Whether you're starting fresh or integrating into an existing project, Houx makes it easy to get up and running. For a full-fledged experience, we recommend using the official scaffolding tool, **HouxKit**.
+
+Install HouxKit via npm:
+
 ```bash
 npm install init:houx
 ```
-This will scaffold a build system with folders separating concerns, like styles, dist, widgets and docs.  
-You can use Houx without a HouxKit in the terminal by calling `npm install houx`
 
-if you wants to embed or try houx outside of the terminal by adding a touch of interacting to your project in the browser, you can simply include it directly in your HTML file through a CDN link:
+For simpler integration, Houx can be added directly to your project with:
 
 ```html
-<script src="https://cdn.example.com/houx.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/hexaxsoftwares/houx.js@main/houx.global.dev.js"></script>
 ```
-check the Installation guide for detailed Installation information.
+Check the Installation guide for detailed Installation information.
 
 ##### Basic Usage
 
@@ -86,7 +91,7 @@ Here’s a simple example to get you started:
 <html>
 <head>
   <title>Houx.js Example</title>
-  <script src="https://cdn.example.com/houx.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/hexaxsoftwares/houx.js@main/houx.global.dev.js"></script>
 </head>
 <body>
   <div id="app">
@@ -99,17 +104,17 @@ Here’s a simple example to get you started:
         this.message= 'Hello, Houx.js!'
       }
     }).mount('#app');
-    //houx will have to call the .mount(selector or DOM node) to get rendered to the DOM
+    //You will have to call the .mount(selector or DOM node) to get rendered to the DOM
   </script>
 </body>
 </html>
 ```
 
-This example demonstrates how to create a basic Houx.js instance and bind data to the DOM.
+This example demonstrates how to create a basic Houx instance and bind data to the DOM.
 
 ##### Widgets
 
-Widgets are reusable pieces of your UI. Define an initial entrypoint widget build by calling the `Houx.initBuild()` method: and then registering them with the initBuild.widget call.
+Widgets are reusable pieces of your UI. Define an initial entrypoint widget build by calling the `Houx.initBuild()` method: and then registering other child widgets with the `initBuild.widget()` call.
 
 ```javascript
 Houx.initBuild({
@@ -129,7 +134,22 @@ Use your widget in the DOM within the mount root:
 
 ##### Reactivity System
 
-Houx.js uses a reactive data system to update the DOM when your data changes. When you modify the data, the framework automatically re-renders the affected parts of the UI.
+Houx uses a reactive data system to update the DOM when your data changes. When you modify the data, the framework automatically re-renders the affected parts of the UI.  
+Here is a simple counter app that updates a count once the button updates the counter prop through an inline event listener.
+```javascript
+Houx.initBuild({
+  model:function(){
+    this.count = 0
+  }
+}).mount('#app')
+```
+Usage in templates
+```html
+<!--in Dom templates-->
+<div id='app'>
+  <button $$on:click='count++' > I'm clicked {{ count }} times </button>
+</div>
+```
 
 ##### Directives
 
@@ -147,14 +167,14 @@ Example:
 
 ## Event Handling
 
-Houx.js makes it easy to handle user events. Define methods in your widget and use the `$$on` directive to attach it to an actual houx element vnode:
+Houx makes it easy to handle user events. Define methods in your widget and use the `$$on` directive to attach it to an actual houx element vnode:
 
 ```javascript
 Houx.initBuild({
-  data: {
-    count: 0
+  model:function(){
+    this.count= 0
   },
-  methods: {
+  handlers: {
     increment() {
       this.count++;
     }
@@ -168,7 +188,7 @@ Usage in template
 
 ##### Data Binding
 
-Houx.js supports both one-way and two-way data binding. Use the `$$model` directive for two-way data binding with form elements:
+Houx supports both one-way and two-way data binding. Use the `$$model` directive for two-way data binding with form elements:
 
 ```html
 <input $$model="message">
@@ -176,12 +196,15 @@ Houx.js supports both one-way and two-way data binding. Use the `$$model` direct
 
 ## Lifecycle Hooks
 
-Houx.js provides several lifecycle hooks that allow you to run code at specific stages of a widget's life:
+Houx provides several lifecycle hooks that allow you to run code at specific stages of a widget's life:
 
-- `postBuild`: Called after the instance is created.
+- `postBuild`: Called after the instance and vnodes are created.
+- `onWatch`:Called when effect watch is installed
 - `postMount`: Called after the instance is mounted.
+- `onEffect`:Called once a reactive effect is triggered.
 - `postUpdate`: Called after the instance's data is updated.
 - `postDestroy`: Called after the instance is destroyed.
+- etc....
 
 Example:
 
@@ -190,7 +213,7 @@ Houx.initBuild({
   model:function() {
     this.message= 'Hello!'
   },
-  postBuild() {
+  postBuild:function() {
     console.log('Instance created!');
   }
 });
@@ -207,16 +230,17 @@ You can create custom directives to encapsulate reusable behavior:
 Houx.initBuild({
   //widget options
 }).directive('focus', {
-  created(vnode, value, modifiers ) {
+  created:function(vnode, value, modifiers ) {
     el.$element.focus();
   }
 });
+// registered using the initBuild().directive() call
 ```
 To be used the same way with builtin Directives
 
 ##### Plugins
 
-Extend Houx.js functionality with plugins. A plugin is a function that adds an app level functionality to your build:
+Extend Houx functionality with plugins. A plugin is a function that adds an app level functionality to your build:
 
 ```javascript
 
@@ -238,7 +262,7 @@ Ready to experience the power of Houx? Get started with our comprehensive docume
 - **Tutorials**: [insert link]
 - **Example Projects**: [insert link]
 
-Houx is inspired by the success of Vue's API and builds upon the shoulders of giants in the web development community. We're grateful for the contributions and innovations that have paved the way for Houx.
+Houx is inspired by the success of Vue framework system and builds upon the shoulders of giants in the web development community. We're grateful for the contributions and innovations that have paved the way for Houx.
 
 **Join the Community**
 
@@ -264,6 +288,6 @@ We welcome contributions from the community. To get involved, please follow thes
 
 Houx is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
-Begin your journey with Houx.js by joining the community today and exploring its core features and understanding how it simplifies the complexities of modern web development. With Houx.js, you can focus on creating exceptional user experiences while the framework takes care of the underlying details.
+Begin your journey with Houx by joining the community today and exploring its core features and understanding how it simplifies the complexities of modern web development. With Houx, you can focus on creating exceptional user experiences while the framework takes care of the underlying details.
 
-Discover the elegance of Houx.js and elevate your web development projects to new heights by starting your next web project with houx.
+Discover the elegance of Houx and elevate your web development projects to new heights by starting your next web project with houx.
