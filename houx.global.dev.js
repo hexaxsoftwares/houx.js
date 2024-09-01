@@ -7589,7 +7589,8 @@ const Houx=(function(global){
     let [ open, close ]= self[$$$core].settings.delimiters;
     // open=hasSpecialCharacters(open) ? escapeRegExp(open) : open ;
     // close=hasSpecialCharacters(close) ? escapeRegExp(close) : close ;
-    const pattern=new RegExp(`^[${open}](.*?)[${close}]$`, 'g');
+    log(open, close)
+    const pattern=new RegExp(`${open}(.*?)${close}`, 'g');
     return transpileHouxDelimiterTemplateBlocks(self, html).replace(pattern, (match, value )=>{
       return `${open}${ _escapeDecoder(String(value||"")) }${close}`;
     });
@@ -7691,6 +7692,7 @@ const Houx=(function(global){
   function _HouxTemplateParser(html, self, parent, hx__VNode, fall, isRerender=false, config={} ){
     if(!html) return null;
     if(self && isHouxBuild(self))  html=RunMustacheExcape(self, html );
+    log(html)
     html=openingTagsHydration( self , html).replace(closingTagsRegex, (match, tag)=> {
       tag = isBlockTag(tag) ? "section" : tag ;
       return IsDomparserTag(tag) ? `</hx$$--${tag}-$hx>` : `</${tag}>` ;
